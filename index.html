@@ -68,7 +68,7 @@
     <p class="hint">Chụp thẳng từ trên xuống, phiếu chiếm gần hết khung hình, đủ sáng, thấy rõ 4 ô vuông đen ở 4 góc.</p>
     <div id="stageWrap" style="display:none">
       <canvas id="stage"></canvas>
-      <p class="hint">4 chấm màu là tâm 4 ô vuông đen. Nếu chấm nào lệch khỏi ô vuông: bấm nút điểm đó rồi chạm đúng tâm ô vuông trên ảnh.</p>
+      <p class="hint"><b>Ảnh phải thấy đủ cả phiếu, nhất là 4 ô vuông đen ở 4 góc</b> — thiếu 1 góc là app không chấm (v1.1). 4 chấm màu là tâm 4 ô vuông đen. Nếu chấm nào lệch khỏi ô vuông: bấm nút điểm đó rồi chạm đúng tâm ô vuông trên ảnh.</p>
       <div class="row ptbtns">
         <button class="grey ptbtn" data-p="0">① Góc trên-trái</button>
         <button class="grey ptbtn" data-p="1">② Trên-phải</button>
@@ -105,7 +105,7 @@
       <button id="btnClear" class="red">🗑 Xoá danh sách</button>
     </div>
   </div>
-  <p class="hint">Prototype v1 — thang điểm 0.25/câu. Bản chính thức sẽ đọc trọng số từng phần (VD reading 0.5đ) từ QR tổng khi xuất đề.</p>
+  <p class="hint">Prototype v1.1 — thang điểm 0.25/câu; đã thêm kiểm tra khung phiếu trước khi chấm. Bản chính thức sẽ đọc trọng số từng phần (VD reading 0.5đ) từ QR tổng khi xuất đề.</p>
 </main>
 <script>
 "use strict";
@@ -247,9 +247,60 @@ $("stage").onclick = e => {
   const x = (e.clientX - r.left) * srcCanvas.width / r.width;
   const y = (e.clientY - r.top) * srcCanvas.height / r.height;
   pts[selPt] = [x, y]; selPt = (selPt + 1) % 4; drawStage();
+  forceGrade = false; $("btnGrade").textContent = "✅ CHẤM BÀI";
 };
-$("btnAuto").onclick = () => { autoDetect(); drawStage(); };
+$("btnAuto").onclick = () => { autoDetect(); drawStage(); forceGrade = false; $("btnGrade").textContent = "✅ CHẤM BÀI"; };
 
+// ===== Quad validation (v1.1): refuse to grade a badly-framed sheet =====
+let _srcGray = null;
+function srcGray() {
+  if (_srcGray && _srcGray.c === srcCanvas) return _srcGray;
+  const ctx = srcCanvas.getContext("2d");
+  const d = ctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height).data;
+  const g = new Uint8Array(srcCanvas.width * srcCanvas.height);
+  for (let i = 0; i < g.length; i++) g[i] = .299*d[i*4] + .587*d[i*4+1] + .114*d[i*4+2];
+  _srcGray = { c: srcCanvas, g, w: srcCanvas.width, h: srcCanvas.height };
+  return _srcGray;
+}
+function meanDiskSrc(x, y, r) {
+  const { g, w, h } = srcGray();
+  let s = 0, n = 0;
+  for (let dy = -r; dy <= r; dy += 3) for (let dx = -r; dx <= r; dx += 3) {
+    if (dx*dx + dy*dy > r*r) continue;
+    const xx = Math.round(x+dx), yy = Math.round(y+dy);
+    if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+    s += g[yy*w + xx]; n++;
+  }
+  return n ? s/n : 255;
+}
+function validateQuad() {
+  const P = pts, problems = [];
+  const dist = (a,b) => Math.hypot(a[0]-b[0], a[1]-b[1]);
+  const topW = dist(P[0],P[1]), botW = dist(P[3],P[2]), leftH = dist(P[0],P[3]), rightH = dist(P[1],P[2]);
+  const avgW = (topW+botW)/2, avgH = (leftH+rightH)/2;
+  // order sanity
+  if (!(P[0][1] < P[3][1] && P[1][1] < P[2][1] && P[0][0] < P[1][0] && P[3][0] < P[2][0]))
+    problems.push("thứ tự 4 điểm chưa đúng (1 trên-trái, 2 trên-phải, 3 dưới-phải, 4 dưới-trái)");
+  // shape: portrait sheet, opposite sides roughly equal
+  const ratio = avgW / avgH;
+  if (ratio < 0.45 || ratio > 0.95) problems.push("khung phiếu không giống tờ A4 dọc (có thể thiếu phần trên/dưới của phiếu trong ảnh)");
+  if (Math.abs(topW-botW)/avgW > 0.4 || Math.abs(leftH-rightH)/avgH > 0.4)
+    problems.push("khung phiếu méo nhiều (chụp quá nghiêng hoặc sai điểm góc)");
+  // area
+  let area = 0;
+  for (let i = 0; i < 4; i++) { const a = P[i], b = P[(i+1)%4]; area += a[0]*b[1] - b[0]*a[1]; }
+  if (Math.abs(area)/2 < 0.18 * srcCanvas.width * srcCanvas.height)
+    problems.push("phiếu chiếm quá ít khung hình — chụp gần lại");
+  // each point must sit on a real black square: a disk ~6% of quad width around it must be mostly black
+  const names = ["trên-trái", "trên-phải", "dưới-phải", "dưới-trái"];
+  const r = Math.max(6, 0.03 * avgW);
+  P.forEach((p, i) => {
+    const m = meanDiskSrc(p[0], p[1], r);
+    if (m > 125) problems.push("điểm " + (i+1) + " (" + names[i] + ") chưa nằm trên ô vuông đen (độ đen không đạt) — chụp đủ góc này hoặc chạm đặt lại điểm");
+  });
+  return problems;
+}
+let forceGrade = false;
 // ===== Homography warp (dst -> src) + bilinear sampling =====
 function solveHomography(frm, to) {
   const A = [], b = [];
@@ -303,9 +354,20 @@ function diskMean(gray, TW, cx, cy, r) {
 }
 // ===== Grading =====
 $("btnGrade").onclick = () => {
+  const problems = validateQuad();
+  if (problems.length && !forceGrade) {
+    forceGrade = true;
+    $("btnGrade").textContent = "⚠ Vẫn chấm bất chấp";
+    warn("⚠ Chưa chấm được vì: " + problems.join("; ") + ". Sửa xong bấm CHẤM BÀI lại, hoặc bấm 'Vẫn chấm bất chấp' nếu chắc chắn 4 điểm đã đúng.");
+    return;
+  }
+  forceGrade = false;
+  $("btnGrade").textContent = "✅ CHẤM BÀI";
+  warn("");
   const { canvas, gray, TW } = warp();
   const pv = $("warpPreview"); pv.width = canvas.width; pv.height = canvas.height;
-  pv.getContext("2d").drawImage(canvas, 0, 0);
+  const pvCtx = pv.getContext("2d");
+  pvCtx.drawImage(canvas, 0, 0);
   answers = []; flags = [];
   for (let q = 1; q <= 40; q++) {
     const means = [];
@@ -324,8 +386,22 @@ $("btnGrade").onclick = () => {
     }
     answers.push(ans); flags.push(flag);
   }
+  // overlay the read bubbles on the flattened sheet so misalignment is obvious at a glance
+  const keyNow = KEY[$("codeSel").value];
+  answers.forEach((a, i) => {
+    const j = a === null ? -1 : OPTS.indexOf(a);
+    if (j < 0) return;
+    const [bx, by] = bubbleXY(i+1, j);
+    pvCtx.beginPath();
+    pvCtx.arc((bx-ORIGIN)*SCALE, (by-ORIGIN)*SCALE, BUBBLE_R_PX(), 0, 7);
+    pvCtx.lineWidth = 5;
+    pvCtx.strokeStyle = a === keyNow[i] ? "#16a34a" : "#dc2626";
+    pvCtx.stroke();
+  });
+  pv.style.display = "block";
   showResult();
 };
+function BUBBLE_R_PX() { return 3.2 * SCALE; }
 function showResult() {
   const key = KEY[$("codeSel").value];
   let correct = 0;
