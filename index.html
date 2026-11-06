@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Chấm OMR — Prototype 40 câu</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
+  header { background: #14532d; color: #fff; padding: 12px 16px; }
+  header h1 { font-size: 19px; margin: 0; }
+  header p { margin: 3px 0 0; font-size: 13px; opacity: .85; }
+  main { max-width: 860px; margin: 0 auto; padding: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { font-size: 16px; margin: 0 0 10px; }
+  label { font-size: 14px; display: block; margin: 6px 0 3px; }
+  input[type=text], select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #c8cfda; border-radius: 8px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 120px; }
+  button { padding: 11px 12px; font-size: 15px; border: 0; border-radius: 9px; background: #2563eb; color: #fff; cursor: pointer; }
+  button.green { background: #16a34a; } button.grey { background: #64748b; } button.red { background: #dc2626; }
+  button:disabled { opacity: .45; }
+  #stageWrap { position: relative; }
+  canvas#stage { width: 100%; border-radius: 10px; background: #222; display: block; touch-action: manipulation; }
+  video { width: 100%; border-radius: 10px; background: #000; display: none; }
+  .hint { font-size: 13.5px; color: #475569; line-height: 1.5; }
+  .score { font-size: 40px; font-weight: 800; color: #14532d; text-align: center; }
+  .sub { text-align: center; font-size: 15px; color: #475569; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin-top: 10px; }
+  .chip { border-radius: 8px; padding: 7px 2px; text-align: center; font-size: 14px; cursor: pointer; border: 2px solid transparent; user-select: none; }
+  .chip b { display: block; font-size: 15px; }
+  .ok { background: #dcfce7; } .wrong { background: #fee2e2; } .blank { background: #fef9c3; }
+  .flag { border-color: #f59e0b !important; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { border-bottom: 1px solid #e5e7eb; padding: 6px 4px; text-align: left; }
+  .warn { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 8px 10px; font-size: 14px; display: none; }
+  .ptbtns button { padding: 8px; font-size: 13.5px; }
+  .sel { outline: 3px solid #f59e0b; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📷 App Chấm OMR — Prototype</h1>
+  <p>Phiếu 40 câu • Mã 101 • Chấm offline trên điện thoại, dữ liệu chỉ nằm trong máy này</p>
+</header>
+<main>
+  <div class="card">
+    <h2>1 · Thông tin bài làm</h2>
+    <label>Họ tên học sinh</label>
+    <input type="text" id="studentName" placeholder="VD: Nguyễn Văn A">
+    <div class="row">
+      <div><label>Lớp</label><input type="text" id="studentClass" placeholder="VD: 11A1"></div>
+      <div><label>Mã đề</label>
+        <select id="codeSel"><option value="101">101 (PROTO 40)</option></select></div>
+    </div>
+    <p class="hint">Mẹo thử nhanh không cần in: bấm <b>Tải ảnh phiếu</b> và chọn file <b>Phieu_Mau_DaTo_Ma101.png</b> — phiếu mẫu đã tô sẵn, điểm đúng phải là <b>8.0</b> (32/40, sai 6 câu, bỏ trống Q7 + Q22).</p>
+  </div>
+
+  <div class="card">
+    <h2>2 · Chụp / tải ảnh phiếu</h2>
+    <div class="row">
+      <button id="btnCam">📷 Mở camera</button>
+      <button id="btnCapture" class="green" disabled>📸 Chụp</button>
+      <button id="btnFile" class="grey">📁 Tải ảnh phiếu</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+    <video id="video" playsinline autoplay muted></video>
+    <p class="hint">Chụp thẳng từ trên xuống, phiếu chiếm gần hết khung hình, đủ sáng, thấy rõ 4 ô vuông đen ở 4 góc.</p>
+    <div id="stageWrap" style="display:none">
+      <canvas id="stage"></canvas>
+      <p class="hint">4 chấm màu là tâm 4 ô vuông đen. Nếu chấm nào lệch khỏi ô vuông: bấm nút điểm đó rồi chạm đúng tâm ô vuông trên ảnh.</p>
+      <div class="row ptbtns">
+        <button class="grey ptbtn" data-p="0">① Góc trên-trái</button>
+        <button class="grey ptbtn" data-p="1">② Trên-phải</button>
+        <button class="grey ptbtn" data-p="2">③ Dưới-phải</button>
+        <button class="grey ptbtn" data-p="3">④ Dưới-trái</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnAuto" class="grey">🎯 Tự tìm 4 góc</button>
+        <button id="btnGrade" class="green">✅ CHẤM BÀI</button>
+      </div>
+    </div>
+    <div class="warn" id="warnBox"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <h2>3 · Kết quả</h2>
+    <div class="score" id="scoreBig">–</div>
+    <div class="sub" id="scoreSub"></div>
+    <p class="hint" style="text-align:center">Chạm vào 1 câu để sửa đáp án đọc được (A → B → C → D → trống), điểm tự tính lại.</p>
+    <div class="grid" id="chipGrid"></div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnSave" class="green">💾 Lưu vào danh sách</button>
+      <button id="btnWarp" class="grey">👁 Xem ảnh đã kéo phẳng</button>
+    </div>
+    <canvas id="warpPreview" style="width:100%;display:none;border-radius:10px;margin-top:10px"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>4 · Danh sách đã chấm</h2>
+    <table><thead><tr><th>Họ tên</th><th>Lớp</th><th>Mã</th><th>Đúng</th><th>Điểm</th></tr></thead>
+    <tbody id="resultBody"><tr><td colspan="5" class="hint">Chưa có bài nào.</td></tr></tbody></table>
+    <div class="row" style="margin-top:10px">
+      <button id="btnCSV" class="grey">⬇ Xuất CSV</button>
+      <button id="btnClear" class="red">🗑 Xoá danh sách</button>
+    </div>
+  </div>
+  <p class="hint">Prototype v1 — thang điểm 0.25/câu. Bản chính thức sẽ đọc trọng số từng phần (VD reading 0.5đ) từ QR tổng khi xuất đề.</p>
+</main>
+<script>
+"use strict";
+// ===== Shared geometry with the printed sheet (mm, origin = page top-left) =====
+const KEY = { "101": ["A","C","B","D","B","A","D","C","C","D","A","B","D","B","C","A","A","D","B","C","C","A","D","B","B","D","A","C","D","C","B","A","A","B","C","D","C","D","A","B"] };
+const OPTS = ["A","B","C","D"];
+const ORIGIN = 16, BOX_W = 178, BOX_H = 265, SCALE = 5;      // warp: 890 x 1325 px
+function bubbleXY(q, j) {
+  const xs = q <= 20 ? [38,50,62,74] : [130,142,154,166];
+  return [xs[j], 72 + ((q-1) % 20) * 9.8];
+}
+// ===== State =====
+let srcCanvas = null;          // full-res source image
+let pts = null;                // [TL,TR,BR,BL] in source px
+let selPt = 0;
+let answers = [];              // detected/edited answers: 'A'..'D' or null
+let flags = [];                // per-question warning flags
+let results = [];
+const $ = id => document.getElementById(id);
+const warn = m => { const w = $("warnBox"); if (!m) { w.style.display = "none"; return; } w.textContent = m; w.style.display = "block"; };
+
+// ===== Image loading =====
+function setSource(canvas) {
+  srcCanvas = canvas;
+  warn("");
+  pts = presetPts();
+  autoDetect();
+  drawStage();
+  $("stageWrap").style.display = "block";
+  $("resultCard").style.display = "none";
+}
+function presetPts() {  // fiducial centres as fractions of a straight full-page photo
+  const W = srcCanvas.width, H = srcCanvas.height;
+  return [[.0762*W,.0539*H],[.9238*W,.0539*H],[.9238*W,.9461*H],[.0762*W,.9461*H]];
+}
+function loadFile(file) {
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement("canvas");
+    const sc = Math.min(1, 2200 / Math.max(img.width, img.height));
+    c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    tryQR(c);
+    setSource(c);
+  };
+  img.src = URL.createObjectURL(file);
+}
+$("btnFile").onclick = () => $("fileInput").click();
+$("fileInput").onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); };
+
+// ===== Camera =====
+let stream = null;
+$("btnCam").onclick = async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 } }, audio: false });
+    const v = $("video"); v.srcObject = stream; v.style.display = "block";
+    $("btnCapture").disabled = false;
+    scanQRloop();
+  } catch (e) { warn("Không mở được camera (" + e.message + "). Lưu ý: camera cần trang HTTPS hoặc localhost — nếu mở file trực tiếp bị chặn, hãy dùng nút Tải ảnh phiếu, hoặc mở app qua bản host (Netlify/GitHub Pages)."); }
+};
+$("btnCapture").onclick = () => {
+  const v = $("video");
+  const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext("2d").drawImage(v, 0, 0);
+  setSource(c);
+  v.style.display = "none"; $("btnCapture").disabled = true;
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+};
+// QR auto-detect (native BarcodeDetector where available) — sets the code select
+async function tryQR(canvas) {
+  if (!("BarcodeDetector" in window)) return;
+  try {
+    const det = new BarcodeDetector({ formats: ["qr_code"] });
+    const codes = await det.detect(canvas);
+    for (const cd of codes) {
+      const m = /OMR1\|[A-Z0-9]+\|(\d+)/.exec(cd.rawValue || "");
+      if (m && KEY[m[1]]) { $("codeSel").value = m[1]; warn("Đã đọc QR: mã đề " + m[1]); return; }
+    }
+  } catch (e) { /* QR is a bonus; manual select still works */ }
+}
+function scanQRloop() {
+  if (!stream) return;
+  const c = document.createElement("canvas");
+  const tick = async () => {
+    if (!stream) return;
+    const v = $("video");
+    if (v.videoWidth) { c.width = v.videoWidth; c.height = v.videoHeight; c.getContext("2d").drawImage(v, 0, 0); await tryQR(c); }
+    setTimeout(tick, 1200);
+  };
+  tick();
+}
+
+// ===== Fiducial auto-detect: median seed in corner window + local centroid =====
+function autoDetect() {
+  const W = srcCanvas.width, H = srcCanvas.height;
+  const sc = Math.min(1, 800 / Math.max(W, H));
+  const c = document.createElement("canvas"); c.width = Math.round(W*sc); c.height = Math.round(H*sc);
+  const ctx = c.getContext("2d"); ctx.drawImage(srcCanvas, 0, 0, c.width, c.height);
+  const d = ctx.getImageData(0, 0, c.width, c.height).data;
+  const w = c.width, h = c.height;
+  const wins = [[0,.25,0,.14],[.75,1,0,.14],[.75,1,.84,1],[0,.25,.84,1]];
+  const found = [];
+  for (const [x0,x1,y0,y1] of wins) {
+    const xs = [], ys = [];
+    for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++) {
+      const i = (y*w + x) * 4, g = .299*d[i] + .587*d[i+1] + .114*d[i+2];
+      if (g < 100) { xs.push(x); ys.push(y); }
+    }
+    if (xs.length < 30) { warn("Chưa tự tìm được 4 góc — hãy chạm để đặt 4 chấm đúng tâm 4 ô vuông đen."); return; }
+    const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
+    const mx = med(xs), my = med(ys), R = .045 * w;
+    let sx = 0, sy = 0, n = 0;
+    for (let k = 0; k < xs.length; k++) if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) { sx += xs[k]; sy += ys[k]; n++; }
+    found.push([sx/n/sc, sy/n/sc]);
+  }
+  pts = found;
+}
+// ===== Stage drawing / point editing =====
+function drawStage() {
+  const st = $("stage"), maxW = 900;
+  const sc = Math.min(1, maxW / srcCanvas.width);
+  st.width = Math.round(srcCanvas.width*sc); st.height = Math.round(srcCanvas.height*sc);
+  const ctx = st.getContext("2d");
+  ctx.drawImage(srcCanvas, 0, 0, st.width, st.height);
+  ctx.lineWidth = 3; ctx.strokeStyle = "#22c55e"; ctx.beginPath();
+  pts.forEach((p,i) => { const q = pts[(i+1)%4]; ctx.moveTo(p[0]*sc, p[1]*sc); ctx.lineTo(q[0]*sc, q[1]*sc); });
+  ctx.stroke();
+  pts.forEach((p,i) => {
+    ctx.beginPath(); ctx.arc(p[0]*sc, p[1]*sc, i === selPt ? 15 : 11, 0, 7);
+    ctx.fillStyle = i === selPt ? "#f59e0b" : "#22c55e"; ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(String(i+1), p[0]*sc, p[1]*sc);
+  });
+  document.querySelectorAll(".ptbtn").forEach(b => b.classList.toggle("sel", +b.dataset.p === selPt));
+}
+document.querySelectorAll(".ptbtn").forEach(b => b.onclick = () => { selPt = +b.dataset.p; drawStage(); });
+$("stage").onclick = e => {
+  const r = e.target.getBoundingClientRect();
+  const x = (e.clientX - r.left) * srcCanvas.width / r.width;
+  const y = (e.clientY - r.top) * srcCanvas.height / r.height;
+  pts[selPt] = [x, y]; selPt = (selPt + 1) % 4; drawStage();
+};
+$("btnAuto").onclick = () => { autoDetect(); drawStage(); };
+
+// ===== Homography warp (dst -> src) + bilinear sampling =====
+function solveHomography(frm, to) {
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++) {
+    const [x,y] = frm[i], [u,v] = to[i];
+    A.push([x,y,1,0,0,0,-u*x,-u*y]); b.push(u);
+    A.push([0,0,0,x,y,1,-v*x,-v*y]); b.push(v);
+  }
+  for (let col = 0, row = 0; row < 8 && col < 8; col++, row++) {
+    let piv = row; for (let r = row+1; r < 8; r++) if (Math.abs(A[r][col]) > Math.abs(A[piv][col])) piv = r;
+    [A[row],A[piv]] = [A[piv],A[row]]; [b[row],b[piv]] = [b[piv],b[row]];
+    for (let r = 0; r < 8; r++) if (r !== row) {
+      const f = A[r][col] / A[row][col];
+      for (let cc = col; cc < 8; cc++) A[r][cc] -= f * A[row][cc];
+      b[r] -= f * b[row];
+    }
+  }
+  const h = b.map((v,i) => v / A[i][i]);
+  return [[h[0],h[1],h[2]],[h[3],h[4],h[5]],[h[6],h[7],1]];
+}
+function warp() {
+  const TW = BOX_W * SCALE, TH = BOX_H * SCALE;
+  const wc = document.createElement("canvas"); wc.width = TW; wc.height = TH;
+  const wctx = wc.getContext("2d");
+  const sctx = srcCanvas.getContext("2d");
+  const sd = sctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height);
+  const out = wctx.createImageData(TW, TH);
+  const Hm = solveHomography([[0,0],[TW,0],[TW,TH],[0,TH]], pts);
+  const SW = srcCanvas.width, SH = srcCanvas.height, src = sd.data, dst = out.data;
+  for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) {
+    const den = Hm[2][0]*x + Hm[2][1]*y + Hm[2][2];
+    const sx = (Hm[0][0]*x + Hm[0][1]*y + Hm[0][2]) / den;
+    const sy = (Hm[1][0]*x + Hm[1][1]*y + Hm[1][2]) / den;
+    let g = 255;
+    if (sx >= 0 && sy >= 0 && sx < SW-1 && sy < SH-1) {
+      const x0 = sx|0, y0 = sy|0, dx = sx-x0, dy = sy-y0;
+      const i00 = (y0*SW+x0)*4, i10 = i00+4, i01 = i00+SW*4, i11 = i01+4;
+      const lum = k => .299*src[k] + .587*src[k+1] + .114*src[k+2];
+      g = lum(i00)*(1-dx)*(1-dy) + lum(i10)*dx*(1-dy) + lum(i01)*(1-dx)*dy + lum(i11)*dx*dy;
+    }
+    const o = (y*TW+x)*4; dst[o] = dst[o+1] = dst[o+2] = g; dst[o+3] = 255;
+  }
+  wctx.putImageData(out, 0, 0);
+  return { canvas: wc, gray: out.data, TW, TH };
+}
+function diskMean(gray, TW, cx, cy, r) {
+  let s = 0, n = 0;
+  for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2)
+    if (dx*dx + dy*dy <= r*r) { s += gray[((cy+dy)*TW + (cx+dx)) * 4]; n++; }
+  return s / n;
+}
+// ===== Grading =====
+$("btnGrade").onclick = () => {
+  const { canvas, gray, TW } = warp();
+  const pv = $("warpPreview"); pv.width = canvas.width; pv.height = canvas.height;
+  pv.getContext("2d").drawImage(canvas, 0, 0);
+  answers = []; flags = [];
+  for (let q = 1; q <= 40; q++) {
+    const means = [];
+    for (let j = 0; j < 4; j++) {
+      const [bx, by] = bubbleXY(q, j);
+      means.push(diskMean(gray, TW, Math.round((bx-ORIGIN)*SCALE), Math.round((by-ORIGIN)*SCALE), 9));
+    }
+    const order = [0,1,2,3].sort((a,b) => means[a]-means[b]);
+    const m0 = means[order[0]], m1 = means[order[1]];
+    let ans = null, flag = "";
+    if (m0 > 185) { ans = null; if (m0 < 210) flag = "có vết mờ — kiểm tra"; }
+    else {
+      ans = OPTS[order[0]];
+      if (m1 - m0 < 18 && m1 < 190) flag = "giống tô 2 ô — kiểm tra";
+      else if (m0 > 150) flag = "tô nhạt — kiểm tra";
+    }
+    answers.push(ans); flags.push(flag);
+  }
+  showResult();
+};
+function showResult() {
+  const key = KEY[$("codeSel").value];
+  let correct = 0;
+  const grid = $("chipGrid"); grid.innerHTML = "";
+  answers.forEach((a, i) => {
+    const isOk = a === key[i]; if (isOk) correct++;
+    const chip = document.createElement("div");
+    chip.className = "chip " + (a === null ? "blank" : isOk ? "ok" : "wrong") + (flags[i] ? " flag" : "");
+    chip.innerHTML = "<b>" + (i+1) + "</b>" + (a === null ? "— trống" : a) + (isOk ? " ✓" : " ✗");
+    chip.title = (flags[i] ? "⚠ " + flags[i] + " · " : "") + "Đáp án đúng: " + key[i] + " — chạm để sửa";
+    chip.onclick = () => {
+      const seq = ["A","B","C","D",null];
+      answers[i] = seq[(seq.indexOf(answers[i]) + 1) % 5];
+      flags[i] = ""; showResult();
+    };
+    grid.appendChild(chip);
+  });
+  const sc = correct * 0.25;
+  const score = sc % 1 === 0 ? sc.toFixed(1) : sc.toFixed(2).replace(/0$/, "");
+  $("scoreBig").textContent = score + " / 10";
+  const nf = flags.filter(Boolean).length;
+  $("scoreSub").textContent = "Đúng " + correct + "/40 câu · Mã " + $("codeSel").value + (nf ? " · ⚠ " + nf + " câu cần kiểm tra (viền cam)" : "");
+  $("resultCard").style.display = "block";
+  $("resultCard").scrollIntoView({ behavior: "smooth" });
+  $("btnSave").dataset.correct = correct; $("btnSave").dataset.score = score;
+}
+$("btnWarp").onclick = () => { const p = $("warpPreview"); p.style.display = p.style.display === "none" ? "block" : "none"; };
+// ===== Save + CSV =====
+$("btnSave").onclick = () => {
+  const name = $("studentName").value.trim();
+  if (!name) { warn("Nhập họ tên học sinh trước khi lưu."); $("studentName").focus(); return; }
+  results.push({ name, cls: $("studentClass").value.trim(), code: $("codeSel").value,
+                 correct: $("btnSave").dataset.correct, score: $("btnSave").dataset.score });
+  renderResults(); warn("Đã lưu bài của " + name + ".");
+  $("studentName").value = "";
+};
+function renderResults() {
+  const tb = $("resultBody");
+  tb.innerHTML = results.length ? "" : '<tr><td colspan="5" class="hint">Chưa có bài nào.</td></tr>';
+  results.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td></td><td></td><td></td><td></td><td></td>";
+    [r.name, r.cls, r.code, r.correct + "/40", r.score].forEach((v,i) => tr.children[i].textContent = v);
+    tb.appendChild(tr);
+  });
+}
+$("btnCSV").onclick = () => {
+  if (!results.length) { warn("Chưa có bài nào để xuất."); return; }
+  const csv = "﻿Ho ten,Lop,Ma de,So cau dung,Diem\n" + results.map(r => [r.name, r.cls, r.code, r.correct, r.score].join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "bang_diem_omr.csv"; a.click();
+};
+$("btnClear").onclick = () => { results = []; renderResults(); };
+</script>
+</body>
+</html>
