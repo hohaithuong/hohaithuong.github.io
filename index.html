@@ -105,7 +105,7 @@
       <button id="btnClear" class="red">🗑 Xoá danh sách</button>
     </div>
   </div>
-  <p class="hint">Prototype v1.1 — thang điểm 0.25/câu; đã thêm kiểm tra khung phiếu trước khi chấm. Bản chính thức sẽ đọc trọng số từng phần (VD reading 0.5đ) từ QR tổng khi xuất đề.</p>
+  <p class="hint">Prototype v1.2 — thang điểm 0.25/câu; tự tinh chỉnh tâm sau khi kéo phẳng + ngưỡng đọc thích ứng theo từng ảnh. Chụp phiếu in trên giấy cho kết quả tốt nhất (chụp qua màn hình dễ bị viền đen + moiré làm lệch góc). Bản chính thức sẽ đọc trọng số từng phần từ QR tổng khi xuất đề.</p>
 </main>
 <script>
 "use strict";
@@ -246,9 +246,26 @@ $("stage").onclick = e => {
   const r = e.target.getBoundingClientRect();
   const x = (e.clientX - r.left) * srcCanvas.width / r.width;
   const y = (e.clientY - r.top) * srcCanvas.height / r.height;
-  pts[selPt] = [x, y]; selPt = (selPt + 1) % 4; drawStage();
+  pts[selPt] = snapToSquare(x, y); selPt = (selPt + 1) % 4; drawStage();
   forceGrade = false; $("btnGrade").textContent = "✅ CHẤM BÀI";
 };
+// Snap a tap to the centre of the nearby black square, if one is found (v1.2)
+function snapToSquare(x, y) {
+  const { g, w, h } = srcGray();
+  const xs = [], ys = [];
+  const R = 55;
+  for (let yy = Math.max(0, Math.round(y-R)); yy < Math.min(h, y+R); yy++)
+    for (let xx = Math.max(0, Math.round(x-R)); xx < Math.min(w, x+R); xx++)
+      if (g[yy*w + xx] < 110) { xs.push(xx); ys.push(yy); }
+  if (xs.length < 80) return [x, y];
+  const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
+  const mx = med(xs), my = med(ys);
+  if (Math.hypot(mx-x, my-y) > 60) return [x, y];
+  let sx = 0, sy = 0, n = 0;
+  for (let i = 0; i < xs.length; i++)
+    if (Math.abs(xs[i]-mx) < 34 && Math.abs(ys[i]-my) < 34) { sx += xs[i]; sy += ys[i]; n++; }
+  return n >= 80 ? [sx/n, sy/n] : [x, y];
+}
 $("btnAuto").onclick = () => { autoDetect(); drawStage(); forceGrade = false; $("btnGrade").textContent = "✅ CHẤM BÀI"; };
 
 // ===== Quad validation (v1.1): refuse to grade a badly-framed sheet =====
@@ -321,15 +338,16 @@ function solveHomography(frm, to) {
   const h = b.map((v,i) => v / A[i][i]);
   return [[h[0],h[1],h[2]],[h[3],h[4],h[5]],[h[6],h[7],1]];
 }
-function warp() {
+function warp() { return warpFrom(srcCanvas, pts); }
+function warpFrom(source, srcPts) {
   const TW = BOX_W * SCALE, TH = BOX_H * SCALE;
   const wc = document.createElement("canvas"); wc.width = TW; wc.height = TH;
   const wctx = wc.getContext("2d");
-  const sctx = srcCanvas.getContext("2d");
-  const sd = sctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height);
+  const sctx = source.getContext("2d");
+  const sd = sctx.getImageData(0, 0, source.width, source.height);
   const out = wctx.createImageData(TW, TH);
-  const Hm = solveHomography([[0,0],[TW,0],[TW,TH],[0,TH]], pts);
-  const SW = srcCanvas.width, SH = srcCanvas.height, src = sd.data, dst = out.data;
+  const Hm = solveHomography([[0,0],[TW,0],[TW,TH],[0,TH]], srcPts);
+  const SW = source.width, SH = source.height, src = sd.data, dst = out.data;
   for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) {
     const den = Hm[2][0]*x + Hm[2][1]*y + Hm[2][2];
     const sx = (Hm[0][0]*x + Hm[0][1]*y + Hm[0][2]) / den;
@@ -352,6 +370,34 @@ function diskMean(gray, TW, cx, cy, r) {
     if (dx*dx + dy*dy <= r*r) { s += gray[((cy+dy)*TW + (cx+dx)) * 4]; n++; }
   return s / n;
 }
+// ===== Warp self-refinement (v1.2) =====
+// In the warped image only a quarter of each corner square is visible; when alignment
+// is perfect its centroid sits 15px inward from the corner. Measure all four and re-warp.
+function refineWarp(w1) {
+  const { gray, TW, TH } = w1;
+  const pat = [[15,15],[-15,15],[-15,-15],[15,-15]];
+  const ideal = [[0,0],[TW,0],[TW,TH],[0,TH]];
+  const centres = [];
+  for (let k = 0; k < 4; k++) {
+    const [ix, iy] = ideal[k];
+    const x0 = Math.max(0, ix-55), x1 = Math.min(TW, ix+55);
+    const y0 = Math.max(0, iy-55), y1 = Math.min(TH, iy+55);
+    const xs = [], ys = [];
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++)
+      if (gray[(y*TW + x) * 4] < 110) { xs.push(x); ys.push(y); }
+    if (xs.length < 50) return null;
+    const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
+    const mx = med(xs), my = med(ys);
+    let sx = 0, sy = 0, n = 0;
+    for (let i = 0; i < xs.length; i++)
+      if (Math.abs(xs[i]-mx) < 26 && Math.abs(ys[i]-my) < 26) { sx += xs[i]; sy += ys[i]; n++; }
+    if (n < 50) return null;
+    centres.push([sx/n - pat[k][0], sy/n - pat[k][1]]);
+  }
+  for (let k = 0; k < 4; k++)
+    if (Math.hypot(centres[k][0]-ideal[k][0], centres[k][1]-ideal[k][1]) > 55) return null;
+  return warpFrom(w1.canvas, centres);
+}
 // ===== Grading =====
 $("btnGrade").onclick = () => {
   const problems = validateQuad();
@@ -364,26 +410,48 @@ $("btnGrade").onclick = () => {
   forceGrade = false;
   $("btnGrade").textContent = "✅ CHẤM BÀI";
   warn("");
-  const { canvas, gray, TW } = warp();
+  const w1 = warp();
+  const wFinal = refineWarp(w1) || w1;
+  const { canvas, gray, TW } = wFinal;
   const pv = $("warpPreview"); pv.width = canvas.width; pv.height = canvas.height;
   const pvCtx = pv.getContext("2d");
   pvCtx.drawImage(canvas, 0, 0);
-  answers = []; flags = [];
+  // Pass 1: sample every bubble
+  const allRows = [];
   for (let q = 1; q <= 40; q++) {
     const means = [];
     for (let j = 0; j < 4; j++) {
       const [bx, by] = bubbleXY(q, j);
       means.push(diskMean(gray, TW, Math.round((bx-ORIGIN)*SCALE), Math.round((by-ORIGIN)*SCALE), 9));
     }
+    allRows.push(means);
+  }
+  // Adaptive threshold (v1.2): 2-means over all 160 bubbles -> midpoint between
+  // the "filled" cluster and the "empty" cluster of THIS photo.
+  const flat = allRows.flat();
+  let cD = Math.min(...flat), cL = Math.max(...flat);
+  for (let it = 0; it < 15; it++) {
+    const D = flat.filter(v => Math.abs(v-cD) <= Math.abs(v-cL));
+    const L = flat.filter(v => Math.abs(v-cD) > Math.abs(v-cL));
+    if (!D.length || !L.length) break;
+    cD = D.reduce((s,v)=>s+v,0)/D.length; cL = L.reduce((s,v)=>s+v,0)/L.length;
+  }
+  const T = (cD + cL) / 2;
+  // Pass 2: classify each row — filled needs to beat the adaptive threshold
+  // OR stand out strongly against its own row (light pencil on a dark photo).
+  answers = []; flags = [];
+  for (let q = 1; q <= 40; q++) {
+    const means = allRows[q-1];
     const order = [0,1,2,3].sort((a,b) => means[a]-means[b]);
     const m0 = means[order[0]], m1 = means[order[1]];
+    const othersAvg = means.filter((_, j) => j !== order[0]).reduce((s,v)=>s+v,0) / 3;
+    const filled = (m0 <= T && m1 - m0 >= 10) || (m0 <= 180 && othersAvg - m0 >= 45);
     let ans = null, flag = "";
-    if (m0 > 185) { ans = null; if (m0 < 210) flag = "có vết mờ — kiểm tra"; }
-    else {
+    if (filled) {
       ans = OPTS[order[0]];
-      if (m1 - m0 < 18 && m1 < 190) flag = "giống tô 2 ô — kiểm tra";
-      else if (m0 > 150) flag = "tô nhạt — kiểm tra";
-    }
+      if (m1 <= T && m1 - m0 < 18) flag = "giống tô 2 ô — kiểm tra";
+      else if (m0 > 140) flag = "tô nhạt — kiểm tra";
+    } else if (m0 < 200) flag = "có vết mờ — kiểm tra";
     answers.push(ans); flags.push(flag);
   }
   // overlay the read bubbles on the flattened sheet so misalignment is obvious at a glance
