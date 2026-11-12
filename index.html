@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.1 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -60,7 +60,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3</h1>
+  <h1>📷 App Chấm OMR v3.1</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -189,7 +189,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.1 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10754,20 +10754,28 @@ $("btnCapture").onclick = () => {
 // ===== V3 AUTO SCAN: live corner detection -> auto capture -> auto grade =====
 function detectCornersInImage(gray, w, h) {
   const wins = [[0,.25,0,.16],[.75,1,0,.16],[.75,1,.82,1],[0,.25,.82,1]];
-  const pts = [], found = [];
+  const pts = [], found = [], cns = [];
   const minPx = Math.max(20, Math.round(w * h * 0.0008));
   for (const [x0,x1,y0,y1] of wins) {
     const xs = [], ys = [];
     for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++)
       if (gray[y*w + x] < 100) { xs.push(x); ys.push(y); }
-    if (xs.length < minPx) { pts.push(null); found.push(false); continue; }
+    if (xs.length < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
     const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
     const mx = med(xs), my = med(ys), R = 0.05 * w;
     let sx = 0, sy = 0, n = 0;
     for (let k = 0; k < xs.length; k++)
       if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) { sx += xs[k]; sy += ys[k]; n++; }
-    if (n < minPx) { pts.push(null); found.push(false); continue; }
+    if (n < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
     const cx = sx/n, cy = sy/n;
+    let xMin = 1e9, xMax = -1e9, yMin = 1e9, yMax = -1e9;
+    for (let k = 0; k < xs.length; k++)
+      if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) {
+        if (xs[k] < xMin) xMin = xs[k]; if (xs[k] > xMax) xMax = xs[k];
+        if (ys[k] < yMin) yMin = ys[k]; if (ys[k] > yMax) yMax = ys[k];
+      }
+    const bw = xMax - xMin + 1, bh = yMax - yMin + 1;
+    const sizeOk = bw >= 6 && bh >= 6 && bw <= 0.12 * w && bh <= 0.12 * w && bw/bh >= 0.45 && bw/bh <= 2.2;
     let s = 0, m = 0; const r = Math.max(4, Math.round(0.018 * w));
     for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
       if (dx*dx + dy*dy > r*r) continue;
@@ -10776,7 +10784,15 @@ function detectCornersInImage(gray, w, h) {
       s += gray[yy*w + xx]; m++;
     }
     const dark = m > 0 && (s/m) <= 130;
-    pts.push(dark ? [cx, cy] : null); found.push(dark);
+    const ok = dark && sizeOk;
+    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0);
+  }
+  const good = cns.filter(v => v > 0);
+  if (good.length === 4) {
+    const mn = Math.min(...good);
+    if (Math.max(...good) / mn > 3.2)
+      for (let i = 0; i < 4; i++)
+        if (cns[i] > 2.2 * mn) { pts[i] = null; found[i] = false; }
   }
   return { pts, found, count: found.filter(Boolean).length };
 }
@@ -10794,14 +10810,27 @@ function quadPlausible(P, w, h) {
   for (let i = 0; i < 4; i++) { const a = P[i], b = P[(i+1)%4]; area += a[0]*b[1] - b[0]*a[1]; }
   return Math.abs(area)/2 >= 0.16 * w * h;
 }
-let autoMode = false, autoStable = 0, autoPrev = null, autoBusy = false, autoLastQR = 0;
+function interiorStatsGray(gray, w, h, P) {
+  let s = 0, n = 0, dark = 0;
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) {
+    const fu = 0.14 + 0.72 * i / 5, fv = 0.14 + 0.72 * j / 5;
+    const tx = P[0][0] + (P[1][0]-P[0][0]) * fu, ty = P[0][1] + (P[1][1]-P[0][1]) * fu;
+    const bx = P[3][0] + (P[2][0]-P[3][0]) * fu, by = P[3][1] + (P[2][1]-P[3][1]) * fu;
+    const x = Math.round(tx + (bx-tx) * fv), y = Math.round(ty + (by-ty) * fv);
+    if (x < 0 || y < 0 || x >= w || y >= h) continue;
+    const gv = gray[y*w + x];
+    s += gv; n++; if (gv < 110) dark++;
+  }
+  return { mean: n ? s/n : 0, darkFrac: n ? dark/n : 1 };
+}
+let autoMode = false, autoStable = 0, autoPrev = null, autoBusy = false, autoLastQR = 0, autoLive = null;
 const autoCanvas = document.createElement("canvas");
 function autoSetStatus(t) {
   const e = $("autoStatus");
   e.textContent = t; e.style.display = t ? "block" : "none";
 }
 function stopAutoScan() {
-  autoMode = false; autoStable = 0; autoPrev = null;
+  autoMode = false; autoStable = 0; autoPrev = null; autoLive = null;
   $("btnAutoScan").textContent = "🚀 QUÉT TỰ ĐỘNG — đưa camera vào phiếu là tự chấm";
   $("video").style.display = "none";
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
@@ -10846,12 +10875,19 @@ async function autoTick() {
         autoStable = 0; autoPrev = null;
         autoSetStatus("🔎 Thấy 4 góc rồi nhưng khung chưa giống tờ A4: đưa máy thẳng từ trên xuống, thấy trọn cả tờ phiếu.");
       } else {
-        let move = 0;
-        if (autoPrev) for (let i = 0; i < 4; i++) move = Math.max(move, Math.hypot(det.pts[i][0]-autoPrev[i][0], det.pts[i][1]-autoPrev[i][1]));
-        autoPrev = det.pts;
-        autoStable = move <= 5 ? autoStable + 1 : 0;
-        if (autoStable >= 4) { autoBusy = false; captureAuto(); return; }
-        autoSetStatus("✅ Đã bắt được 4 góc — giữ yên máy... " + Math.min(100, autoStable * 25) + "%");
+        const ist = interiorStatsGray(gray, c.width, c.height, det.pts);
+        if (ist.darkFrac > 0.22 || ist.mean < 140) {
+          autoStable = 0; autoPrev = null; autoLive = null;
+          autoSetStatus("🔎 Khung đang bắt ra vùng tối ngoài tờ giấy. Đưa phiếu chiếm hết khung hình, đừng để lọt nền/bàn tối vào trong khung.");
+        } else {
+          let move = 0;
+          if (autoPrev) for (let i = 0; i < 4; i++) move = Math.max(move, Math.hypot(det.pts[i][0]-autoPrev[i][0], det.pts[i][1]-autoPrev[i][1]));
+          autoPrev = det.pts;
+          autoLive = { pts: det.pts, w: c.width, h: c.height };
+          autoStable = move <= 5 ? autoStable + 1 : 0;
+          if (autoStable >= 4) { autoBusy = false; captureAuto(); return; }
+          autoSetStatus("✅ Đã bắt được 4 góc — giữ yên máy... " + Math.min(100, autoStable * 25) + "%");
+        }
       }
     } catch (e) { /* frame not ready: keep scanning */ }
     autoBusy = false;
@@ -10859,6 +10895,7 @@ async function autoTick() {
   if (autoMode) setTimeout(autoTick, 160);
 }
 function captureAuto() {
+  const live = autoLive;
   const v = $("video");
   const c = document.createElement("canvas");
   c.width = v.videoWidth; c.height = v.videoHeight;
@@ -10866,6 +10903,10 @@ function captureAuto() {
   stopAutoScan();
   if (navigator.vibrate) navigator.vibrate(60);
   setSource(c);
+  if (live) {
+    pts = live.pts.map(([x, y]) => [x * c.width / live.w, y * c.height / live.h]);
+    drawStage();
+  }
   const problems = validateQuad();
   if (!problems.length) {
     autoSetStatus("🎯 Đã tự chụp — đang chấm...");
@@ -10982,6 +11023,10 @@ function validateQuad() {
   P.forEach((p, i) => {
     if (meanDiskSrc(p[0], p[1], r) > 125) problems.push("điểm " + (i+1) + " (" + names[i] + ") chưa nằm trên ô vuông đen — chụp đủ góc này hoặc chạm đặt lại điểm");
   });
+  const sg = srcGray();
+  const ist = interiorStatsGray(sg.g, sg.w, sg.h, P);
+  if (ist.darkFrac > 0.28)
+    problems.push("vùng bên trong khung có mảng tối lớn — có thể 1 điểm góc đang nằm ngoài tờ giấy, bắt vào nền/bàn tối");
   return problems;
 }
 let forceGrade = false;
