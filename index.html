@@ -187,6 +187,10 @@
 
     <h3 style="margin:16px 0 6px">Bài đã lưu trong máy</h3>
     <div id="examList"></div>
+
+    <h3 style="margin:22px 0 6px;color:#b91c1c">Vùng nguy hiểm</h3>
+    <button id="btnResetAll" style="background:#dc2626;color:#fff;font-weight:700">↺ RESET - Xóa tất cả, làm lại từ đầu</button>
+    <p class="hint">Xóa toàn bộ bài kiểm tra + đáp án đã lưu trong máy này, đưa app về trạng thái ban đầu (chỉ còn bài mẫu mặc định). Danh sách bài đã chấm cũng bị xóa. Không khôi phục được.</p>
   </div>
 
   <div class="card" id="printCard" style="display:none">
@@ -11899,6 +11903,12 @@ $("btnCSV").onclick = () => {
   a.download = "bang_diem_omr.csv"; a.click();
 };
 $("btnClear").onclick = () => { results = []; renderResults(); };
+$("btnResetAll").onclick = () => {
+  if (!confirm("RESET toàn bộ app?\n\nSẽ xóa hết: các bài kiểm tra + đáp án đã lưu, bài đang chọn, danh sách bài đã chấm. App trở về trạng thái ban đầu (chỉ còn bài mẫu mặc định).\n\nKhông khôi phục được. Bro chắc chắn chứ?")) return;
+  try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}
+  if (window.caches && caches.keys) { try { caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k)))).catch(() => {}); } catch (e) {} }
+  setTimeout(() => location.reload(), 200);
+};
 // ===== Init =====
 loadStore();
 refreshExamUI();
