@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3.5 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.6 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -64,7 +64,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.5</h1>
+  <h1>📷 App Chấm OMR v3.6</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -193,7 +193,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.5 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.6 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10776,27 +10776,34 @@ function detectCornersInImage(gray, w, h, thr) {
   if (!thr) thr = 100;
   const wins = [[0,.3,0,.2],[.7,1,0,.2],[.7,1,.8,1],[0,.3,.8,1]];
   const pts = [], found = [], cns = [], sizes = [];
-  const minPx = Math.max(20, Math.round(w * h * 0.0008));
+  const minCand = Math.max(12, Math.round(w * h * 0.00012));
+  const d = Math.max(8, Math.round(0.032 * w));
+  const brightAt = (x, y) => x < 0 || y < 0 || x >= w || y >= h || gray[y*w + x] >= thr + 40;
   for (const [x0,x1,y0,y1] of wins) {
-    const xs = [], ys = [];
-    for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++)
-      if (gray[y*w + x] < thr) { xs.push(x); ys.push(y); }
-    if (xs.length < minPx) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
+    const cand = [];
+    for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++) {
+      if (gray[y*w + x] >= thr) continue;
+      let b = 0;
+      if (brightAt(x - d, y)) b++;
+      if (brightAt(x + d, y)) b++;
+      if (brightAt(x, y - d)) b++;
+      if (brightAt(x, y + d)) b++;
+      if (b >= 3) cand.push([x, y]);
+    }
+    if (cand.length < minCand) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
     const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
-    const mx = med(xs), my = med(ys), R = 0.05 * w;
-    let sx = 0, sy = 0, n = 0;
-    for (let k = 0; k < xs.length; k++)
-      if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) { sx += xs[k]; sy += ys[k]; n++; }
-    if (n < minPx) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
-    const cx = sx/n, cy = sy/n;
-    let xMin = 1e9, xMax = -1e9, yMin = 1e9, yMax = -1e9;
-    for (let k = 0; k < xs.length; k++)
-      if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) {
-        if (xs[k] < xMin) xMin = xs[k]; if (xs[k] > xMax) xMax = xs[k];
-        if (ys[k] < yMin) yMin = ys[k]; if (ys[k] > yMax) yMax = ys[k];
+    const mx = med(cand.map(p => p[0])), my = med(cand.map(p => p[1])), R = 0.05 * w;
+    let sx = 0, sy = 0, n = 0, xMin = 1e9, xMax = -1e9, yMin = 1e9, yMax = -1e9;
+    for (const [px, py] of cand)
+      if (Math.abs(px - mx) < R && Math.abs(py - my) < R) {
+        sx += px; sy += py; n++;
+        if (px < xMin) xMin = px; if (px > xMax) xMax = px;
+        if (py < yMin) yMin = py; if (py > yMax) yMax = py;
       }
+    if (n < minCand) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
+    const cx = sx/n, cy = sy/n;
     const bw = xMax - xMin + 1, bh = yMax - yMin + 1;
-    const sizeOk = bw >= 6 && bh >= 6 && bw <= 0.13 * w && bh <= 0.13 * w && bw/bh >= 0.4 && bw/bh <= 2.5;
+    const sizeOk = bw >= 5 && bh >= 5 && bw <= 0.13 * w && bh <= 0.13 * w && bw/bh >= 0.4 && bw/bh <= 2.5;
     let s = 0, m = 0; const r = Math.max(4, Math.round(0.018 * w));
     for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
       if (dx*dx + dy*dy > r*r) continue;
@@ -10804,9 +10811,8 @@ function detectCornersInImage(gray, w, h, thr) {
       if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
       s += gray[yy*w + xx]; m++;
     }
-    const dark = m > 0 && (s/m) <= thr + 30;
-    const ok = dark && sizeOk;
-    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0); sizes.push(ok ? [bw, bh] : [0, 0]);
+    const ok = sizeOk && m > 0 && (s/m) <= thr + 30;
+    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0); sizes.push(ok ? [bw + 8, bh + 8] : [0, 0]);
   }
   const good = cns.filter(v => v > 0);
   if (good.length === 4) {
@@ -11048,22 +11054,14 @@ function autoDetect() {
   const ctx = c.getContext("2d"); ctx.drawImage(srcCanvas, 0, 0, c.width, c.height);
   const d = ctx.getImageData(0, 0, c.width, c.height).data;
   const w = c.width, h = c.height;
-  const wins = [[0,.25,0,.14],[.75,1,0,.14],[.75,1,.84,1],[0,.25,.84,1]];
-  const found = [];
-  for (const [x0,x1,y0,y1] of wins) {
-    const xs = [], ys = [];
-    for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++) {
-      const i = (y*w + x) * 4, g = .299*d[i] + .587*d[i+1] + .114*d[i+2];
-      if (g < 100) { xs.push(x); ys.push(y); }
-    }
-    if (xs.length < 30) { warn("Chưa tự tìm được 4 góc — hãy chạm để đặt 4 chấm đúng tâm 4 ô vuông đen."); return; }
-    const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
-    const mx = med(xs), my = med(ys), R = .045 * w;
-    let sx = 0, sy = 0, n = 0;
-    for (let k = 0; k < xs.length; k++) if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) { sx += xs[k]; sy += ys[k]; n++; }
-    found.push([sx/n/sc, sy/n/sc]);
-  }
-  pts = found;
+  const gray = new Uint8Array(w * h);
+  for (let i = 0; i < gray.length; i++) gray[i] = .299*d[i*4] + .587*d[i*4+1] + .114*d[i*4+2];
+  const det = detectCornersInImage(gray, w, h, otsuThreshold(gray));
+  let applied = 0;
+  for (let i = 0; i < 4; i++)
+    if (det.pts[i]) { pts[i] = [det.pts[i][0]/sc, det.pts[i][1]/sc]; applied++; }
+  if (applied < 4) warn("Tự tìm được " + applied + "/4 góc — hãy chạm để đặt các chấm còn thiếu đúng tâm ô vuông đen.");
+  return applied;
 }
 function drawStage() {
   const st = $("stage"), maxW = 900;
