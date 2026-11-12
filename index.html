@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3.4 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.5 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -64,7 +64,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.4</h1>
+  <h1>📷 App Chấm OMR v3.5</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -193,7 +193,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.4 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.5 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10756,21 +10756,38 @@ $("btnCapture").onclick = () => {
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
 };
 // ===== V3 AUTO SCAN: live corner detection -> auto capture -> auto grade =====
-function detectCornersInImage(gray, w, h) {
-  const wins = [[0,.25,0,.16],[.75,1,0,.16],[.75,1,.82,1],[0,.25,.82,1]];
-  const pts = [], found = [], cns = [];
+function otsuThreshold(gray) {
+  const hist = new Array(256).fill(0);
+  for (let i = 0; i < gray.length; i += 2) hist[gray[i]]++;
+  let total = 0, sum = 0;
+  for (let t = 0; t < 256; t++) { total += hist[t]; sum += t * hist[t]; }
+  let sumB = 0, wB = 0, best = -1, thr = 110;
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t]; if (!wB) continue;
+    const wF = total - wB; if (!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB, mF = (sum - sumB) / wF;
+    const between = wB * wF * (mB - mF) * (mB - mF);
+    if (between > best) { best = between; thr = t; }
+  }
+  return Math.max(70, Math.min(150, thr + 12));
+}
+function detectCornersInImage(gray, w, h, thr) {
+  if (!thr) thr = 100;
+  const wins = [[0,.3,0,.2],[.7,1,0,.2],[.7,1,.8,1],[0,.3,.8,1]];
+  const pts = [], found = [], cns = [], sizes = [];
   const minPx = Math.max(20, Math.round(w * h * 0.0008));
   for (const [x0,x1,y0,y1] of wins) {
     const xs = [], ys = [];
     for (let y = Math.floor(y0*h); y < y1*h; y++) for (let x = Math.floor(x0*w); x < x1*w; x++)
-      if (gray[y*w + x] < 100) { xs.push(x); ys.push(y); }
-    if (xs.length < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
+      if (gray[y*w + x] < thr) { xs.push(x); ys.push(y); }
+    if (xs.length < minPx) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
     const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
     const mx = med(xs), my = med(ys), R = 0.05 * w;
     let sx = 0, sy = 0, n = 0;
     for (let k = 0; k < xs.length; k++)
       if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) { sx += xs[k]; sy += ys[k]; n++; }
-    if (n < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
+    if (n < minPx) { pts.push(null); found.push(false); cns.push(0); sizes.push([0,0]); continue; }
     const cx = sx/n, cy = sy/n;
     let xMin = 1e9, xMax = -1e9, yMin = 1e9, yMax = -1e9;
     for (let k = 0; k < xs.length; k++)
@@ -10779,7 +10796,7 @@ function detectCornersInImage(gray, w, h) {
         if (ys[k] < yMin) yMin = ys[k]; if (ys[k] > yMax) yMax = ys[k];
       }
     const bw = xMax - xMin + 1, bh = yMax - yMin + 1;
-    const sizeOk = bw >= 6 && bh >= 6 && bw <= 0.12 * w && bh <= 0.12 * w && bw/bh >= 0.45 && bw/bh <= 2.2;
+    const sizeOk = bw >= 6 && bh >= 6 && bw <= 0.13 * w && bh <= 0.13 * w && bw/bh >= 0.4 && bw/bh <= 2.5;
     let s = 0, m = 0; const r = Math.max(4, Math.round(0.018 * w));
     for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
       if (dx*dx + dy*dy > r*r) continue;
@@ -10787,18 +10804,18 @@ function detectCornersInImage(gray, w, h) {
       if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
       s += gray[yy*w + xx]; m++;
     }
-    const dark = m > 0 && (s/m) <= 130;
+    const dark = m > 0 && (s/m) <= thr + 30;
     const ok = dark && sizeOk;
-    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0);
+    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0); sizes.push(ok ? [bw, bh] : [0, 0]);
   }
   const good = cns.filter(v => v > 0);
   if (good.length === 4) {
     const mn = Math.min(...good);
     if (Math.max(...good) / mn > 3.2)
       for (let i = 0; i < 4; i++)
-        if (cns[i] > 2.2 * mn) { pts[i] = null; found[i] = false; }
+        if (cns[i] > 2.2 * mn) { pts[i] = null; found[i] = false; sizes[i] = [0, 0]; }
   }
-  return { pts, found, count: found.filter(Boolean).length };
+  return { pts, found, count: found.filter(Boolean).length, sizes };
 }
 function quadPlausible(P, w, h) {
   if (P.some(p => !p)) return false;
@@ -10947,7 +10964,7 @@ $("btnAutoScan").onclick = async () => {
     $("autoOverlay").style.display = "block";
     autoMode = true; autoStable = 0; autoPrev = null; autoMarkers = null; autoLockStreak = 0; autoStartAt = Date.now();
     $("btnAutoScan").textContent = "⏹ Dừng quét tự động";
-    autoSetStatus("🔎 Canh phiếu khớp khung xanh lá: 4 ô đen nằm ở 4 góc khung.");
+    autoSetStatus("🔎 Đưa trọn tờ phiếu vào khung hình: ô xanh sẽ tự tìm và thu vào 4 ô đen ở góc phiếu.");
     v.scrollIntoView({ behavior: "smooth", block: "center" });
     autoTick();
   } catch (e) { warn("Không mở được camera (" + e.message + "). Camera cần trang HTTPS."); }
@@ -10971,7 +10988,9 @@ async function autoTick() {
         if (data && autoMode) applySheetQR(data);
       }
       if (!autoMode) { autoBusy = false; return; }
-      const det = detectAnchored(gray, c.width, c.height);
+      const thr = otsuThreshold(gray);
+      const det = detectCornersInImage(gray, c.width, c.height, thr);
+      const plausible = det.count === 4 && quadPlausible(det.pts, c.width, c.height);
       const upd = updateMarkers(autoMarkers, det, c.width, c.height);
       autoMarkers = upd.markers;
       drawAutoOverlay();
@@ -10982,20 +11001,22 @@ async function autoTick() {
         const ist = interiorStatsGray(gray, c.width, c.height, det.pts);
         interiorOk = !(ist.darkFrac > 0.22 || ist.mean < 140);
       }
-      if (upd.lockedCount === 4 && interiorOk) {
+      if (upd.lockedCount === 4 && plausible && interiorOk) {
         autoLockStreak++;
         if (autoLockStreak >= 5 && Date.now() - autoStartAt > 1200) { autoBusy = false; captureAuto(); return; }
         autoSetStatus("🔒 Đã khóa đủ 4 góc — giữ yên máy thêm chút... " + Math.min(100, autoLockStreak * 20) + "%");
       } else {
         autoLockStreak = 0;
-        if (upd.lockedCount === 4 && !interiorOk)
-          autoSetStatus("🔒 Đã khóa 4 góc nhưng trong khung có mảng tối lớn — canh lại cho phiếu phủ kín khung xanh lá.");
+        if (upd.lockedCount === 4 && !plausible)
+          autoSetStatus("🔒 4 ô xanh đã ôm ô đen nhưng khung chưa giống tờ A4 — đưa máy thẳng từ trên xuống, thấy trọn tờ phiếu.");
+        else if (upd.lockedCount === 4 && !interiorOk)
+          autoSetStatus("🔒 Đã khóa 4 góc nhưng trong khung có mảng tối lớn — canh lại cho phiếu phủ kín khung hình.");
         else if (upd.lockedCount > 0)
-          autoSetStatus("🔒 Đã khóa " + upd.lockedCount + "/4 góc. Còn ô " + missing.join(", ") + ": giữ máy steady, ô xanh sẽ tự thu vào ô đen.");
+          autoSetStatus("🔒 Đã khóa " + upd.lockedCount + "/4 góc. Còn ô " + missing.join(", ") + ": dịch máy nhẹ cho ô đen vào góc đó, ô xanh sẽ tự thu vào.");
         else if (det.count > 0)
-          autoSetStatus("🔎 Thấy " + det.count + "/4 ô đen, ô xanh đang thu vào... giữ yên máy.");
+          autoSetStatus("🔎 Thấy " + det.count + "/4 ô đen, ô xanh đang đuổi theo... giữ yên máy.");
         else
-          autoSetStatus("🔎 Chưa thấy ô đen nào ở 4 góc khung. Canh phiếu cho 4 ô đen nằm đúng 4 góc khung xanh lá.");
+          autoSetStatus("🔎 Chưa thấy ô đen nào. Đưa trọn tờ phiếu vào khung hình, đủ sáng, để 4 ô đen ở 4 góc tờ giấy lọt vào hình.");
       }
     } catch (e) { /* frame not ready: keep scanning */ }
     autoBusy = false;
