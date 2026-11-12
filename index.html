@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3.6 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.7 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -64,7 +64,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.6</h1>
+  <h1>📷 App Chấm OMR v3.7</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -193,7 +193,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.6 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.7 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10902,9 +10902,9 @@ function updateMarkers(markers, det, w, h) {
     m.seen = !!p;
     if (p) {
       const target = Math.max(det.sizes[i][0], det.sizes[i][1]) + 12;
-      m.x += (p[0] - m.x) * .22; m.y += (p[1] - m.y) * .22; m.s += (target - m.s) * .22;
+      m.x += (p[0] - m.x) * .38; m.y += (p[1] - m.y) * .38; m.s += (target - m.s) * .38;
       if (Math.hypot(m.x - p[0], m.y - p[1]) < 8 && Math.abs(m.s - target) < 10) m.conv++; else m.conv = 0;
-      m.locked = m.conv >= 3;
+      m.locked = m.conv >= 2;
     } else {
       m.locked = false; m.conv = 0;
       const [fx, fy] = GUIDE_CORNERS[i];
@@ -11009,8 +11009,8 @@ async function autoTick() {
       }
       if (upd.lockedCount === 4 && plausible && interiorOk) {
         autoLockStreak++;
-        if (autoLockStreak >= 5 && Date.now() - autoStartAt > 1200) { autoBusy = false; captureAuto(); return; }
-        autoSetStatus("🔒 Đã khóa đủ 4 góc — giữ yên máy thêm chút... " + Math.min(100, autoLockStreak * 20) + "%");
+        if (autoLockStreak >= 3 && Date.now() - autoStartAt > 700) { autoBusy = false; captureAuto(); return; }
+        autoSetStatus("🔒 Đã khóa đủ 4 góc — giữ yên máy thêm chút... " + Math.min(100, Math.round(autoLockStreak * 100 / 3)) + "%");
       } else {
         autoLockStreak = 0;
         if (upd.lockedCount === 4 && !plausible)
@@ -11027,7 +11027,7 @@ async function autoTick() {
     } catch (e) { /* frame not ready: keep scanning */ }
     autoBusy = false;
   }
-  if (autoMode) setTimeout(autoTick, 160);
+  if (autoMode) setTimeout(autoTick, 90);
 }
 function captureAuto() {
   const v = $("video");
