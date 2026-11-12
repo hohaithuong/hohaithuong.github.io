@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3.3 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.4 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -64,7 +64,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.3</h1>
+  <h1>📷 App Chấm OMR v3.4</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -193,7 +193,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.3 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.4 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10872,25 +10872,26 @@ function detectAnchored(gray, w, h) {
   return { pts, found, count: found.filter(Boolean).length, sizes };
 }
 function updateMarkers(markers, det, w, h) {
-  if (!markers) markers = GUIDE_CORNERS.map(([fx, fy]) => ({ x: fx * w, y: fy * h, s: .16 * w, locked: false, seen: false }));
+  if (!markers) markers = GUIDE_CORNERS.map(([fx, fy]) => ({ x: fx * w, y: fy * h, s: .16 * w, locked: false, seen: false, conv: 0 }));
   let lockedCount = 0;
   for (let i = 0; i < 4; i++) {
     const m = markers[i], p = det.pts[i];
     m.seen = !!p;
     if (p) {
       const target = Math.max(det.sizes[i][0], det.sizes[i][1]) + 12;
-      m.x += (p[0] - m.x) * .5; m.y += (p[1] - m.y) * .5; m.s += (target - m.s) * .5;
-      m.locked = Math.hypot(m.x - p[0], m.y - p[1]) < 7 && Math.abs(m.s - target) < 9;
+      m.x += (p[0] - m.x) * .22; m.y += (p[1] - m.y) * .22; m.s += (target - m.s) * .22;
+      if (Math.hypot(m.x - p[0], m.y - p[1]) < 8 && Math.abs(m.s - target) < 10) m.conv++; else m.conv = 0;
+      m.locked = m.conv >= 3;
     } else {
-      m.locked = false;
+      m.locked = false; m.conv = 0;
       const [fx, fy] = GUIDE_CORNERS[i];
-      m.x += (fx * w - m.x) * .18; m.y += (fy * h - m.y) * .18; m.s += (.16 * w - m.s) * .18;
+      m.x += (fx * w - m.x) * .12; m.y += (fy * h - m.y) * .12; m.s += (.16 * w - m.s) * .12;
     }
     if (m.locked) lockedCount++;
   }
   return { markers, lockedCount };
 }
-let autoMarkers = null, autoLockStreak = 0;
+let autoMarkers = null, autoLockStreak = 0, autoStartAt = 0;
 function drawAutoOverlay() {
   const cv = $("autoOverlay");
   if (!autoMarkers || !cv) return;
@@ -10929,7 +10930,7 @@ function autoSetStatus(t) {
   e.textContent = t; e.style.display = t ? "block" : "none";
 }
 function stopAutoScan() {
-  autoMode = false; autoStable = 0; autoPrev = null; autoLive = null; autoMarkers = null; autoLockStreak = 0;
+  autoMode = false; autoStable = 0; autoPrev = null; autoLive = null; autoMarkers = null; autoLockStreak = 0; autoStartAt = 0;
   $("btnAutoScan").textContent = "🚀 QUÉT TỰ ĐỘNG — đưa camera vào phiếu là tự chấm";
   $("video").style.display = "none";
   $("guideRect").style.display = "none";
@@ -10944,7 +10945,7 @@ $("btnAutoScan").onclick = async () => {
     const v = $("video"); v.srcObject = stream; v.style.display = "block";
     $("guideRect").style.display = "block";
     $("autoOverlay").style.display = "block";
-    autoMode = true; autoStable = 0; autoPrev = null; autoMarkers = null; autoLockStreak = 0;
+    autoMode = true; autoStable = 0; autoPrev = null; autoMarkers = null; autoLockStreak = 0; autoStartAt = Date.now();
     $("btnAutoScan").textContent = "⏹ Dừng quét tự động";
     autoSetStatus("🔎 Canh phiếu khớp khung xanh lá: 4 ô đen nằm ở 4 góc khung.");
     v.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -10983,8 +10984,8 @@ async function autoTick() {
       }
       if (upd.lockedCount === 4 && interiorOk) {
         autoLockStreak++;
-        if (autoLockStreak >= 2) { autoBusy = false; captureAuto(); return; }
-        autoSetStatus("🔒 Đã khóa đủ 4 góc — đang chụp...");
+        if (autoLockStreak >= 5 && Date.now() - autoStartAt > 1200) { autoBusy = false; captureAuto(); return; }
+        autoSetStatus("🔒 Đã khóa đủ 4 góc — giữ yên máy thêm chút... " + Math.min(100, autoLockStreak * 20) + "%");
       } else {
         autoLockStreak = 0;
         if (upd.lockedCount === 4 && !interiorOk)
