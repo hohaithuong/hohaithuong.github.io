@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Chấm OMR v3.1 — Quét tự động · Cấu hình · In phiếu</title>
+<title>App Chấm OMR v3.2 — Quét tự động · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
@@ -23,6 +23,9 @@
   button:disabled { opacity: .45; }
   canvas#stage { width: 100%; border-radius: 10px; background: #222; display: block; touch-action: manipulation; }
   video { width: 100%; border-radius: 10px; background: #000; display: none; }
+  .vidwrap { position: relative; }
+  #guideRect { position: absolute; left: 5%; right: 5%; top: 3.5%; bottom: 3.5%; border: 3px dashed rgba(34,197,94,.95); border-radius: 10px; display: none; pointer-events: none; box-shadow: 0 0 0 999px rgba(0,0,0,.18); }
+  #guideRect span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); background: rgba(22,163,74,.92); color: #fff; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
   .hint { font-size: 13.5px; color: #475569; line-height: 1.5; }
   .score { font-size: 40px; font-weight: 800; color: #14532d; text-align: center; }
   .sub { text-align: center; font-size: 15px; color: #475569; }
@@ -60,7 +63,7 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.1</h1>
+  <h1>📷 App Chấm OMR v3.2</h1>
   <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
 </header>
 <main>
@@ -95,7 +98,7 @@
       <button id="btnFile" class="grey">📁 Tải ảnh phiếu</button>
     </div>
     <input type="file" id="fileInput" accept="image/*" style="display:none">
-    <video id="video" playsinline autoplay muted></video>
+    <div class="vidwrap"><video id="video" playsinline autoplay muted></video><div id="guideRect"><span>Đặt phiếu khớp khung này, 4 ô đen vào 4 góc</span></div></div>
     <div id="stageWrap" style="display:none">
       <canvas id="stage"></canvas>
       <p class="hint"><b>Ảnh phải thấy đủ cả phiếu, nhất là 4 ô vuông đen ở 4 góc</b> — thiếu 1 góc là app không chấm. 4 chấm màu là tâm 4 ô vuông đen; chạm vào ảnh để đặt lại điểm (điểm tự hút vào tâm ô vuông).</p>
@@ -189,7 +192,7 @@
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.1 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+  <p class="hint">OMR v3.2 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -10823,6 +10826,59 @@ function interiorStatsGray(gray, w, h, P) {
   }
   return { mean: n ? s/n : 0, darkFrac: n ? dark/n : 1 };
 }
+const GUIDE_CORNERS = [[.05,.035],[.95,.035],[.95,.965],[.05,.965]];
+function detectAnchored(gray, w, h) {
+  const pts = [], found = [], cns = [];
+  const minPx = Math.max(20, Math.round(w * h * 0.0008));
+  for (const [fx, fy] of GUIDE_CORNERS) {
+    const wx0 = Math.max(0, Math.round(fx*w - .09*w)), wx1 = Math.min(w, Math.round(fx*w + .09*w));
+    const wy0 = Math.max(0, Math.round(fy*h - .06*h)), wy1 = Math.min(h, Math.round(fy*h + .06*h));
+    const xs = [], ys = [];
+    for (let y = wy0; y < wy1; y++) for (let x = wx0; x < wx1; x++)
+      if (gray[y*w + x] < 100) { xs.push(x); ys.push(y); }
+    if (xs.length < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
+    const med = arr => arr.slice().sort((a,b)=>a-b)[arr.length>>1];
+    const mx = med(xs), my = med(ys), R = 0.05 * w;
+    let sx = 0, sy = 0, n = 0, xMin = 1e9, xMax = -1e9, yMin = 1e9, yMax = -1e9;
+    for (let k = 0; k < xs.length; k++)
+      if (Math.abs(xs[k]-mx) < R && Math.abs(ys[k]-my) < R) {
+        sx += xs[k]; sy += ys[k]; n++;
+        if (xs[k] < xMin) xMin = xs[k]; if (xs[k] > xMax) xMax = xs[k];
+        if (ys[k] < yMin) yMin = ys[k]; if (ys[k] > yMax) yMax = ys[k];
+      }
+    if (n < minPx) { pts.push(null); found.push(false); cns.push(0); continue; }
+    const bw = xMax - xMin + 1, bh = yMax - yMin + 1;
+    const touches = xMin <= wx0 + 1 || yMin <= wy0 + 1 || xMax >= wx1 - 2 || yMax >= wy1 - 2;
+    const sizeOk = bw >= 6 && bh >= 6 && bw <= 0.12 * w && bh <= 0.12 * w && bw/bh >= 0.45 && bw/bh <= 2.2;
+    const cx = sx/n, cy = sy/n;
+    let s = 0, m = 0; const r = Math.max(4, Math.round(0.018 * w));
+    for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
+      if (dx*dx + dy*dy > r*r) continue;
+      const xx = Math.round(cx+dx), yy = Math.round(cy+dy);
+      if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+      s += gray[yy*w + xx]; m++;
+    }
+    const ok = m > 0 && (s/m) <= 130 && sizeOk && !touches;
+    pts.push(ok ? [cx, cy] : null); found.push(ok); cns.push(ok ? n : 0);
+  }
+  const good = cns.filter(v => v > 0);
+  if (good.length === 4) {
+    const mn = Math.min(...good);
+    if (Math.max(...good) / mn > 3.2)
+      for (let i = 0; i < 4; i++)
+        if (cns[i] > 2.2 * mn) { pts[i] = null; found[i] = false; }
+  }
+  return { pts, found, count: found.filter(Boolean).length };
+}
+function fiducialExtent(gray, w, h, p, maxR) {
+  const dark = (x, y) => x >= 0 && y >= 0 && x < w && y < h && gray[y*w + x] < 140;
+  let L = 0, Rr = 0, U = 0, D = 0;
+  for (let d = 1; d <= maxR; d++) { if (dark(Math.round(p[0]-d), Math.round(p[1]))) L = d; else break; }
+  for (let d = 1; d <= maxR; d++) { if (dark(Math.round(p[0]+d), Math.round(p[1]))) Rr = d; else break; }
+  for (let d = 1; d <= maxR; d++) { if (dark(Math.round(p[0]), Math.round(p[1]-d))) U = d; else break; }
+  for (let d = 1; d <= maxR; d++) { if (dark(Math.round(p[0]), Math.round(p[1]+d))) D = d; else break; }
+  return { wdt: L + Rr, hgt: U + D };
+}
 let autoMode = false, autoStable = 0, autoPrev = null, autoBusy = false, autoLastQR = 0, autoLive = null;
 const autoCanvas = document.createElement("canvas");
 function autoSetStatus(t) {
@@ -10833,6 +10889,7 @@ function stopAutoScan() {
   autoMode = false; autoStable = 0; autoPrev = null; autoLive = null;
   $("btnAutoScan").textContent = "🚀 QUÉT TỰ ĐỘNG — đưa camera vào phiếu là tự chấm";
   $("video").style.display = "none";
+  $("guideRect").style.display = "none";
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
 }
 $("btnAutoScan").onclick = async () => {
@@ -10841,9 +10898,10 @@ $("btnAutoScan").onclick = async () => {
     sheetScanning = false;
     if (!stream) stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 } }, audio: false });
     const v = $("video"); v.srcObject = stream; v.style.display = "block";
+    $("guideRect").style.display = "block";
     autoMode = true; autoStable = 0; autoPrev = null;
     $("btnAutoScan").textContent = "⏹ Dừng quét tự động";
-    autoSetStatus("🔎 Đang tìm phiếu... đưa phiếu vào giữa khung hình.");
+    autoSetStatus("🔎 Canh phiếu khớp khung xanh lá: 4 ô đen nằm ở 4 góc khung.");
     v.scrollIntoView({ behavior: "smooth", block: "center" });
     autoTick();
   } catch (e) { warn("Không mở được camera (" + e.message + "). Camera cần trang HTTPS."); }
@@ -10867,26 +10925,24 @@ async function autoTick() {
         if (data && autoMode) applySheetQR(data);
       }
       if (!autoMode) { autoBusy = false; return; }
-      const det = detectCornersInImage(gray, c.width, c.height);
+      const det = detectAnchored(gray, c.width, c.height);
       if (det.count < 4) {
         autoStable = 0; autoPrev = null;
-        autoSetStatus("🔎 Đang tìm phiếu: thấy " + det.count + "/4 ô vuông đen ở góc. Đưa phiếu chiếm gần hết khung hình, đủ sáng.");
-      } else if (!quadPlausible(det.pts, c.width, c.height)) {
-        autoStable = 0; autoPrev = null;
-        autoSetStatus("🔎 Thấy 4 góc rồi nhưng khung chưa giống tờ A4: đưa máy thẳng từ trên xuống, thấy trọn cả tờ phiếu.");
+        const names = ["trên-trái", "trên-phải", "dưới-phải", "dưới-trái"];
+        const missing = names.filter((_, i) => !det.found[i]);
+        autoSetStatus("🔎 Thấy " + det.count + "/4 ô mốc. Chưa thấy ô " + missing.join(", ") + ": canh phiếu cho 4 ô đen nằm đúng 4 góc của khung xanh lá.");
       } else {
         const ist = interiorStatsGray(gray, c.width, c.height, det.pts);
         if (ist.darkFrac > 0.22 || ist.mean < 140) {
-          autoStable = 0; autoPrev = null; autoLive = null;
-          autoSetStatus("🔎 Khung đang bắt ra vùng tối ngoài tờ giấy. Đưa phiếu chiếm hết khung hình, đừng để lọt nền/bàn tối vào trong khung.");
+          autoStable = 0; autoPrev = null;
+          autoSetStatus("🔎 Trong khung đang có mảng tối lớn ngoài tờ giấy. Canh lại cho phiếu phủ kín khung xanh lá.");
         } else {
           let move = 0;
           if (autoPrev) for (let i = 0; i < 4; i++) move = Math.max(move, Math.hypot(det.pts[i][0]-autoPrev[i][0], det.pts[i][1]-autoPrev[i][1]));
           autoPrev = det.pts;
-          autoLive = { pts: det.pts, w: c.width, h: c.height };
-          autoStable = move <= 5 ? autoStable + 1 : 0;
-          if (autoStable >= 4) { autoBusy = false; captureAuto(); return; }
-          autoSetStatus("✅ Đã bắt được 4 góc — giữ yên máy... " + Math.min(100, autoStable * 25) + "%");
+          autoStable = move <= 6 ? autoStable + 1 : 0;
+          if (autoStable >= 3) { autoBusy = false; captureAuto(); return; }
+          autoSetStatus("✅ 4 ô mốc đã vào khung — giữ yên máy... " + Math.min(100, autoStable * 34) + "%");
         }
       }
     } catch (e) { /* frame not ready: keep scanning */ }
@@ -10895,7 +10951,6 @@ async function autoTick() {
   if (autoMode) setTimeout(autoTick, 160);
 }
 function captureAuto() {
-  const live = autoLive;
   const v = $("video");
   const c = document.createElement("canvas");
   c.width = v.videoWidth; c.height = v.videoHeight;
@@ -10903,10 +10958,6 @@ function captureAuto() {
   stopAutoScan();
   if (navigator.vibrate) navigator.vibrate(60);
   setSource(c);
-  if (live) {
-    pts = live.pts.map(([x, y]) => [x * c.width / live.w, y * c.height / live.h]);
-    drawStage();
-  }
   const problems = validateQuad();
   if (!problems.length) {
     autoSetStatus("🎯 Đã tự chụp — đang chấm...");
@@ -11027,6 +11078,13 @@ function validateQuad() {
   const ist = interiorStatsGray(sg.g, sg.w, sg.h, P);
   if (ist.darkFrac > 0.28)
     problems.push("vùng bên trong khung có mảng tối lớn — có thể 1 điểm góc đang nằm ngoài tờ giấy, bắt vào nền/bàn tối");
+  const expSq = 0.067 * avgW, maxR = Math.round(0.14 * avgW), badSq = [];
+  P.forEach((p, i) => {
+    const e = fiducialExtent(sg.g, sg.w, sg.h, p, maxR);
+    if (e.wdt < 0.45 * expSq || e.wdt > 1.6 * expSq || e.hgt < 0.45 * expSq || e.hgt > 1.6 * expSq) badSq.push(i + 1);
+  });
+  if (badSq.length)
+    problems.push("điểm " + badSq.join(", ") + " không giống ô vuông mốc (kích thước lạ — có thể đang bắt vào vật tối khác ngoài tờ giấy)");
   return problems;
 }
 let forceGrade = false;
