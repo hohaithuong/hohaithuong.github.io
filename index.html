@@ -11395,7 +11395,7 @@ function autoTrackUpdate(det, w, h) {
   return seen;
 }
 
-let autoMarkers = null, autoLockStreak = 0, autoStartAt = 0, autoFinalPts = null, autoFrameSize = null, autoLiveSharp = 0, autoLowConf = false;
+let autoMarkers = null, autoLockStreak = 0, autoStartAt = 0, autoLockSince = 0, autoFinalPts = null, autoFrameSize = null, autoLiveSharp = 0, autoLowConf = false;
 function drawAutoOverlay() {
   const cv = $("autoOverlay");
   if (!autoMarkers || !cv || !autoCanvas.width) return;
@@ -11495,16 +11495,18 @@ async function autoTick() {
       const good = det.ok && det.score >= 0.45 && seen === 4 && (det.align >= 0.55 || det.lowConfidence);
       if (good) {
         autoLockStreak++;
+        if (autoLockStreak === 1) autoLockSince = Date.now();
         autoLowConf = !!det.lowConfidence;
         autoFinalPts = det.pts;
         autoFrameSize = [c.width, c.height];
         autoLiveSharp = graySharpness(gray, c.width, c.height);
         const need = autoLowConf ? 5 : 3;
-        if (autoLockStreak >= need && Date.now() - autoStartAt > 1000) { autoBusy = false; captureAuto(); return; }
+        const dwell = autoLowConf ? 800 : 650;
+        if (autoLockStreak >= need && Date.now() - autoLockSince >= dwell && Date.now() - autoStartAt > 1000) { autoBusy = false; captureAuto(); return; }
         autoSetStatus("🔒 Đã bám đủ 4 góc" + (autoLowConf ? " (ảnh hơi mờ/nhỏ — cố giữ máy thẳng và đủ sáng)" : " và khớp lưới đáp án") + " — giữ yên máy... " +
-          Math.min(100, Math.round(autoLockStreak / need * 100)) + "%");
+          Math.min(100, Math.round((Date.now() - autoLockSince) / dwell * 100)) + "%");
       } else {
-        autoLockStreak = 0;
+        autoLockStreak = 0; autoLockSince = 0;
         if (det.ok) autoSetStatus("🔎 Đã thấy khung phiếu nhưng chưa khớp lưới đáp án — đưa máy thẳng từ trên xuống, thấy trọn tờ phiếu, đủ sáng.");
         else if (det.markers >= 2) autoSetStatus("🔎 Thấy " + det.markers + " ô vuông đen — cần đủ 4 ô ở 4 góc tờ phiếu trong hình (thiếu góc nào thì đưa góc đó vào).");
         else autoSetStatus("🔎 Chưa thấy ô vuông đen ở góc phiếu. Đưa trọn tờ phiếu vào khung hình, đủ sáng, không để tay che góc.");
@@ -11776,7 +11778,9 @@ function bubbleInk(gray, TW, TH, cx, cy, paper) {
   }
   if (!vals.length) return 0;
   vals.sort((a, b) => a - b);
-  return paper - vals[vals.length >> 1];
+  const m = vals.length, i0 = Math.max(0, (m >> 1) - 2);
+  const med = (vals[i0] + vals[i0 + 1] + vals[Math.min(m - 1, i0 + 2)]) / 3;
+  return paper - med;
 }
 
 function doGrade() {
@@ -11822,13 +11826,13 @@ function doGrade() {
     const ink = allInk[q - 1];
     const order = [0, 1, 2, 3].sort((a, b) => ink[a] - ink[b]);
     const n0 = ink[order[3]], n1 = ink[order[2]];
-    const filled = n0 >= 38;
+    const filled = n0 >= 30;
     let ans = null, flag = "";
     if (filled) {
       ans = OPTS[order[3]];
-      if (n1 >= 32 && n0 - n1 < 25) flag = "giống tô 2 ô — kiểm tra";
-      else if (n0 < 60) flag = "tô nhạt — kiểm tra";
-    } else if (n0 >= 18) flag = "có vết mờ — kiểm tra";
+      if (n1 >= 26 && n0 - n1 < 22) flag = "giống tô 2 ô — kiểm tra";
+      else if (n0 < 52) flag = "tô nhạt — kiểm tra";
+    } else if (n0 >= 15) flag = "có vết mờ — kiểm tra";
     answers.push(ans); flags.push(flag);
   }
   const keyNow = ex.keys[$("codeSel").value].split("");
