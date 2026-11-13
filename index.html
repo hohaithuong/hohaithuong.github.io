@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chấm trắc nghiệm OMR v3.9 — Tự bắt khung · Cấu hình · In phiếu</title>
+<title>Chấm trắc nghiệm OMR v3.9.1 — Tự bắt khung · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #edf0f4; color: #1c2333; }
@@ -97,7 +97,7 @@
 </head>
 <body>
 <header>
-  <h1>Chấm trắc nghiệm OMR v3.9</h1>
+  <h1>Chấm trắc nghiệm OMR v3.9.1</h1>
   <p>Chấm phiếu tô tròn bằng camera - dữ liệu chỉ lưu trong máy này</p>
 </header>
 <main>
@@ -10405,7 +10405,7 @@ function layoutFor(q) {
   let rows, blocks;
   if (q <= 20) { rows = q; blocks = [{ numX: 20, xs: [38,50,62,74] }]; }
   else { rows = Math.ceil(q/2); blocks = [{ numX: 20, xs: [38,50,62,74] }, { numX: 112, xs: [130,142,154,166] }]; }
-  const rowDY = rows <= 1 ? 9.8 : (rows <= 20 ? Math.min(15, Math.max(9.8, 186/(rows-1))) : Math.min(9.8, 186/(rows-1)));
+  const rowDY = rows <= 20 ? 9.8 : Math.min(9.8, 186/(rows-1));
   const bubbleR = rowDY >= 9 ? 3.2 : (rowDY >= 8 ? 3.0 : 2.8);
   const sampleR = Math.max(6, Math.round((bubbleR - 1.4) * SCALE));
   return { rows, blocks, rowDY, bubbleR, sampleR };
@@ -11185,7 +11185,7 @@ function omrLayout(q) {
   var rows, blocks;
   if (q <= 20) { rows = q; blocks = [{ numX: 20, xs: [38, 50, 62, 74] }]; }
   else { rows = Math.ceil(q / 2); blocks = [{ numX: 20, xs: [38, 50, 62, 74] }, { numX: 112, xs: [130, 142, 154, 166] }]; }
-  var rowDY = rows <= 1 ? 9.8 : (rows <= 20 ? Math.min(15, Math.max(9.8, 186 / (rows - 1))) : Math.min(9.8, 186 / (rows - 1)));
+  var rowDY = rows <= 20 ? 9.8 : Math.min(9.8, 186 / (rows - 1));
   return { rows: rows, blocks: blocks, rowDY: rowDY };
 }
 
