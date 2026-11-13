@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chấm trắc nghiệm OMR v3.9.1 — Tự bắt khung · Cấu hình · In phiếu</title>
+<title>Chấm trắc nghiệm OMR v3.9.2 — Tự bắt khung · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #edf0f4; color: #1c2333; }
@@ -97,7 +97,7 @@
 </head>
 <body>
 <header>
-  <h1>Chấm trắc nghiệm OMR v3.9.1</h1>
+  <h1>Chấm trắc nghiệm OMR v3.9.2</h1>
   <p>Chấm phiếu tô tròn bằng camera - dữ liệu chỉ lưu trong máy này</p>
 </header>
 <main>
@@ -11923,7 +11923,7 @@ function doGrade() {
     const ink = allInk[q - 1];
     const order = [0, 1, 2, 3].sort((a, b) => ink[a] - ink[b]);
     const n0 = ink[order[3]], n1 = ink[order[2]];
-    const filled = n0 >= 30 || (n0 >= 21 && n1 < 21 && n0 - n1 >= 10);
+    const filled = n0 >= 30 || (n0 >= 18 && n1 < 18 && n0 - n1 >= 10);
     let ans = null, flag = "";
     if (filled) {
       ans = OPTS[order[3]];
