@@ -11800,15 +11800,49 @@ function doGrade() {
   const pvCtx = pv.getContext("2d");
   pvCtx.drawImage(canvas, 0, 0);
   const allRows = [], allPaper = [], allInk = [];
+  const inkAt = (q, j, dx, dy) => {
+    const [bx, by] = bubbleXY(q, j);
+    const cx = Math.round((bx - ORIGIN) * SCALE) + dx, cy = Math.round((by - ORIGIN) * SCALE) + dy;
+    return bubbleInk(gray, TW, TH, cx, cy, warpPaperRef(gray, TW, TH, cx, cy));
+  };
+  const rowInk = (q, dx, dy) => [0, 1, 2, 3].map(j => inkAt(q, j, dx, dy));
+  // Local grid alignment per block: a captured frame can sit a few px off the
+  // printed grid (worst far from the corners), so ring samples land half off
+  // the fills and whole bands read empty. Search the small shift that best
+  // separates the strongest bubble from the runner-up across the block.
+  const blockShift = (qs) => {
+    const score = (dx, dy) => qs.reduce((s, q) => {
+      const ik = rowInk(q, dx, dy).slice().sort((a, b) => b - a);
+      return s + ik[0] - ik[1];
+    }, 0);
+    let bx = 0, by = 0, bs = score(0, 0);
+    for (let dy = -10; dy <= 10; dy += 2) for (let dx = -10; dx <= 10; dx += 2) {
+      const s = score(dx, dy);
+      if (s > bs) { bs = s; bx = dx; by = dy; }
+    }
+    for (let dy = by - 1; dy <= by + 1; dy++) for (let dx = bx - 1; dx <= bx + 1; dx++) {
+      const s = score(dx, dy);
+      if (s > bs) { bs = s; bx = dx; by = dy; }
+    }
+    return [bx, by];
+  };
+  const nBlocks = ex.q > CUR.rows ? 2 : 1;
+  const shifts = [];
+  for (let b = 0; b < nBlocks; b++) {
+    const qs = [];
+    for (let q = 1; q <= ex.q; q++) if ((q <= CUR.rows ? 0 : 1) === b) qs.push(q);
+    shifts.push(blockShift(qs));
+  }
   for (let q = 1; q <= ex.q; q++) {
     const means = [], paper = [], ink = [];
+    const sd = shifts[q <= CUR.rows ? 0 : 1];
     for (let j = 0; j < 4; j++) {
       const [bx, by] = bubbleXY(q, j);
       const cx = Math.round((bx - ORIGIN) * SCALE), cy = Math.round((by - ORIGIN) * SCALE);
       const pRef = warpPaperRef(gray, TW, TH, cx, cy);
       means.push(diskMean(gray, TW, cx, cy, CUR.sampleR));
       paper.push(pRef);
-      ink.push(bubbleInk(gray, TW, TH, cx, cy, pRef));
+      ink.push(inkAt(q, j, sd[0], sd[1]));
     }
     allRows.push(means); allPaper.push(paper); allInk.push(ink);
   }
