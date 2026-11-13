@@ -11860,11 +11860,11 @@ function doGrade() {
     const ink = allInk[q - 1];
     const order = [0, 1, 2, 3].sort((a, b) => ink[a] - ink[b]);
     const n0 = ink[order[3]], n1 = ink[order[2]];
-    const filled = n0 >= 30;
+    const filled = n0 >= 30 || (n0 >= 21 && n1 < 21 && n0 - n1 >= 10);
     let ans = null, flag = "";
     if (filled) {
       ans = OPTS[order[3]];
-      if (n1 >= 26 && n0 - n1 < 22) flag = "giống tô 2 ô — kiểm tra";
+      if (n0 >= 30 && n1 >= 26 && n0 - n1 < 22) flag = "giống tô 2 ô — kiểm tra";
       else if (n0 < 52) flag = "tô nhạt — kiểm tra";
     } else if (n0 >= 15) flag = "có vết mờ — kiểm tra";
     answers.push(ans); flags.push(flag);
