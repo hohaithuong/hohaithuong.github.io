@@ -6,20 +6,22 @@
 <title>App Chấm OMR v3.8 — Tự bắt khung · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #f2f4f7; color: #1c2333; }
-  header { background: #14532d; color: #fff; padding: 12px 16px; }
-  header h1 { font-size: 19px; margin: 0; }
-  header p { margin: 3px 0 0; font-size: 13px; opacity: .85; }
-  main { max-width: 880px; margin: 0 auto; padding: 12px; }
-  .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-  .card h2 { font-size: 16px; margin: 0 0 10px; }
-  label { font-size: 14px; display: block; margin: 8px 0 3px; }
-  input[type=text], input[type=number], select, textarea { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #c8cfda; border-radius: 8px; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #edf0f4; color: #1c2333; }
+  header { background: #14532d; color: #fff; padding: 11px 16px; }
+  header h1 { font-size: 17px; margin: 0; font-weight: 700; letter-spacing: .01em; }
+  header p { margin: 2px 0 0; font-size: 12px; opacity: .8; }
+  main { max-width: 880px; margin: 0 auto; padding: 14px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(15,23,42,.05); }
+  .card h2 { font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 12px; }
+  .card h3 { font-size: 14px; font-weight: 700; color: #0f172a; }
+  label { font-size: 13.5px; color: #334155; display: block; margin: 8px 0 3px; }
+  input[type=text], input[type=number], select, textarea { width: 100%; padding: 11px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; }
+  input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus { border-color: #2563eb; outline: 2px solid rgba(37,99,235,.22); }
   textarea { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; }
   .row > * { flex: 1; min-width: 110px; }
-  button { padding: 11px 12px; font-size: 15px; border: 0; border-radius: 9px; background: #2563eb; color: #fff; cursor: pointer; }
-  button.green { background: #16a34a; } button.grey { background: #64748b; } button.red { background: #dc2626; } button.dark { background: #14532d; }
+  button { padding: 11px 14px; font-size: 15px; font-weight: 600; border: 0; border-radius: 10px; background: #1d4ed8; color: #fff; cursor: pointer; }
+  button.green { background: #16a34a; } button.grey { background: #e2e8f0; color: #1e293b; } button.red { background: #dc2626; } button.dark { background: #14532d; }
   button:disabled { opacity: .45; }
   canvas#stage { width: 100%; border-radius: 10px; background: #222; display: block; touch-action: manipulation; }
   video { width: 100%; border-radius: 10px; background: #000; display: none; }
@@ -27,16 +29,17 @@
   #guideRect { position: absolute; left: 5%; right: 5%; top: 3.5%; bottom: 3.5%; border: 3px dashed rgba(34,197,94,.95); border-radius: 10px; display: none; pointer-events: none; box-shadow: 0 0 0 999px rgba(0,0,0,.18); }
   #guideRect span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); background: rgba(22,163,74,.92); color: #fff; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
   #autoOverlay { position: absolute; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; }
-  .hint { font-size: 13.5px; color: #475569; line-height: 1.5; }
+  .hint { font-size: 13px; color: #64748b; line-height: 1.5; }
   .score { font-size: 40px; font-weight: 800; color: #14532d; text-align: center; }
   .sub { text-align: center; font-size: 15px; color: #475569; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin-top: 10px; }
-  .chip { border-radius: 8px; padding: 7px 2px; text-align: center; font-size: 14px; cursor: pointer; border: 2px solid transparent; user-select: none; background: #f1f5f9; }
+  .chip { border-radius: 10px; padding: 7px 2px; text-align: center; font-size: 14px; cursor: pointer; border: 2px solid transparent; user-select: none; background: #eef2f7; }
   .chip b { display: block; font-size: 15px; }
   .ok { background: #dcfce7 !important; } .wrong { background: #fee2e2 !important; } .blank { background: #fef9c3 !important; }
   .flag { border-color: #f59e0b !important; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   td, th { border-bottom: 1px solid #e5e7eb; padding: 6px 4px; text-align: left; }
+  th { font-size: 12.5px; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
   .warn { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 8px 10px; font-size: 14px; display: none; margin-top: 10px; }
   .msg { background: #ecfdf5; border: 1px solid #16a34a; border-radius: 8px; padding: 8px 10px; font-size: 14px; display: none; margin-top: 10px; }
   .keyrow { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; }
@@ -44,7 +47,7 @@
   .keyrow .keyIn { flex: 1; min-width: 200px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
   .keyrow .st { font-size: 12.5px; width: 100%; }
   .st.bad { color: #dc2626; } .st.good { color: #16a34a; }
-  .examItem { display: flex; gap: 8px; align-items: center; border: 1px solid #e5e7eb; border-radius: 9px; padding: 8px 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .examItem { display: flex; gap: 8px; align-items: center; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; flex-wrap: wrap; }
   .examItem b { font-size: 15px; }
   .examItem .meta { font-size: 13px; color: #475569; flex: 1; min-width: 160px; }
   .examItem button { padding: 7px 10px; font-size: 13.5px; }
@@ -68,16 +71,16 @@
 </head>
 <body>
 <header>
-  <h1>📷 App Chấm OMR v3.8</h1>
-  <p>Quét tự động bằng camera · Cấu hình bài kiểm tra · In phiếu tô tròn — dữ liệu chỉ nằm trong máy này</p>
+  <h1>App Chấm OMR v3.8</h1>
+  <p>Chấm phiếu tô tròn bằng camera - dữ liệu chỉ lưu trong máy này</p>
 </header>
 <main>
   <div class="card">
-    <h2>📋 Bài kiểm tra đang dùng</h2>
+    <h2>Bài kiểm tra đang dùng</h2>
     <div class="row">
       <div style="flex:2"><select id="examSel"></select></div>
-      <button id="btnCfg" class="dark">⚙ Cấu hình</button>
-      <button id="btnPrint" class="dark">🖨 In phiếu</button>
+      <button id="btnCfg" class="dark">Cấu hình</button>
+      <button id="btnPrint" class="dark">In phiếu</button>
     </div>
     <p class="hint" id="examMeta"></p>
   </div>
@@ -94,22 +97,22 @@
 
   <div class="card">
     <h2>2 · Quét phiếu</h2>
-    <button id="btnAutoScan" class="green" style="width:100%;font-size:17px;padding:14px">🚀 QUÉT TỰ ĐỘNG — đưa camera vào phiếu là tự chấm</button>
+    <button id="btnAutoScan" class="green" style="width:100%;font-size:17px;padding:14px">QUÉT TỰ ĐỘNG</button>
     <div class="msg" id="autoStatus"></div>
-    <p class="hint">Đưa trọn tờ phiếu vào khung (đủ 4 ô vuông đen ở 4 góc), đủ sáng, giữ máy thẳng. App tự dò 4 góc, tự chỉnh khi phiếu bị xoay/nghiêng, tự đọc QR mã đề; giữ yên ~1 giây là tự chụp và chấm luôn. Khung xanh = 4 góc đã bám + đã khớp lưới đáp án.</p><p class="hint">Nếu mở file trực tiếp (không phải HTTPS): trình duyệt chặn camera trực tiếp — dùng nút <b>📷 CHỤP ẢNH PHIẾU</b> bên dưới (mở camera điện thoại), ảnh chụp xong vẫn tự bắt khung và tự chấm.</p>
+    <p class="hint">Đặt trọn phiếu trong khung, đủ 4 ô đen ở 4 góc, đủ sáng, giữ máy thẳng và yên ~1 giây - app tự chụp và chấm. Nếu camera trực tiếp không mở được, dùng nút Chụp ảnh phiếu bên dưới.</p>
     <div class="row">
-      <button id="btnCam" class="grey">📷 Chụp thủ công</button>
-      <button id="btnCapture" disabled>📸 Chụp</button>
-      <button id="btnFile" class="grey">📁 Tải ảnh phiếu</button>
+      <button id="btnCam" class="grey">Chụp thủ công</button>
+      <button id="btnCapture" disabled>Chụp</button>
+      <button id="btnFile" class="grey">Tải ảnh phiếu</button>
     </div>
-    <button id="btnPhoto" class="green" style="width:100%;margin-top:8px">📷 CHỤP ẢNH PHIẾU — camera điện thoại, không cần HTTPS</button>
+    <button id="btnPhoto" class="green" style="width:100%;margin-top:8px">CHỤP ẢNH PHIẾU</button>
     <input type="file" id="fileInput" accept="image/*" style="display:none">
     <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none">
     <div class="warn" id="insecureNote" style="display:none"></div>
     <div class="vidwrap"><video id="video" playsinline autoplay muted></video><div id="guideRect"><span>Đặt phiếu khớp khung này, 4 ô đen vào 4 góc</span></div><canvas id="autoOverlay"></canvas></div>
     <div id="stageWrap" style="display:none">
       <canvas id="stage"></canvas>
-      <p class="hint"><b>Ảnh phải thấy đủ cả phiếu, nhất là 4 ô vuông đen ở 4 góc</b> — thiếu 1 góc là app không chấm. 4 chấm màu là tâm 4 ô vuông đen; chạm vào ảnh để đặt lại điểm (điểm tự hút vào tâm ô vuông). App tự chỉnh hướng phiếu (kể cả chụp ngược 180°).</p>
+      <p class="hint"><b>Ảnh phải đủ 4 ô vuông đen ở 4 góc.</b> Chạm vào ảnh để đặt lại điểm góc nếu cần.</p>
       <div class="row ptbtns">
         <button class="grey ptbtn" data-p="0">① Góc trên-trái</button>
         <button class="grey ptbtn" data-p="1">② Trên-phải</button>
@@ -117,8 +120,8 @@
         <button class="grey ptbtn" data-p="3">④ Dưới-trái</button>
       </div>
       <div class="row" style="margin-top:8px">
-        <button id="btnAuto" class="grey">🎯 Tự tìm 4 góc</button>
-        <button id="btnGrade" class="green">✅ CHẤM BÀI</button>
+        <button id="btnAuto" class="grey">Tự tìm 4 góc</button>
+        <button id="btnGrade" class="green">CHẤM BÀI</button>
       </div>
     </div>
     <div class="warn" id="warnBox"></div>
@@ -128,11 +131,11 @@
     <h2>3 · Kết quả</h2>
     <div class="score" id="scoreBig">–</div>
     <div class="sub" id="scoreSub"></div>
-    <p class="hint" style="text-align:center">Chạm vào 1 câu để sửa đáp án đọc được (A → B → C → D → trống), điểm tự tính lại.</p>
+    <p class="hint" style="text-align:center">Chạm vào ô câu để sửa đáp án, điểm tự tính lại.</p>
     <div class="grid" id="chipGrid"></div>
     <div class="row" style="margin-top:12px">
-      <button id="btnSave" class="green">💾 Lưu vào danh sách</button>
-      <button id="btnWarp" class="grey">👁 Xem ảnh đã kéo phẳng</button>
+      <button id="btnSave" class="green">Lưu vào danh sách</button>
+      <button id="btnWarp" class="grey">Xem ảnh đã kéo phẳng</button>
     </div>
     <canvas id="warpPreview" style="width:100%;display:none;border-radius:10px;margin-top:10px"></canvas>
   </div>
@@ -142,23 +145,23 @@
     <table><thead><tr><th>Họ tên</th><th>Lớp</th><th>Bài / Mã</th><th>Đúng</th><th>Điểm</th></tr></thead>
     <tbody id="resultBody"><tr><td colspan="5" class="hint">Chưa có bài nào.</td></tr></tbody></table>
     <div class="row" style="margin-top:10px">
-      <button id="btnCSV" class="grey">⬇ Xuất CSV</button>
-      <button id="btnClear" class="red">🗑 Xoá danh sách</button>
+      <button id="btnCSV" class="grey">Xuất CSV</button>
+      <button id="btnClear" class="red">Xoá danh sách</button>
     </div>
   </div>
 
   <div class="card" id="cfgCard" style="display:none">
-    <h2>⚙ Cấu hình bài kiểm tra</h2>
+    <h2>Cấu hình bài kiểm tra</h2>
     <h3 style="margin:6px 0">Nạp nhanh cấu hình</h3>
     <div class="row">
-      <button id="btnScanCfg">📷 Quét QR cấu hình</button>
-      <button id="btnImport" class="grey">📂 Nhập file JSON</button>
+      <button id="btnScanCfg">Quét QR cấu hình</button>
+      <button id="btnImport" class="grey">Nhập file JSON</button>
     </div>
     <video id="cfgVideo" playsinline autoplay muted></video>
     <input type="file" id="cfgFile" accept=".json,.txt" style="display:none">
     <label>…hoặc dán nội dung cấu hình (chuỗi OMRCFG1:…)</label>
     <textarea id="cfgPaste" rows="3" placeholder="Dán nội dung vào đây"></textarea>
-    <button id="btnPasteCfg" class="grey" style="margin-top:6px">⬇ Nạp từ nội dung đã dán</button>
+    <button id="btnPasteCfg" class="grey" style="margin-top:6px">Nạp từ nội dung đã dán</button>
 
     <h3 style="margin:16px 0 4px">Tạo / sửa bài</h3>
     <label>Tên bài kiểm tra</label>
@@ -170,16 +173,16 @@
     <p class="hint" id="wInfo"></p>
     <label>Đáp án theo mã đề (chuỗi A/B/C/D liền nhau, đủ số câu)</label>
     <div id="keyRows"></div>
-    <button id="btnAddCode" class="grey">＋ Thêm mã đề</button>
-    <p class="hint">Chọn "Sửa lưới" ở một mã để chạm sửa từng câu:</p>
+    <button id="btnAddCode" class="grey">Thêm mã đề</button>
+    <p class="hint">Sửa từng câu trong lưới:</p>
     <div class="grid" id="keyGrid"></div>
     <div class="row" style="margin-top:12px">
-      <button id="btnSaveCfg" class="green">💾 Lưu bài này</button>
-      <button id="btnNewCfg" class="grey">📄 Bài mới</button>
+      <button id="btnSaveCfg" class="green">Lưu bài này</button>
+      <button id="btnNewCfg" class="grey">Bài mới</button>
     </div>
     <div class="row" style="margin-top:8px">
-      <button id="btnMakeQR" class="dark">🔳 Tạo QR cấu hình</button>
-      <button id="btnExport" class="grey">⬇ Xuất file JSON</button>
+      <button id="btnMakeQR" class="dark">Tạo QR cấu hình</button>
+      <button id="btnExport" class="grey">Xuất file JSON</button>
     </div>
     <div id="cfgQR" style="margin-top:10px"></div>
     <div class="msg" id="cfgMsg"></div>
@@ -188,23 +191,32 @@
     <h3 style="margin:16px 0 6px">Bài đã lưu trong máy</h3>
     <div id="examList"></div>
 
-    <h3 style="margin:22px 0 6px;color:#b91c1c">Vùng nguy hiểm</h3>
+    <p style="margin:22px 0 6px;font-weight:700;color:#b91c1c;font-size:14px">Chú ý - reset sẽ xóa sạch dữ liệu chấm</p>
     <button id="btnResetAll" style="background:#dc2626;color:#fff;font-weight:700">↺ RESET - Xóa tất cả, làm lại từ đầu</button>
-    <p class="hint">Xóa toàn bộ bài kiểm tra + đáp án đã lưu trong máy này, đưa app về trạng thái ban đầu (chỉ còn bài mẫu mặc định). Danh sách bài đã chấm cũng bị xóa. Không khôi phục được.</p>
+    <p class="hint">Xóa cả bài kiểm tra và đáp án đã lưu, đưa app về trạng thái ban đầu (chỉ còn bài mẫu mặc định). Không khôi phục được.</p>
   </div>
 
   <div class="card" id="printCard" style="display:none">
-    <h2>🖨 In phiếu tô tròn</h2>
+    <h2>In phiếu tô tròn</h2>
     <div class="row">
       <div><label>Mã đề</label><select id="printCodeSel"></select></div>
-      <button id="btnRenderSheet" class="grey">👁 Xem phiếu</button>
-      <button id="btnDoPrint" class="green">🖨 In / Lưu PDF</button>
+      <button id="btnRenderSheet" class="grey">Xem phiếu</button>
+      <button id="btnDoPrint" class="green">In / Lưu PDF</button>
     </div>
-    <p class="hint">In ở tỉ lệ <b>100% (Actual size)</b>, giấy A4. Mỗi phiếu có sẵn QR chứa mã đề — học sinh nhận phiếu nào, app chấm theo key mã đó. Chọn "Tất cả mã" để in mỗi mã một trang.</p>
+    <p class="hint">In ở tỉ lệ <b>100% (Actual size)</b>. QR trên phiếu chứa mã đề để app tự chọn đáp án.</p>
     <div id="sheetHolder"></div>
   </div>
 
-  <p class="hint">OMR v3.8 — chấm offline; cấu hình và điểm lưu trong trình duyệt của máy này. Chụp phiếu in trên giấy cho kết quả tốt nhất.</p>
+<div id="resetModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25)">
+      <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:#0f172a">Bạn có chắc chắn muốn xóa tiến trình chấm bài không?</p>
+      <p class="hint" style="margin:0 0 14px">Toàn bộ bài kiểm tra, đáp án và danh sách điểm trong máy này sẽ bị xóa sạch, không khôi phục được.</p>
+      <div class="row">
+        <button id="btnResetNo" class="grey">Không</button>
+        <button id="btnResetYes" class="red">Có</button>
+      </div>
+    </div>
+  </div>
 </main>
 <div id="printArea"></div>
 <script>/**
@@ -11941,8 +11953,10 @@ $("btnCSV").onclick = () => {
   a.download = "bang_diem_omr.csv"; a.click();
 };
 $("btnClear").onclick = () => { results = []; renderResults(); };
-$("btnResetAll").onclick = () => {
-  if (!confirm("RESET toàn bộ app?\n\nSẽ xóa hết: các bài kiểm tra + đáp án đã lưu, bài đang chọn, danh sách bài đã chấm. App trở về trạng thái ban đầu (chỉ còn bài mẫu mặc định).\n\nKhông khôi phục được. Bro chắc chắn chứ?")) return;
+$("btnResetAll").onclick = () => { $("resetModal").style.display = "flex"; };
+$("btnResetNo").onclick = () => { $("resetModal").style.display = "none"; };
+$("resetModal").addEventListener("click", e => { if (e.target === $("resetModal")) $("resetModal").style.display = "none"; });
+$("btnResetYes").onclick = () => {
   try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}
   if (window.caches && caches.keys) { try { caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k)))).catch(() => {}); } catch (e) {} }
   setTimeout(() => location.reload(), 200);
