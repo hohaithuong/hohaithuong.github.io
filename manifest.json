@@ -1,17 +1,32 @@
 {
-  "name": "App Chấm OMR",
-  "short_name": "Chấm OMR",
-  "description": "Chấm phiếu trả lời trắc nghiệm bằng camera: quét tự động, cấu hình nhiều mã đề, in phiếu A4.",
+  "name": "Chấm trắc nghiệm OMR",
+  "short_name": "Chấm TN OMR",
+  "description": "Chấm phiếu trả lời trắc nghiệm bằng camera: quét tự động, cấu hình nhiều mã đề, thang điểm tùy chọn, in phiếu A4.",
   "lang": "vi",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f1f5f9",
-  "theme_color": "#15803d",
+  "theme_color": "#1e40af",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
