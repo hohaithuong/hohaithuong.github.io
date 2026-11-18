@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Làm bài & sửa bài - Review Test Unit 4 K10</title>
+<style>
+:root{--zoom:1}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:#f4f6f8;color:#1c2733;font-size:calc(19px * var(--zoom))}
+header{background:#14457a;color:#fff;padding:14px 16px}
+header h1{margin:0;font-size:1.15em}
+header .sub{opacity:.85;font-size:.85em;margin-top:2px}
+.hrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.chip{background:#fff;color:#14457a;border-radius:999px;padding:5px 14px;font-weight:700}
+.hbtn{border:1px solid #fff;background:transparent;color:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;font-size:.85em}
+.hbtn.on{background:#ffb020;color:#1c2733;border-color:#ffb020;font-weight:700}
+#tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#e8eef4}
+#tabs button{border:1px solid #b9cbdd;background:#fff;border-radius:999px;padding:7px 14px;font-size:.88em;cursor:pointer}
+#tabs button.on{background:#14457a;color:#fff;border-color:#14457a}
+main{max-width:1180px;margin:0 auto;padding:14px 12px 90px}
+section.blk{display:none}section.blk.on{display:block}
+.item{background:#fff;border:1px solid #d8e1ea;border-radius:10px;padding:12px 14px;margin:10px 0}
+.item .stem{font-weight:600;margin-bottom:8px;line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{text-align:left;border:1px solid #c3d2e0;background:#fbfdff;border-radius:8px;padding:9px 12px;font-size:.95em;cursor:pointer}
+.opts button:hover{border-color:#14457a}
+.opts button.sel{background:#dbeafe;border-color:#14457a;font-weight:700}
+.opts button.ok{background:#e2f4e5;border-color:#2e9e4f;color:#14532a;font-weight:700}
+.opts button.bad{background:#fdeaea;border-color:#d33;color:#8c1d1d}
+.opts button.okkey{border:2px solid #2e9e4f;background:#e2f4e5;color:#14532a;font-weight:700}
+.expl{display:none;background:#f2f8f2;border:1px solid #bfe3c6;border-radius:8px;padding:9px 12px;margin-top:9px;line-height:1.55}
+.expl.open{display:block}
+.passage{background:#fff;border:1px solid #d8e1ea;border-radius:12px;padding:18px 20px;line-height:2.15;font-size:1.08em}
+.passage p{margin:0 0 12px}
+.blank{display:inline-block;position:relative}
+.ddbtn{border:2px solid #14457a;background:#eaf2fa;color:#14457a;border-radius:8px;padding:2px 9px;font-size:.9em;font-weight:700;cursor:pointer;min-width:92px}
+.ddbtn .n{font-size:.7em;background:#14457a;color:#fff;border-radius:6px;padding:1px 6px;margin-right:6px}
+.ddbtn.sel{background:#14457a;color:#fff}.ddbtn.sel .n{background:#fff;color:#14457a}
+.blank.ok .ddbtn{border-color:#2e9e4f;background:#e2f4e5;color:#14532a}
+.blank.bad .ddbtn{border-color:#d33;background:#fdeaea;color:#8c1d1d}
+.ddlist{display:none;position:absolute;top:112%;left:0;background:#fff;border:1px solid #b9cbdd;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:60;min-width:180px;padding:5px}
+.ddlist.open{display:block}
+.ddlist button{display:block;width:100%;text-align:left;border:0;background:#fff;padding:10px 12px;border-radius:7px;font-size:.92em;cursor:pointer;color:#20303f}
+.ddlist button:hover{background:#eef3f8}
+.czexpl{display:none;background:#fff;border:1px solid #d8e1ea;border-radius:10px;padding:12px 16px;line-height:1.6;margin-top:12px}
+.czexpl.open{display:block}
+.czexpl h3{margin:4px 0 8px;color:#14457a}.czexpl p{margin:5px 0}
+.bw{color:#8a5a12;font-weight:600;cursor:pointer;border-bottom:1px dotted #8a5a12}
+mark.hl{background:#ffe58a;padding:0 1px;border-radius:2px}
+.cols{display:block}
+@media (min-width:920px){
+ .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+ .col{max-height:78vh;overflow-y:auto;padding-right:4px}
+}
+textarea.rw{width:100%;border:1px solid #c3d2e0;border-radius:8px;padding:10px 12px;font-size:.98em;font-family:inherit;line-height:1.5;resize:vertical;min-height:52px}
+textarea.rw.ok{border:2px solid #2e9e4f;background:#f2fbf4}
+textarea.rw.bad{border:2px solid #d33;background:#fdf3f3}
+.model{display:none;background:#f2f8f2;border:1px solid #bfe3c6;border-radius:8px;padding:9px 12px;margin-top:9px;line-height:1.55}
+.model.open{display:block}
+.submitbar{background:#fff;border:1px solid #d8e1ea;border-radius:12px;padding:16px;text-align:center;margin-top:18px}
+.submitbar button{border:0;border-radius:10px;padding:13px 34px;font-size:1.05em;cursor:pointer;background:#14457a;color:#fff;font-weight:700}
+.submitbar .prog{margin-bottom:10px;font-weight:600;color:#14457a}
+.resultbanner{display:none;background:#e2f4e5;border:1px solid #2e9e4f;color:#14532a;border-radius:12px;padding:16px;text-align:center;font-size:1.15em;font-weight:700;margin-top:18px}
+.resultbanner.open{display:block}
+#popwrap{display:none;position:fixed;inset:0;background:rgba(10,20,35,.55);z-index:100;align-items:center;justify-content:center;padding:16px}
+#pop{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px 24px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#pop .w{font-size:1.7em;font-weight:800;color:#8a5a12}
+#pop .meta{color:#5a6b7c;margin:4px 0 10px}
+#pop .en{font-size:1.1em;line-height:1.5}
+#pop .vn{font-size:1.15em;font-weight:700;color:#14457a;margin-top:8px}
+#popx{float:right;border:0;background:#eef3f8;border-radius:8px;font-size:1.1em;padding:4px 12px;cursor:pointer}
+.note{color:#5a6b7c;font-size:.88em;line-height:1.5;margin:8px 2px}
+.inst{font-style:italic;color:#33475e;margin:4px 2px 10px}
+</style></head><body>
+<header>
+<h1>REVIEW TEST - UNIT 4: FOR A BETTER COMMUNITY</h1>
+<div class="sub">Làm bài & sửa bài · 40 câu · mỗi câu 0,25 điểm</div>
+<div class="hrow">
+<span class="chip" id="score">Đã làm: 0/40</span>
+<button class="hbtn" id="hlBtn">🖍 Highlight bài đọc</button>
+<button class="hbtn" id="hlClear">🧹 Xóa highlight</button>
+<button class="hbtn" id="zout">A-</button>
+<button class="hbtn" id="zin">A+</button>
+<button class="hbtn" id="resetBtn">↺ Làm lại từ đầu</button>
+</div>
+</header>
+<div id="tabs">
+<button data-t="A" class="on">Phần 1: Câu 1-15</button>
+<button data-t="C1">Cloze 1: Câu 16-22</button>
+<button data-t="C2">Cloze 2: Câu 23-29</button>
+<button data-t="R">Reading: Câu 30-35</button>
+<button data-t="W">Rewrite: Câu 36-40</button>
+</div>
+<main>
+<section class="blk on" id="secA"></section>
+<section class="blk" id="secC1"></section>
+<section class="blk" id="secC2"></section>
+<section class="blk" id="secR"></section>
+<section class="blk" id="secW"></section>
+<div class="submitbar" id="submitbar">
+<div class="prog" id="prog">Đã làm: 0/40 câu</div>
+<button id="submitBtn">✔ NỘP BÀI</button>
+</div>
+<div class="resultbanner" id="resultbanner"></div>
+</main>
+<div id="popwrap"><div id="pop"><button id="popx">✕</button><div class="w" id="popw"></div><div class="meta" id="popmeta"></div><div class="en" id="popen"></div><div class="vn" id="popvn"></div></div></div>
+<script>
+const DATA = {"A": [{"n": 1, "stem": "Local businesses ______ a large sum of money to build a new library for the village children.", "options": ["participated", "donated", "volunteered", "delivered"], "key": 1, "expl": "<span class=\"bw\" data-w=\"donate\">Donate</span> money = quyên góp tiền cho mục đích từ thiện."}, {"n": 2, "stem": "She is always willing to share what she has with others. She is very ______.", "options": ["endless", "remote", "generous", "homeless"], "key": 2, "expl": "<span class=\"bw\" data-w=\"generous\">Generous</span> = hào phóng, sẵn sàng chia sẻ với người khác."}, {"n": 3, "stem": "Our school is holding a charity run to ______ money for children with heart disease.", "options": ["grow", "lift", "rise", "raise"], "key": 3, "expl": "Raise money = gây quỹ; rise không đi với tân ngữ."}, {"n": 4, "stem": "Volunteers ______ hot meals to <span class=\"bw\" data-w=\"elderly\">elderly</span> people who live alone every Sunday.", "options": ["raise", "donate", "deliver", "spend"], "key": 2, "expl": "Deliver = mang đến tận nơi: phát suất ăn tận nhà cho người già neo đơn."}, {"n": 5, "stem": "This clean-water programme will bring great ______ to farmers in <span class=\"bw\" data-w=\"remote\">remote</span> areas.", "options": ["advertisements", "benefits", "applications", "items"], "key": 1, "expl": "Bring <span class=\"bw\" data-w=\"benefits\">benefits</span> to = mang lại lợi ích cho ai."}, {"n": 6, "stem": "Teenagers who ______ in community work often become more confident and responsible.", "options": ["appear", "deliver", "participate", "donate"], "key": 2, "expl": "<span class=\"bw\" data-w=\"participate\">Participate</span> in = tham gia vào hoạt động cộng đồng."}, {"n": 7, "stem": "You need to send in your ______ before the deadline if you want to join the volunteer team.", "options": ["application", "advertisement", "item", "announcement"], "key": 0, "expl": "<span class=\"bw\" data-w=\"application\">Application</span> = đơn đăng ký; send in your <span class=\"bw\" data-w=\"application\">application</span> = nộp đơn."}, {"n": 8, "stem": "While I ______ dinner, the phone rang three times.", "options": ["am cooking", "cook", "cooked", "was cooking"], "key": 3, "expl": "Hành động dài đang diễn ra (đang nấu ăn) bị hành động ngắn xen vào: quá khứ tiếp diễn."}, {"n": 9, "stem": "She ______ her <span class=\"bw\" data-w=\"ankle\">ankle</span> while she ______ in the park.", "options": ["was twisting - ran", "twisted - runs", "twists - is running", "twisted - was running"], "key": 3, "expl": "Bị trẹo chân (hành động ngắn, quá khứ đơn) trong khi đang chạy (quá khứ tiếp diễn)."}, {"n": 10, "stem": "At 7 o&#x27;clock last night, the volunteers ______ food <span class=\"bw\" data-w=\"parcels\">parcels</span> for the flood <span class=\"bw\" data-w=\"victims\">victims</span>.", "options": ["packed", "were packing", "pack", "have packed"], "key": 1, "expl": "Hành động đang diễn ra tại một thời điểm xác định trong quá khứ: quá khứ tiếp diễn."}, {"n": 11, "stem": "He ______ TV when the power suddenly went out.", "options": ["watches", "has watched", "watched", "was watching"], "key": 3, "expl": "Đang xem TV (hành động dài) thì mất điện (hành động ngắn xen vào)."}, {"n": 12, "stem": "While the teacher ______ the instructions, two students were <span class=\"bw\" data-w=\"whispering\">whispering</span> at the back of the class.", "options": ["explained", "explains", "was explaining", "explain"], "key": 2, "expl": "Hai hành động song song đang diễn ra với While: đều dùng quá khứ tiếp diễn."}, {"n": 13, "stem": "They ______ in a small village when the storm hit the coast.", "options": ["were staying", "stay", "are staying", "stayed"], "key": 0, "expl": "Đang ở tại làng (nền dài) thì bão ập đến (hành động ngắn): were staying."}, {"n": 14, "stem": "I met an old friend while I ______ for the bus.", "options": ["was waiting", "waited", "am waiting", "wait"], "key": 0, "expl": "Gặp bạn cũ (hành động ngắn) trong lúc đang chờ xe buýt (hành động dài)."}, {"n": 15, "stem": "The children were playing outside when it suddenly ______ to rain heavily.", "options": ["was starting", "started", "has started", "starts"], "key": 1, "expl": "Bắt đầu mưa là hành động ngắn xen vào hành động đang chơi: quá khứ đơn."}], "C1": {"tpl": "Last summer, students from my school built a small library for children in a {16} mountain village. For two months, they collected used books from friends and <span class=\"bw\" data-w=\"neighbours\">neighbours</span>. A local bookshop also {17} 300 new books to the project. Before the trip, all the students {18} in a training course to learn how to run reading games for young children. On the opening day, the children {19} outside the school gate long before the group arrived. Now the library opens every weekend. Older pupils read stories to the younger ones, and parents can <span class=\"bw\" data-w=\"borrow\">borrow</span> books to read at home. The project has brought real {20} to the village. For the students, it was a {21} <span class=\"bw\" data-w=\"experience\">experience</span>: they saw with their own eyes how a small action can {22} a big <span class=\"bw\" data-w=\"difference\">difference</span> to other people&#x27;s lives.", "blanks": [{"n": 16, "options": ["remote", "rich", "noisy", "crowded"], "key": 0, "expl": "<span class=\"bw\" data-w=\"remote\">Remote</span> = xa xôi, hẻo lánh: ngôi làng miền núi xa xôi."}, {"n": 17, "options": ["bought", "donated", "sold", "raised"], "key": 1, "expl": "<span class=\"bw\" data-w=\"donate\">Donate</span> = tặng, quyên góp: hiệu sách tặng 300 cuốn sách mới cho dự án."}, {"n": 18, "options": ["entered", "joined", "participated", "attended"], "key": 2, "expl": "<span class=\"bw\" data-w=\"participate\">Participate</span> in = tham gia vào; join/attend/enter không đi với giới từ in trong câu này."}, {"n": 19, "options": ["were waiting", "waited", "wait", "are waiting"], "key": 0, "expl": "Trẻ em đang chờ sẵn từ trước khi nhóm đến (hành động đang diễn ra): quá khứ tiếp diễn."}, {"n": 20, "options": ["benefits", "items", "applications", "chances"], "key": 0, "expl": "Bring <span class=\"bw\" data-w=\"benefits\">benefits</span> to = mang lại lợi ích cho cả làng."}, {"n": 21, "options": ["meant", "meaningful", "meaningless", "meaning"], "key": 1, "expl": "Sau mạo từ a cần tính từ: <span class=\"bw\" data-w=\"meaningful\">meaningful</span> = có ý nghĩa."}, {"n": 22, "options": ["give", "do", "make", "take"], "key": 2, "expl": "Cụm cố định: make a <span class=\"bw\" data-w=\"difference\">difference</span> = tạo ra thay đổi tích cực."}]}, "C2": {"tpl": "Last October, heavy rain fell for three days in our town. On the third night, while most people {23}, the river suddenly rose and water entered the streets. Mr Nam, a <span class=\"bw\" data-w=\"retired\">retired</span> teacher, {24} the <span class=\"bw\" data-w=\"alarm\">alarm</span> bell at the village hall. At once, dozens of young volunteers rushed out of their homes. While some of them {25} <span class=\"bw\" data-w=\"sandbags\">sandbags</span> along the river bank, others knocked on doors to wake families up. Mrs Hoa {26} her two <span class=\"bw\" data-w=\"grandchildren\">grandchildren</span> to the hall when a strong young man offered to carry them on his motorbike. By midnight, everyone {27} <span class=\"bw\" data-w=\"safely\">safely</span> inside the hall. The next morning, the rain {28}, and people went home to clean their houses. “<b>We were lucky,</b>” Mr Nam said. “<b>When <span class=\"bw\" data-w=\"neighbours\">neighbours</span> help <span class=\"bw\" data-w=\"neighbours\">neighbours</span>, no one {29} alone in hard times.</b>”", "blanks": [{"n": 23, "options": ["slept", "were sleeping", "sleep", "are sleeping"], "key": 1, "expl": "While + hành động dài đang diễn ra trong quá khứ: were sleeping."}, {"n": 24, "options": ["rang", "rings", "ring", "was ringing"], "key": 0, "expl": "Hành động ngắn, hoàn tất (rung chuông báo động) khiến mọi người ùa ra: quá khứ đơn."}, {"n": 25, "options": ["are carrying", "carried", "carry", "were carrying"], "key": 3, "expl": "Hai hành động song song với While: were carrying (đang khuân bao cát)."}, {"n": 26, "options": ["is carrying", "was carrying", "carried", "carries"], "key": 1, "expl": "Đang bế cháu đi (hành động dài) thì có người đề nghị giúp (hành động ngắn xen vào)."}, {"n": 27, "options": ["was", "is", "were", "are"], "key": 0, "expl": "Chủ ngữ everyone luôn đi với động từ số ít; ngữ cảnh quá khứ nên dùng was."}, {"n": 28, "options": ["stops", "was stopping", "has stopped", "stopped"], "key": 3, "expl": "Mưa tạnh hẳn vào sáng hôm sau (hành động hoàn tất): quá khứ đơn."}, {"n": 29, "options": ["is feeling", "feels", "feel", "felt"], "key": 1, "expl": "Lời nói về một chân lý chung ở hiện tại; chủ ngữ no one đi với feels."}]}, "R": {"paras": ["Every weekday at five in the morning, while most of the city is still asleep, Mr Tuan opens his small breakfast stall near the bus station. But Mr Tuan does not sell his food. For the past six years, he has given free breakfasts to street cleaners, lottery ticket sellers and poor students who leave home early for school.", "Mr Tuan used to be a cook in a large restaurant. When he <span class=\"bw\" data-w=\"retired\">retired</span>, he had some <span class=\"bw\" data-w=\"savings\">savings</span> and a lot of free time. “<b>I saw workers eating nothing before their <span class=\"bw\" data-w=\"shifts\">shifts</span>,</b>” he says. “<b>Some of <b>them</b> saved every coin for their children&#x27;s school <span class=\"bw\" data-w=\"fees\">fees</span>. I told myself I could do something.</b>” He began with just ten <b><span class=\"bw\" data-w=\"portions\">portions</span></b> of sticky rice a day. Soon, <span class=\"bw\" data-w=\"neighbours\">neighbours</span> heard about the stall and started to help. A baker nearby gives him <span class=\"bw\" data-w=\"unsold\">unsold</span> bread every morning, and students from a local college take turns serving food at weekends.", "Each morning, about eighty people come to the stall. They do not have to show any papers or explain their <span class=\"bw\" data-w=\"situation\">situation</span>. “<b>Everyone is welcome,</b>” Mr Tuan says. “<b>A hot meal in the morning gives people <span class=\"bw\" data-w=\"strength\">strength</span> for a whole day of hard work.</b>”", "Mr Tuan is now over seventy, but he has no plan to stop. Next month, with the <span class=\"bw\" data-w=\"support\">support</span> of the Women&#x27;s Union, he will open a second stall near the <span class=\"bw\" data-w=\"industrial\">industrial</span> park, where many factory workers <span class=\"bw\" data-w=\"rent\">rent</span> small rooms. “<b>As long as I can stand in my kitchen,</b>” he laughs, “<b>the stall stays open.</b>”"], "items": [{"n": 30, "stem": "What is the passage mainly about?", "options": ["How to run a successful breakfast stall near a bus station", "The school fees of poor children in the city", "A retired cook who gives free breakfasts to people in need", "Why street cleaners and ticket sellers have difficult jobs"], "key": 2, "expl": "Toàn bài kể về ông Tuấn, đầu bếp đã nghỉ hưu, phát bữa sáng miễn phí cho người lao động nghèo."}, {"n": 31, "stem": "Why did Mr Tuan start giving free breakfasts?", "options": ["The Women's Union asked him to do it", "He wanted to earn money after retiring", "He saw workers going to work without eating", "He wanted to become famous in his city"], "key": 2, "expl": "Ông thấy công nhân nhịn đói trước ca làm: “<b>I saw workers eating nothing before their <span class=\"bw\" data-w=\"shifts\">shifts</span>.</b>”"}, {"n": 32, "stem": "Who helps Mr Tuan at the stall now?", "options": ["Only students from a local college", "Factory workers at the industrial park", "Members of the Women's Union", "A nearby baker and college students"], "key": 3, "expl": "Người bán bánh mì gần đó cho bánh không bán hết và sinh viên thay phiên phục vụ cuối tuần."}, {"n": 33, "stem": "Which of the following is NOT true about the stall?", "options": ["Mr Tuan started with ten portions of sticky rice a day", "Mr Tuan used to work as a cook in a restaurant", "About eighty people come to it every morning", "People must explain their situation to get free food"], "key": 3, "expl": "Bài ghi rõ khách không cần xuất trình giấy tờ hay giải thích hoàn cảnh, nên câu này sai."}, {"n": 34, "stem": "The word “<b>them</b>” in paragraph 2 refers to ______.", "options": ["workers", "children", "neighbours", "students"], "key": 0, "expl": "“<b>Them</b>” chỉ những công nhân (workers) được nhắc ngay ở câu trước."}, {"n": 35, "stem": "The word “<b><span class=\"bw\" data-w=\"portions\">portions</span></b>” in paragraph 2 is closest in meaning to ______.", "options": ["tables", "prices", "servings", "recipes"], "key": 2, "expl": "<span class=\"bw\" data-w=\"portions\">Portions</span> = phần ăn, suất ăn, gần nghĩa nhất với <span class=\"bw\" data-w=\"servings\">servings</span>."}]}, "W": [{"n": 36, "orig": "The volunteers were packing food parcels. At that moment, the truck arrived.", "direct": "Combine the two sentences with WHEN.", "model": "The volunteers were packing food parcels when the truck arrived.", "expl": "Hành động dài (were packing) + hành động ngắn xen vào (arrived) nối bằng when.", "accept": ["the volunteers were packing food parcels when the truck arrived", "when the truck arrived the volunteers were packing food parcels"]}, {"n": 37, "orig": "She was walking home. It started to rain.", "direct": "Combine the two sentences with WHILE.", "model": "While she was walking home, it started to rain. (Hoặc: It started to rain while she was walking home.)", "expl": "While + quá khứ tiếp diễn cho hành động dài đang diễn ra.", "accept": ["while she was walking home it started to rain", "it started to rain while she was walking home"]}, {"n": 38, "orig": "I met many friendly people during my volunteer work in the village.", "direct": "Rewrite the sentence with WHEN.", "model": "I met many friendly people when I was doing volunteer work in the village.", "expl": "During + danh từ được viết lại thành when + mệnh đề quá khứ tiếp diễn.", "accept": ["i met many friendly people when i was doing volunteer work in the village"]}, {"n": 39, "orig": "He read a book. His sister cooked dinner at the same time.", "direct": "Combine the two sentences with WHILE.", "model": "While he was reading a book, his sister was cooking dinner.", "expl": "Hai hành động song song cùng lúc: cả hai đều dùng quá khứ tiếp diễn với while.", "accept": ["while he was reading a book his sister was cooking dinner", "his sister was cooking dinner while he was reading a book"]}, {"n": 40, "orig": "I was having a shower at that moment. The phone rang.", "direct": "Combine the two sentences with WHEN.", "model": "The phone rang when I was having a shower. (Hoặc: When the phone rang, I was having a shower.)", "expl": "Hành động ngắn (rang) xen vào hành động dài đang diễn ra (was having a shower).", "accept": ["the phone rang when i was having a shower", "when the phone rang i was having a shower"]}], "VOCAB": {"remote": {"type": "adj", "ipa": "/rɪˈməʊt/", "en": "far away from towns and cities", "vn": "xa xôi, hẻo lánh"}, "donate": {"type": "verb", "ipa": "/dəʊˈneɪt/", "en": "to give money or things to help people", "vn": "quyên góp, tặng"}, "participate": {"type": "verb", "ipa": "/pɑːˈtɪsɪpeɪt/", "en": "to take part in an activity", "vn": "tham gia"}, "benefits": {"type": "noun", "ipa": "/ˈbenɪfɪts/", "en": "good results or advantages", "vn": "lợi ích"}, "meaningful": {"type": "adj", "ipa": "/ˈmiːnɪŋfl/", "en": "useful and important, worth doing", "vn": "có ý nghĩa"}, "difference": {"type": "noun", "ipa": "/ˈdɪfrəns/", "en": "a change that improves a situation (make a difference)", "vn": "sự thay đổi tích cực"}, "generous": {"type": "adj", "ipa": "/ˈdʒenərəs/", "en": "happy to give money, help or time to others", "vn": "hào phóng"}, "application": {"type": "noun", "ipa": "/ˌæplɪˈkeɪʃn/", "en": "a formal request for a job or a place", "vn": "đơn đăng ký, đơn xin"}, "announcement": {"type": "noun", "ipa": "/əˈnaʊnsmənt/", "en": "an official statement that tells people something", "vn": "thông báo"}, "advertisement": {"type": "noun", "ipa": "/ədˈvɜːtɪsmənt/", "en": "a public notice that promotes something", "vn": "quảng cáo"}, "elderly": {"type": "adj", "ipa": "/ˈeldəli/", "en": "old (used politely about people)", "vn": "cao tuổi"}, "parcels": {"type": "noun", "ipa": "/ˈpɑːslz/", "en": "packages wrapped and sent or carried somewhere", "vn": "gói, kiện đồ"}, "victims": {"type": "noun", "ipa": "/ˈvɪktɪmz/", "en": "people who suffer because of a disaster or accident", "vn": "nạn nhân"}, "ankle": {"type": "noun", "ipa": "/ˈæŋkl/", "en": "the joint between your foot and your leg", "vn": "mắt cá chân"}, "whispering": {"type": "verb", "ipa": "/ˈwɪspərɪŋ/", "en": "speaking very quietly", "vn": "đang thì thầm"}, "neighbours": {"type": "noun", "ipa": "/ˈneɪbəz/", "en": "people who live near you", "vn": "hàng xóm"}, "borrow": {"type": "verb", "ipa": "/ˈbɒrəʊ/", "en": "to use something and return it later", "vn": "mượn"}, "experience": {"type": "noun", "ipa": "/ɪkˈspɪəriəns/", "en": "something that happens to you, or the process of doing something", "vn": "trải nghiệm, kinh nghiệm"}, "retired": {"type": "adj", "ipa": "/rɪˈtaɪərd/", "en": "no longer working because of age", "vn": "đã nghỉ hưu"}, "alarm": {"type": "noun", "ipa": "/əˈlɑːm/", "en": "a bell or sound that warns people of danger", "vn": "chuông báo động"}, "sandbags": {"type": "noun", "ipa": "/ˈsændbæɡz/", "en": "bags filled with sand, used to hold back flood water", "vn": "bao cát (chống lũ)"}, "grandchildren": {"type": "noun", "ipa": "/ˈɡræntʃɪldrən/", "en": "the children of your children", "vn": "các cháu (nội/ngoại)"}, "safely": {"type": "adv", "ipa": "/ˈseɪfli/", "en": "in a safe way, without harm", "vn": "một cách an toàn"}, "portions": {"type": "noun", "ipa": "/ˈpɔːʃnz/", "en": "amounts of food for one person", "vn": "phần ăn, suất ăn"}, "servings": {"type": "noun", "ipa": "/ˈsɜːvɪŋz/", "en": "amounts of food for one person", "vn": "phần ăn, suất ăn"}, "situation": {"type": "noun", "ipa": "/ˌsɪtʃuˈeɪʃn/", "en": "the conditions and things happening at a time", "vn": "hoàn cảnh, tình huống"}, "strength": {"type": "noun", "ipa": "/streŋθ/", "en": "physical power and energy", "vn": "sức lực"}, "support": {"type": "noun", "ipa": "/səˈpɔːt/", "en": "help or encouragement", "vn": "sự hỗ trợ"}, "savings": {"type": "noun", "ipa": "/ˈseɪvɪŋz/", "en": "money that you keep for the future", "vn": "tiền tiết kiệm"}, "unsold": {"type": "adj", "ipa": "/ʌnˈsəʊld/", "en": "not sold yet", "vn": "chưa bán được, còn thừa"}, "shifts": {"type": "noun", "ipa": "/ʃɪfts/", "en": "periods of work time in a factory or company", "vn": "ca làm việc"}, "fees": {"type": "noun", "ipa": "/fiːz/", "en": "money paid for a service, e.g. school fees", "vn": "phí, học phí"}, "industrial": {"type": "adj", "ipa": "/ɪnˈdʌstriəl/", "en": "connected with factories and industry", "vn": "công nghiệp"}, "rent": {"type": "verb", "ipa": "/rent/", "en": "to pay money to live in a place owned by someone else", "vn": "thuê (nhà, phòng)"}}};
+const LS = 'ontap_u4k10_exam_v1';
+let S = JSON.parse(localStorage.getItem(LS) || 'null') || {sel: {}, cz: {}, rw: {}, hl: '', zoom: 1, submitted: false, correct: 0};
+function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+const $ = id => document.getElementById(id);
+const ALLMCQ = {};
+DATA.A.forEach(it => ALLMCQ[it.n] = it);
+DATA.R.items.forEach(it => ALLMCQ[it.n] = it);
+const ALLCZ = {};
+DATA.C1.blanks.forEach(b => ALLCZ[b.n] = b);
+DATA.C2.blanks.forEach(b => ALLCZ[b.n] = b);
+function norm(s){ return (s || '').toLowerCase().replace(/[.,!?;:'"“”()]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function rwOK(w){ const v = norm(S.rw[w.n]); return v !== '' && w.accept.indexOf(v) >= 0; }
+function answered(){
+  let c = 0;
+  for (const n in S.sel) c++;
+  for (const n in S.cz) c++;
+  for (const n in S.rw) if ((S.rw[n] || '').trim() !== '') c++;
+  return c;
+}
+function refreshTop(){
+  if (S.submitted){
+    const pts = (S.correct * 0.25).toFixed(2).replace(/\.?0+$/, '');
+    $('score').textContent = 'Kết quả: ' + S.correct + '/40 đúng - ' + pts + '/10 điểm';
+    $('submitbar').style.display = 'none';
+    const rb = $('resultbanner');
+    rb.classList.add('open');
+    rb.textContent = '🎉 Đã nộp bài - Đúng ' + S.correct + '/40 câu = ' + pts + '/10 điểm. Mở từng phần để xem sửa bài và giải thích.';
+  } else {
+    $('score').textContent = 'Đã làm: ' + answered() + '/40';
+    $('prog').textContent = 'Đã làm: ' + answered() + '/40 câu';
+  }
+}
+/* ---------- MCQ ---------- */
+function mcqHTML(it){
+  const sel = S.sel[it.n];
+  const opts = it.options.map((o, j) => {
+    let cls = '';
+    if (!S.submitted){ if (sel === j) cls = 'sel'; }
+    else {
+      if (j === it.key && sel === j) cls = 'ok';
+      else if (j === it.key) cls = 'okkey';
+      else if (sel === j) cls = 'bad';
+    }
+    return '<button class="' + cls + '" data-n="' + it.n + '" data-j="' + j + '"><b>' + 'ABCD'[j] + '.</b> ' + o + '</button>';
+  }).join('');
+  return '<div class="item"><div class="stem">' + it.n + '. ' + it.stem + '</div><div class="opts">' + opts + '</div>' +
+    '<div class="expl' + (S.submitted ? ' open' : '') + '">' + it.expl + '</div></div>';
+}
+function bindMCQ(root){
+  root.querySelectorAll('.opts button').forEach(b => b.onclick = () => {
+    if (S.submitted) return;
+    S.sel[+b.dataset.n] = +b.dataset.j; save();
+    renderAll();
+  });
+}
+function renderA(){ $('secA').innerHTML = '<p class="inst">Choose the best answer A, B, C or D to complete each sentence.</p>' + DATA.A.map(mcqHTML).join(''); bindMCQ($('secA')); }
+/* ---------- Cloze ---------- */
+function clozeHTML(cid){
+  const C = DATA[cid];
+  let tpl = C.tpl;
+  C.blanks.forEach(b => {
+    const sel = S.cz[b.n];
+    const label = sel !== undefined ? b.options[sel] : '...';
+    const list = b.options.map((o, j) => '<button data-cn="' + b.n + '" data-j="' + j + '">' + o + '</button>').join('');
+    let bcls = '';
+    if (S.submitted) bcls = (sel === b.key) ? 'ok' : 'bad';
+    const span = '<span class="blank ' + bcls + '" data-cn="' + b.n + '"><button class="ddbtn' + (sel !== undefined ? ' sel' : '') + '" data-cn="' + b.n + '"><span class="n">' + b.n + '</span>' + label + ' ▾</button><span class="ddlist" id="ddl' + b.n + '">' + list + '</span></span>';
+    tpl = tpl.replace('{' + b.n + '}', span);
+  });
+  let html = '<p class="inst">Read the following passage and choose the best answer A, B, C or D for each blank.</p><div class="passage">' + tpl + '</div>';
+  if (S.submitted){
+    html += '<div class="czexpl open"><h3>Giải thích</h3>' + C.blanks.map(b => '<p><b>(' + b.n + ') ' + b.options[b.key] + '</b> - ' + b.expl + '</p>').join('') + '</div>';
+  }
+  return html;
+}
+function bindCloze(cid){
+  const sec = $('sec' + cid);
+  sec.querySelectorAll('.ddbtn').forEach(btn => btn.onclick = e => {
+    e.stopPropagation();
+    if (S.submitted) return;
+    const list = $('ddl' + btn.dataset.cn);
+    const was = list.classList.contains('open');
+    document.querySelectorAll('.ddlist').forEach(l => l.classList.remove('open'));
+    if (!was) list.classList.add('open');
+  });
+  sec.querySelectorAll('.ddlist button').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    if (S.submitted) return;
+    S.cz[+b.dataset.cn] = +b.dataset.j; save();
+    renderAll();
+  });
+}
+function renderC(cid){ $('sec' + cid).innerHTML = clozeHTML(cid); bindCloze(cid); }
+document.addEventListener('click', () => document.querySelectorAll('.ddlist').forEach(l => l.classList.remove('open')));
+/* ---------- Reading ---------- */
+function renderR(){
+  $('secR').innerHTML = '<p class="inst">Read the following passage and choose the best answer A, B, C or D for each question.</p>' +
+    '<div class="cols"><div class="col"><div class="passage" id="readpass">' + DATA.R.paras.map(p => '<p>' + p + '</p>').join('') + '</div></div>' +
+    '<div class="col">' + DATA.R.items.map(mcqHTML).join('') + '</div></div>';
+  bindMCQ($('secR'));
+  if (S.hl) $('readpass').innerHTML = S.hl;
+}
+/* ---------- Rewrite ---------- */
+function renderW(){
+  $('secW').innerHTML = '<p class="inst">Rewrite each sentence as directed in brackets, using the word given. Do not change the meaning of the original sentence.</p>' +
+    DATA.W.map(w => {
+      const v = S.rw[w.n] || '';
+      let cls = '';
+      if (S.submitted) cls = rwOK(w) ? 'ok' : 'bad';
+      return '<div class="item"><div class="stem">' + w.n + '. ' + w.orig + '</div>' +
+        '<div class="note">(' + w.direct + ')</div>' +
+        '<textarea class="rw ' + cls + '" data-rw="' + w.n + '" placeholder="Gõ câu viết lại vào đây..." ' + (S.submitted ? 'disabled' : '') + '>' + v.replace(/</g, '&lt;') + '</textarea>' +
+        '<div class="model' + (S.submitted ? ' open' : '') + '"><b>Đáp án mẫu:</b> ' + w.model + '<br>' + w.expl + '</div></div>';
+    }).join('');
+  document.querySelectorAll('[data-rw]').forEach(t => t.oninput = () => { S.rw[+t.dataset.rw] = t.value; save(); refreshTop(); });
+}
+/* ---------- Render all ---------- */
+function renderAll(){ renderA(); renderC('C1'); renderC('C2'); renderR(); renderW(); refreshTop(); }
+/* ---------- Tabs ---------- */
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('section.blk').forEach(s => s.classList.remove('on'));
+  $('sec' + b.dataset.t).classList.add('on');
+});
+/* ---------- Brown vocab pop-up ---------- */
+document.addEventListener('click', e => {
+  const bw = e.target.closest('.bw');
+  if (bw) { e.stopPropagation(); openPop(bw.dataset.w); }
+});
+function openPop(w){
+  const v = DATA.VOCAB[w]; if (!v) return;
+  $('popw').textContent = w;
+  $('popmeta').textContent = v.type + ' · ' + v.ipa;
+  $('popen').textContent = v.en;
+  $('popvn').textContent = v.vn;
+  $('popwrap').style.display = 'flex';
+}
+$('popx').onclick = () => $('popwrap').style.display = 'none';
+$('popwrap').onclick = e => { if (e.target.id === 'popwrap') e.target.style.display = 'none'; };
+/* ---------- Highlight (reading passage, persisted) ---------- */
+let hlOn = false;
+$('hlBtn').onclick = () => { hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', () => {
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const rp = $('readpass');
+  if (!rp || !$('secR').classList.contains('on')) return;
+  if (!rp.contains(range.commonAncestorContainer)) return;
+  try {
+    const mark = document.createElement('mark'); mark.className = 'hl';
+    mark.appendChild(range.extractContents());
+    range.insertNode(mark);
+    sel.removeAllRanges();
+    S.hl = rp.innerHTML; save();
+  } catch (err) {}
+});
+$('hlClear').onclick = () => {
+  const rp = $('readpass');
+  if (rp) rp.querySelectorAll('mark.hl').forEach(mk => mk.replaceWith(...mk.childNodes));
+  S.hl = ''; save();
+};
+/* ---------- Zoom / reset ---------- */
+let zoom = S.zoom || 1;
+function applyZoom(){ document.documentElement.style.setProperty('--zoom', zoom); }
+applyZoom();
+$('zin').onclick = () => { zoom = Math.min(1.5, +(zoom + 0.1).toFixed(2)); S.zoom = zoom; save(); applyZoom(); };
+$('zout').onclick = () => { zoom = Math.max(0.75, +(zoom - 0.1).toFixed(2)); S.zoom = zoom; save(); applyZoom(); };
+$('resetBtn').onclick = () => { localStorage.removeItem(LS); location.reload(); };
+/* ---------- Submit ---------- */
+function grade(){
+  let ok = 0;
+  for (const n in ALLMCQ) if (S.sel[n] === ALLMCQ[n].key) ok++;
+  for (const n in ALLCZ) if (S.cz[n] === ALLCZ[n].key) ok++;
+  DATA.W.forEach(w => { if (rwOK(w)) ok++; });
+  return ok;
+}
+function doSubmit(force){
+  if (S.submitted) return;
+  const left = 40 - answered();
+  if (!force && left > 0 && !confirm('Còn ' + left + ' câu chưa làm. Nộp bài luôn?')) return;
+  S.correct = grade();
+  S.submitted = true; save();
+  renderAll();
+  const answers = [];
+  for (let n = 1; n <= 35; n++) answers.push((ALLMCQ[n] ? S.sel[n] : S.cz[n]) !== undefined ? (ALLMCQ[n] ? S.sel[n] : S.cz[n]) : -1);
+  DATA.W.forEach(w => answers.push(S.rw[w.n] || ''));
+  if (typeof window.hwSendResult === 'function') window.hwSendResult(S.correct, 40, answers);
+  window.scrollTo(0, 0);
+}
+$('submitBtn').onclick = () => doSubmit(false);
+window.hwOnTimeUp = function(){ doSubmit(true); };
+window.__T = {get S(){ return S; }, DATA, doSubmit, grade};
+renderAll();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body></html>
