@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chấm trắc nghiệm OMR v3.9.2 — Tự bắt khung · Cấu hình · In phiếu</title>
+<title>Chấm trắc nghiệm OMR v3.9.3 — Tự bắt khung · Cấu hình · In phiếu</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: #edf0f4; color: #1c2333; }
@@ -94,10 +94,11 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});}</script>
+<style id="pageRule"></style>
 </head>
 <body>
 <header>
-  <h1>Chấm trắc nghiệm OMR v3.9.2</h1>
+  <h1>Chấm trắc nghiệm OMR v3.9.3</h1>
   <p>Chấm phiếu tô tròn bằng camera - dữ liệu chỉ lưu trong máy này</p>
 </header>
 <main>
@@ -117,7 +118,7 @@
     <h2>Hướng dẫn sử dụng</h2>
     <ol>
       <li><b>Tạo bài:</b> Cấu hình → tên bài, số câu, lớp mặc định (nếu chấm theo lớp) → nhập đáp án cho từng mã đề → Lưu bài này. Điểm mỗi câu đều nhau, app tự chia theo tổng điểm (mặc định thang 10).</li>
-      <li><b>In phiếu:</b> In phiếu → chọn mã đề → In / Lưu PDF, tỉ lệ 100% (Actual size). Đề nhiều câu (50-60) nên in giấy A4.</li>
+      <li><b>In phiếu:</b> In phiếu → chọn mã đề → In / Lưu PDF, tỉ lệ 100% (Actual size). Có thể chọn khổ A5 (2 phiếu trên 1 tờ A4, cắt đôi theo đường đứt nét). Đề nhiều câu (50-60) nên in giấy A4.</li>
       <li><b>Chấm:</b> nhập họ tên học sinh (lớp đã điền sẵn) → QUÉT TỰ ĐỘNG → đưa trọn phiếu vào khung, đủ sáng, không chói, giữ yên đến khi app đọc xong → Lưu vào danh sách.</li>
       <li><b>Lấy điểm:</b> mục 4 → Xuất CSV (mở bằng Excel), điểm làm tròn 2 chữ số thập phân. Danh sách điểm chỉ lưu trong lúc app đang mở - xuất file trước khi đóng app.</li>
       <li><b>Chia sẻ cấu hình:</b> Tạo QR cấu hình để đưa cho giáo viên khác (QR chứa đáp án - chỉ cho giáo viên xem). Nhận cấu hình: Tùy chọn nâng cao → Quét QR cấu hình hoặc Nhập file JSON.</li>
@@ -245,10 +246,12 @@
     <h2>In phiếu tô tròn</h2>
     <div class="row">
       <div><label>Mã đề</label><select id="printCodeSel"></select></div>
+      <div><label>Khổ phiếu</label><select id="printSizeSel"><option value="A4">A4 - 1 phiếu/tờ</option><option value="A5">A5 - 2 phiếu/tờ A4</option></select></div>
       <button id="btnRenderSheet" class="grey">Xem phiếu</button>
       <button id="btnDoPrint" class="green">In / Lưu PDF</button>
     </div>
     <p class="hint">In ở tỉ lệ <b>100% (Actual size)</b>. QR trên phiếu chứa mã đề để app tự chọn đáp án.</p>
+    <p class="hint" id="a5Note" style="display:none"></p>
     <div id="sheetHolder"></div>
   </div>
   <p class="hint" style="text-align:center;font-style:normal">Cooked by Ho Hai Thuong. Have fun!</p>
@@ -10721,11 +10724,10 @@ $("btnCfg").onclick = () => {
   if (c.style.display === "block") { fillFormFromExam(exam()); c.scrollIntoView({ behavior: "smooth" }); }
 };
 // ===== Print sheet renderer (SVG, mm-accurate, same layout as scanner) =====
-function sheetSVG(ex, code) {
+function sheetInner(ex, code) {
   const L = layoutFor(ex.q);
   const P = [];
   const mm = v => (Math.round(v * 100) / 100);
-  P.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" width="210mm" height="297mm">');
   P.push('<rect x="0" y="0" width="210" height="297" fill="white"/>');
   for (const [fx, fy] of [[10,10],[188,10],[10,275],[188,275]])
     P.push('<rect x="' + fx + '" y="' + fy + '" width="12" height="12" fill="black"/>');
@@ -10755,6 +10757,22 @@ function sheetSVG(ex, code) {
   }
   P.push('<text x="22" y="266.5" font-family="Arial,sans-serif" font-size="3.2">Hướng dẫn: tô kín ô tròn bằng bút chì 2B hoặc bút bi đen. Mỗi câu chỉ tô 1 ô.</text>');
   P.push('<text x="22" y="271" font-family="Arial,sans-serif" font-size="3.2">In phiếu ở tỉ lệ 100% (Actual size), không chọn Fit to page.</text>');
+  return P.join("");
+}
+function sheetSVG(ex, code) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" width="210mm" height="297mm">' + sheetInner(ex, code) + '</svg>';
+}
+// Two A5 sheets on one A4 landscape page (uniform 1/sqrt(2) scale, cut on the dashed middle line)
+function sheetA5Page(ex, c1, c2) {
+  const s = 0.7071, w = Math.round(210 * s * 100) / 100;
+  const P = [];
+  P.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210" width="297mm" height="210mm">');
+  P.push('<rect x="0" y="0" width="297" height="210" fill="white"/>');
+  P.push('<g transform="translate(0,0) scale(' + s + ')">' + sheetInner(ex, c1) + '</g>');
+  if (c2) {
+    P.push('<g transform="translate(' + w + ',0) scale(' + s + ')">' + sheetInner(ex, c2) + '</g>');
+    P.push('<line x1="' + w + '" y1="0" x2="' + w + '" y2="210" stroke="#888888" stroke-width="0.4" stroke-dasharray="3.5 2.5"/>');
+  }
   P.push('</svg>');
   return P.join("");
 }
@@ -10763,8 +10781,27 @@ function renderPrint() {
   const ex = exam();
   const code = $("printCodeSel").value;
   const codes = code === "__all" ? Object.keys(ex.keys) : [code];
-  $("sheetHolder").innerHTML = codes.map(c => sheetSVG(ex, c)).join("");
-  $("printArea").innerHTML = codes.map(c => '<div class="sheetPage">' + sheetSVG(ex, c) + '</div>').join("");
+  const a5 = $("printSizeSel") && $("printSizeSel").value === "A5";
+  const note = $("a5Note");
+  if (!a5) {
+    $("sheetHolder").innerHTML = codes.map(c => sheetSVG(ex, c)).join("");
+    $("printArea").innerHTML = codes.map(c => '<div class="sheetPage">' + sheetSVG(ex, c) + '</div>').join("");
+    $("pageRule").textContent = "";
+    if (note) note.style.display = "none";
+    return;
+  }
+  const queue = code === "__all" ? codes.slice() : [code, code];
+  const pages = [];
+  for (let i = 0; i < queue.length; i += 2) pages.push(sheetA5Page(ex, queue[i], queue[i + 1] || null));
+  $("sheetHolder").innerHTML = pages.join("");
+  $("printArea").innerHTML = pages.map(sv => '<div class="sheetPage">' + sv + '</div>').join("");
+  $("pageRule").textContent = "@page { size: A4 landscape; margin: 0; }";
+  if (note) {
+    const dia = Math.round(layoutFor(ex.q).bubbleR * 2 * 0.7071 * 10) / 10;
+    note.style.display = "block";
+    note.innerHTML = "Khổ A5: mỗi tờ A4 in được <b>2 phiếu</b> (in ngang, tỉ lệ 100%), cắt đôi theo đường đứt nét ở giữa. Ô tô sau khi thu nhỏ còn khoảng <b>" + dia + "mm</b>." +
+      (ex.q > 30 ? " Đề " + ex.q + " câu ô khá nhỏ, học sinh tô dễ lem - cân nhắc in A4." : "");
+  }
 }
 $("btnPrint").onclick = () => {
   const c = $("printCard");
@@ -10773,6 +10810,7 @@ $("btnPrint").onclick = () => {
 };
 $("btnRenderSheet").onclick = renderPrint;
 $("printCodeSel").onchange = renderPrint;
+$("printSizeSel").onchange = renderPrint;
 $("btnDoPrint").onclick = () => { renderPrint(); window.print(); };
 // ===== Grading engine (from v1.2, parameterised by active exam) =====
 let srcCanvas = null, pts = null, selPt = 0;
