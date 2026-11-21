@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOZE TEXT: FURTHER PRACTICE - Làm bài Test 2 (Samples 5-8)</title>
+<style>
+:root{ --fs:17px; --brown:#8a5a12; --green:#1e8e4f; --red:#d33; --orange:#e07b00; --line:#d8d8d8; --blue:#3b6fd4; }
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Times New Roman",sans-serif;background:#f4f4f6;color:#1c1c1e;font-size:var(--fs)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.15em;margin:0;font-family:"Times New Roman",serif;letter-spacing:.5px}
+header .sub{color:#666;font-size:.82em;width:100%}
+.chip{background:#eef1f6;border:1px solid #c3cede;color:#243b6b;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9em}
+button.tool{background:#fff;border:1px solid #bbb;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.9em}
+button.tool.on{background:#fff3cd;border-color:#e0a800}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select#picker{font-size:.95em;padding:6px;border-radius:8px;border:1px solid #bbb;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.schip{border:1px solid #bbb;background:#fff;border-radius:6px;padding:2px 7px;font-size:.78em;cursor:pointer}
+.schip.full{background:#e8eefc;border-color:var(--blue);color:#1e3a8a;font-weight:700}
+.schip.cur{outline:2px solid #333}
+main{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+@media (max-width:860px){ main{grid-template-columns:1fr} }
+.pane{padding:14px;overflow-y:auto;max-height:calc(100vh - 150px)}
+@media (max-width:860px){ .pane{max-height:none;overflow:visible} }
+.pane.left{border-right:1px solid var(--line);background:#fff}
+.topic{font-family:"Times New Roman",serif;font-weight:700;text-align:center;font-size:1.12em;margin:2px 0 10px}
+.passage{font-family:"Times New Roman",serif;font-size:1.06em;line-height:1.65;text-align:justify}
+.blank{display:inline-block;min-width:2em;text-align:center;background:#eef;border:1px dashed #88a;border-radius:6px;padding:0 4px;font-weight:700;color:#335}
+.blank.picked{background:#e8eefc;border:1px solid var(--blue);color:#1e3a8a}
+.blank.filled{background:#e6f4ea;border:1px solid var(--green);color:#14532d}
+.blank.wrongfill{background:#fdecec;border:1px solid var(--red);color:#a00}
+.blank.shown{background:#fff4e0;border:1px solid var(--orange);color:#8a5200}
+.wv{color:var(--brown);cursor:pointer;border-bottom:1px dotted var(--brown)}
+mark.hl{background:#ffe98a;border-radius:2px}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.qcard .qhead{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.qcard .st{font-size:.85em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} }
+.opt{border:1px solid #bbb;background:#fff;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font-size:.95em}
+.opt:hover{border-color:#666}
+.opt.sel{background:#e8eefc;border-color:var(--blue);font-weight:700}
+.opt.right{background:#e6f4ea;border-color:var(--green);font-weight:700}
+.opt.wrongpick{background:#fdecec;border-color:var(--red);color:#a00}
+.opt:disabled{cursor:default;opacity:.92}
+.expl{display:none;background:#f7f9f7;border-left:3px solid var(--green);padding:8px 10px;margin-top:8px;font-size:.92em;line-height:1.5}
+.expl.show{display:block}
+.submitbar{background:#fff;border-top:1px solid var(--line);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#submitBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 44px;font-size:1.05em;font-weight:700;cursor:pointer}
+#submitBtn:hover{background:#17703d}
+#result{display:none;background:#e6f4ea;border:1px solid var(--green);color:#14532d;border-radius:10px;padding:10px 18px;font-weight:700;font-size:1.05em;text-align:center}
+#modal,#cmodal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+#modal.open,#cmodal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;max-width:430px;width:100%;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);position:relative;text-align:center}
+.mbox .term{font-size:1.5em;font-weight:800;color:var(--brown)}
+.mbox .ipa{font-size:1.15em;color:#444;margin:6px 0}
+.mbox .vn{font-size:1.12em;line-height:1.5}
+.mbox .x{position:absolute;top:6px;right:12px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#888}
+.cbtns{margin-top:16px;display:flex;gap:8px;justify-content:center}
+#cYes{background:var(--green);color:#fff;border-color:var(--green);font-weight:700;padding:8px 18px}
+#cNo{padding:8px 18px}
+.hint{color:#666;font-size:.85em;padding:6px 14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>CLOZE TEXT: FURTHER PRACTICE</h1>
+  <span class="chip" id="score">Đã làm: 0/24</span>
+  <button class="tool" id="zoomOut">A-</button>
+  <button class="tool" id="zoomIn">A+</button>
+  <button class="tool" id="hlBtn">🖍 Tô sáng</button>
+  <div class="sub">Advanced Cloze · Test 2 · Samples 5-8 · 24 câu &nbsp;|&nbsp; Chọn một đáp án cho mỗi câu, làm xong bấm <b>Nộp bài</b> để xem điểm. Chạm vào <b style="color:#8a5a12">từ màu nâu</b> trong bài đọc để xem phiên âm và nghĩa.</div>
+</header>
+<div class="bar">
+  <button class="tool" id="prevBtn">‹ Trước</button>
+  <select id="picker"></select>
+  <button class="tool" id="nextBtn">Sau ›</button>
+  <div class="chips" id="chips"></div>
+</div>
+<main>
+  <section class="pane left">
+    <div class="topic" id="topic"></div>
+    <div class="passage" id="passage"></div>
+  </section>
+  <section class="pane right" id="questions"></section>
+</main>
+<div class="submitbar">
+  <button id="submitBtn">Nộp bài</button>
+  <div id="result"></div>
+</div>
+<div id="modal"><div class="mbox">
+  <button class="x" id="modalX">×</button>
+  <div class="term" id="mTerm"></div>
+  <div class="ipa" id="mIpa"></div>
+  <div class="vn" id="mVn"></div>
+</div></div>
+<div id="cmodal"><div class="mbox">
+  <div class="term" style="color:var(--green);font-size:1.25em">Nộp bài?</div>
+  <div class="vn" id="cText" style="font-size:1em;margin-top:8px"></div>
+  <div class="cbtns">
+    <button class="tool" id="cYes">Nộp bài ngay</button>
+    <button class="tool" id="cNo">Làm tiếp</button>
+  </div>
+</div></div>
+<script>
+const DATA = [
+{"n": 5, "topic": "THE GAS NOBODY TALKS ABOUT", "html": "When people discuss <span class=\"wv\" data-term=\"global warming\" data-ipa=\"/ˈɡləʊbl ˈwɔːmɪŋ/\" data-vn=\"sự nóng lên toàn cầu\">global warming</span>, carbon dioxide takes most of the <span class=\"wv\" data-term=\"take the blame\" data-ipa=\"/bleɪm/\" data-vn=\"chịu phần lỗi, bị đổ lỗi (take the blame)\">blame</span>. Yet methane, a gas <span class=\"blank\" data-q=\"1\">(1)</span> by farming, waste and <span class=\"wv\" data-term=\"fossil fuel\" data-ipa=\"/ˈfɒsl fjuːəl/\" data-vn=\"nhiên liệu hóa thạch (than, dầu, khí đốt)\">fossil fuel</span> <span class=\"wv\" data-term=\"extraction\" data-ipa=\"/ɪkˈstrækʃn/\" data-vn=\"việc khai thác (dầu khí, khoáng sản)\">extraction</span>, is far more powerful in the short term: it <span class=\"wv\" data-term=\"trap\" data-ipa=\"/træp/\" data-vn=\"giữ lại, bẫy lại (nhiệt, ánh sáng)\">traps</span> over eighty times more heat than carbon dioxide in its first twenty years in the atmosphere. The good news is that methane <span class=\"wv\" data-term=\"break down\" data-ipa=\"/breɪk daʊn/\" data-vn=\"phân hủy, tan rã (về hóa học)\">breaks down</span> within about a decade, so cutting <span class=\"wv\" data-term=\"emission\" data-ipa=\"/ɪˈmɪʃn/\" data-vn=\"khí thải, lượng phát thải\">emissions</span> now would slow warming <span class=\"wv\" data-term=\"remarkably\" data-ipa=\"/rɪˈmɑːkəbli/\" data-vn=\"một cách đáng kinh ngạc\">remarkably</span> fast. The sources, however, are not always easy to <span class=\"wv\" data-term=\"pin down\" data-ipa=\"/pɪn daʊn/\" data-vn=\"xác định chính xác (nguồn gốc, nguyên nhân)\">pin down</span>. Some of the largest leaks come from <span class=\"wv\" data-term=\"ageing\" data-ipa=\"/ˈeɪdʒɪŋ/\" data-vn=\"đang cũ đi, lão hóa (đường ống, máy móc)\">ageing</span> <span class=\"wv\" data-term=\"pipeline\" data-ipa=\"/ˈpaɪplaɪn/\" data-vn=\"đường ống dẫn (dầu, khí)\">pipelines</span> and <span class=\"wv\" data-term=\"abandoned\" data-ipa=\"/əˈbændənd/\" data-vn=\"bị bỏ hoang, bỏ không\">abandoned</span> wells, many of <span class=\"blank\" data-q=\"2\">(2)</span> were built long before modern safety standards existed. Satellites can now <span class=\"wv\" data-term=\"detect\" data-ipa=\"/dɪˈtekt/\" data-vn=\"phát hiện, dò tìm\">detect</span> major leaks from space, <span class=\"blank\" data-q=\"3\">(3)</span> the worst <span class=\"wv\" data-term=\"offender\" data-ipa=\"/əˈfendə(r)/\" data-vn=\"kẻ vi phạm; ở đây: nguồn gây hại lớn nhất\">offenders</span> nowhere to hide. <span class=\"wv\" data-term=\"campaigner\" data-ipa=\"/kæmˈpeɪnə(r)/\" data-vn=\"người vận động cho một mục tiêu xã hội\">Campaigners</span> argue that governments have been too slow to act, instead <span class=\"blank\" data-q=\"4\">(4)</span> a blind eye to leaks the <span class=\"wv\" data-term=\"industry\" data-ipa=\"/ˈɪndəstri/\" data-vn=\"ngành công nghiệp\">industry</span> has known about for years. Few climate measures offer so much benefit with so little <span class=\"blank\" data-q=\"5\">(5)</span> to daily life - which is why methane cuts are called the low-hanging <span class=\"blank\" data-q=\"6\">(6)</span> of climate <span class=\"wv\" data-term=\"policy\" data-ipa=\"/ˈpɒləsi/\" data-vn=\"chính sách\">policy</span>.", "blanks": [{"options": ["releasing", "release", "to release", "released"], "key": 3, "explain": "Mệnh đề quan hệ rút gọn bị động: 'a gas (which is) released by...' - khí bị thải ra bởi nông nghiệp nên dùng phân từ quá khứ 'released'. 'Releasing' sẽ biến khí thành chủ thể tự thải ra thứ khác."}, {"options": ["whom", "which", "them", "that"], "key": 1, "explain": "Sau 'many of' chỉ vật phải dùng 'which' (many of which were built...). 'Whom' chỉ người; 'that' không đứng sau giới từ/cụm 'of' như vậy."}, {"options": ["leave", "left", "leaving", "to leave"], "key": 2, "explain": "Cụm phân từ chỉ kết quả: vệ tinh phát hiện rò rỉ, 'leaving the worst offenders nowhere to hide' (khiến kẻ vi phạm không còn chỗ trốn). Chủ ngữ của 'leaving' chính là mệnh đề trước - cấu trúc V-ing rút gọn nâng cao."}, {"options": ["turning", "shutting", "closing", "making"], "key": 0, "explain": "Thành ngữ 'turn a blind eye to' = làm ngơ, nhắm mắt bỏ qua. Không có 'close/shut/make a blind eye'."}, {"options": ["destruction", "disruption", "distraction", "disagreement"], "key": 1, "explain": "'Disruption to daily life' = sự xáo trộn đời sống hằng ngày - collocation chuẩn. 'Destruction' (phá hủy) quá mạnh và không đi với 'to daily life'; 'distraction' là sự xao nhãng; 'disagreement' là sự bất đồng - đều sai nghĩa."}, {"options": ["target", "prize", "option", "fruit"], "key": 3, "explain": "Thành ngữ 'low-hanging fruit' = việc dễ thực hiện mà hiệu quả cao ('quả ở cành thấp, dễ hái') - khớp với ý cắt giảm methane ít xáo trộn mà lợi ích lớn. Các từ còn lại không tạo thành thành ngữ này."}]},
+{"n": 6, "topic": "RESTORING THE VILLAGE PAGODA", "html": "When <span class=\"wv\" data-term=\"craftsman\" data-ipa=\"/ˈkrɑːftsmən/\" data-vn=\"thợ thủ công, nghệ nhân\">craftsmen</span> began <span class=\"wv\" data-term=\"restore\" data-ipa=\"/rɪˈstɔː(r)/\" data-vn=\"khôi phục, trùng tu\">restoring</span> the village pagoda, they expected the work to take six months. Two years later, they are still there. The building, which <span class=\"blank\" data-q=\"1\">(1)</span> without repair for over a century before the <span class=\"wv\" data-term=\"craftsman\" data-ipa=\"/ˈkrɑːftsmən/\" data-vn=\"thợ thủ công, nghệ nhân\">craftsmen</span> arrived, turned out to be far more <span class=\"wv\" data-term=\"fragile\" data-ipa=\"/ˈfrædʒaɪl/\" data-vn=\"mỏng manh, dễ hư hỏng\">fragile</span> than expected: its <span class=\"wv\" data-term=\"beam\" data-ipa=\"/biːm/\" data-vn=\"xà, dầm (gỗ, thép)\">beams</span> were <span class=\"wv\" data-term=\"rotten\" data-ipa=\"/ˈrɒtn/\" data-vn=\"mục nát, bị mối mọt\">rotten</span> and several <span class=\"wv\" data-term=\"statue\" data-ipa=\"/ˈstætʃuː/\" data-vn=\"tượng\">statues</span> had <span class=\"wv\" data-term=\"cracked\" data-ipa=\"/krækt/\" data-vn=\"bị nứt, rạn vỡ\">cracked</span>. The restoration <span class=\"wv\" data-term=\"charter\" data-ipa=\"/ˈtʃɑːtə(r)/\" data-vn=\"điều lệ, quy chế hoạt động\">charter</span> <span class=\"wv\" data-term=\"insist\" data-ipa=\"/ɪnˈsɪst/\" data-vn=\"khăng khăng yêu cầu, quy định chặt\">insists</span> that every damaged piece <span class=\"blank\" data-q=\"2\">(2)</span> photographed and recorded before it is touched. The team leader, himself the grandson of a <span class=\"wv\" data-term=\"carpenter\" data-ipa=\"/ˈkɑːpəntə(r)/\" data-vn=\"thợ mộc\">carpenter</span> who once worked on the same roof, objects to <span class=\"blank\" data-q=\"3\">(3)</span> modern materials, arguing that the pagoda&#x27;s value lies <span class=\"wv\" data-term=\"precisely\" data-ipa=\"/prɪˈsaɪsli/\" data-vn=\"chính xác là, đúng là\">precisely</span> in its original wood and <span class=\"wv\" data-term=\"tile\" data-ipa=\"/taɪl/\" data-vn=\"ngói, gạch lát\">tiles</span>. <span class=\"wv\" data-term=\"funding\" data-ipa=\"/ˈfʌndɪŋ/\" data-vn=\"nguồn kinh phí, tiền tài trợ\">Funding</span> is another worry: the project <span class=\"wv\" data-term=\"depend on\" data-ipa=\"/dɪˈpend ɒn/\" data-vn=\"phụ thuộc hoàn toàn vào\">depends entirely on</span> the <span class=\"blank\" data-q=\"4\">(4)</span> of local people, and if the money <span class=\"wv\" data-term=\"run out\" data-ipa=\"/rʌn aʊt/\" data-vn=\"cạn, hết (tiền, thời gian)\">runs out</span>, work will stop with the roof half finished. For the villagers, the pagoda is not just an old building but a <span class=\"blank\" data-q=\"5\">(5)</span> link between past and present. The project also trains young villagers in <span class=\"wv\" data-term=\"carving\" data-ipa=\"/ˈkɑːvɪŋ/\" data-vn=\"nghệ thuật chạm khắc\">carving</span> and <span class=\"wv\" data-term=\"joinery\" data-ipa=\"/ˈdʒɔɪnəri/\" data-vn=\"nghề mộc ghép nối đồ gỗ\">joinery</span>, skills that have almost <span class=\"blank\" data-q=\"6\">(6)</span> in the area.", "blanks": [{"options": ["had been left", "has been left", "leaves", "is left"], "key": 0, "explain": "Cụm 'before the craftsmen arrived' khóa mốc quá khứ: tòa nhà 'đã bị bỏ mặc' hơn một thế kỉ trước khi thợ đến - quá khứ hoàn thành bị động 'had been left'. 'Has been left' tính từ hiện tại nên bị loại bởi chính cue này."}, {"options": ["is", "was", "be", "being"], "key": 2, "explain": "Sau 'insist that' (yêu cầu, quy định) dùng thể giả định: động từ nguyên mẫu trần 'be photographed'. Đây là cấu trúc nâng cao rất hay bị HS bỏ qua, chọn 'is' theo thói quen."}, {"options": ["used", "to use", "use", "using"], "key": 3, "explain": "'Object to' = phản đối - chữ 'to' là giới từ nên theo sau là V-ing 'using'. Cùng họ bẫy với 'be committed to', 'look forward to'."}, {"options": ["generous", "generosity", "generation", "generously"], "key": 1, "explain": "Sau mạo từ 'the' và trước 'of' phải là danh từ 'generosity' (sự hào phóng). 'Generation' là danh từ nhưng sai nghĩa (thế hệ); hai từ còn lại sai loại từ."}, {"options": ["life", "live", "living", "alive"], "key": 2, "explain": "'A living link' = mối liên kết sống động, vẫn đang tồn tại. 'Alive' không đứng trước danh từ; 'live link' gợi nghĩa liên kết trực tiếp/phát sóng; 'life' là danh từ không làm tính từ ở đây."}, {"options": ["died out", "faded out", "passed out", "worn out"], "key": 0, "explain": "'Die out' = mai một, biến mất dần (dùng cho nghề, phong tục, loài). 'Pass out' = ngất xỉu; 'worn out' = mòn/sờn hoặc kiệt sức; 'fade out' dùng cho âm thanh, hình ảnh mờ dần."}]},
+{"n": 7, "topic": "THE GAP YEAR DEBATE", "html": "When Mai told her parents she wanted to <span class=\"wv\" data-term=\"take a year out\" data-ipa=\"/teɪk ə jɪər aʊt/\" data-vn=\"nghỉ một năm (trước khi vào đại học)\">take a year out</span> before university, they were <span class=\"wv\" data-term=\"horrified\" data-ipa=\"/ˈhɒrɪfaɪd/\" data-vn=\"kinh hoàng, bị sốc nặng\">horrified</span>. In their view, a gap year was wasted time: she would <span class=\"wv\" data-term=\"fall behind\" data-ipa=\"/fɔːl bɪˈhaɪnd/\" data-vn=\"tụt lại phía sau, chậm hơn người khác\">fall behind</span> friends who went straight to university. Mai saw it differently. &#x27;If I <span class=\"blank\" data-q=\"1\">(1)</span> straight into another three years of study,&#x27; she argued, &#x27;I would <span class=\"wv\" data-term=\"burn out\" data-ipa=\"/bɜːn aʊt/\" data-vn=\"kiệt sức vì học/làm việc quá độ\">burn out</span> before I even started.&#x27; It is high time students <span class=\"blank\" data-q=\"2\">(2)</span> that a <span class=\"wv\" data-term=\"degree\" data-ipa=\"/dɪˈɡriː/\" data-vn=\"bằng đại học\">degree</span> is not the only <span class=\"wv\" data-term=\"route\" data-ipa=\"/ruːt/\" data-vn=\"con đường, hướng đi (nghĩa bóng)\">route</span> to a good career: what matters is whether the path chosen is <span class=\"blank\" data-q=\"3\">(3)</span> with their strengths and interests. Mai&#x27;s parents <span class=\"wv\" data-term=\"come round to\" data-ipa=\"/kʌm raʊnd tuː/\" data-vn=\"dần chấp nhận, thay đổi ý kiến theo\">came round to</span> the idea once they saw her plan <span class=\"blank\" data-q=\"4\">(4)</span> down in detail; her <span class=\"wv\" data-term=\"determination\" data-ipa=\"/dɪˌtɜːmɪˈneɪʃn/\" data-vn=\"sự quyết tâm\">determination</span> <span class=\"wv\" data-term=\"win somebody over\" data-ipa=\"/wɪn ˈəʊvə(r)/\" data-vn=\"thuyết phục được ai, làm ai xiêu lòng\">won them over</span> <span class=\"wv\" data-term=\"in the end\" data-ipa=\"/ɪn ðiː end/\" data-vn=\"cuối cùng thì\">in the end</span>. A year later, Mai began her <span class=\"wv\" data-term=\"degree\" data-ipa=\"/dɪˈɡriː/\" data-vn=\"bằng đại học\">degree</span> with a far clearer idea of what she wanted to study. Looking back, she calls the year out an <span class=\"wv\" data-term=\"essential\" data-ipa=\"/ɪˈsenʃl/\" data-vn=\"thiết yếu, không thể thiếu\">essential</span> part of her education - time she would not <span class=\"blank\" data-q=\"5\">(5)</span> for anything. Students who <span class=\"wv\" data-term=\"rush into\" data-ipa=\"/rʌʃ ˈɪntuː/\" data-vn=\"vội vàng lao vào (việc chưa nghĩ kỹ)\">rush into</span> the wrong course often end up <span class=\"blank\" data-q=\"6\">(6)</span> of it halfway through, at <span class=\"wv\" data-term=\"considerable\" data-ipa=\"/kənˈsɪdərəbl/\" data-vn=\"đáng kể, không nhỏ\">considerable</span> cost to themselves and their families.", "blanks": [{"options": ["had rushed", "rushed", "rush", "will rush"], "key": 1, "explain": "Mệnh đề chính 'I would burn out' cho thấy đây là điều kiện loại 2 (giả định hiện tại) nên mệnh đề if dùng quá khứ đơn 'rushed'. HS phải đọc tới vế sau mới chọn được - không thể quyết định ngay tại chỗ trống."}, {"options": ["realised", "had realised", "realise", "will realise"], "key": 0, "explain": "Cấu trúc 'It is high time + S + V2' = đã đến lúc phải làm gì (dù việc chưa xảy ra). Dùng quá khứ đơn 'realised' nhưng ý nghĩa là hiện tại/tương lai - bẫy kinh điển."}, {"options": ["equal", "similar", "suitable", "consistent"], "key": 3, "explain": "'Consistent with' = phù hợp, nhất quán với (điểm mạnh và sở thích). 'Similar' phải đi với 'to'; 'suitable' đi với 'for'; 'equal' đi với 'to' và sai nghĩa."}, {"options": ["writing", "wrote", "written", "write"], "key": 2, "explain": "'Saw her plan written down' = nhìn thấy bản kế hoạch (đã) được viết ra - cấu trúc see + O + V3 mang nghĩa bị động. 'Writing' sẽ biến bản kế hoạch thành chủ thể tự viết."}, {"options": ["sell", "give", "swap", "lose"], "key": 2, "explain": "'Would not swap it for anything' = không đổi lấy bất cứ thứ gì (quá quý giá). 'Give/lose/sell it for anything' không tạo thành thành ngữ này."}, {"options": ["dropping out", "walking out", "breaking out", "giving up"], "key": 0, "explain": "'Drop out of (a course)' = bỏ học giữa chừng. 'Give up' không đi với 'of'; 'walk out' là bỏ đi khỏi cuộc họp/sự kiện; 'break out' dùng cho chiến tranh, dịch bệnh bùng phát."}]},
+{"n": 8, "topic": "FIRST FLAT, FIRST LESSONS", "html": "When Tuan moved into his first flat at eighteen, he thought <span class=\"wv\" data-term=\"independence\" data-ipa=\"/ˌɪndɪˈpendəns/\" data-vn=\"sự độc lập, tự lập\">independence</span> meant doing whatever he liked. Reality taught him <span class=\"wv\" data-term=\"otherwise\" data-ipa=\"/ˈʌðəwaɪz/\" data-vn=\"nếu không thì; theo cách khác\">otherwise</span> within a week. The <span class=\"wv\" data-term=\"rent\" data-ipa=\"/rent/\" data-vn=\"tiền thuê nhà\">rent</span>, the <span class=\"wv\" data-term=\"bill\" data-ipa=\"/bɪl/\" data-vn=\"hóa đơn (điện, nước, điện thoại)\">bills</span> and the food shopping all had to come out of one small <span class=\"wv\" data-term=\"salary\" data-ipa=\"/ˈsæləri/\" data-vn=\"tiền lương tháng\">salary</span>, and making ends <span class=\"blank\" data-q=\"1\">(1)</span> became a monthly <span class=\"wv\" data-term=\"battle\" data-ipa=\"/ˈbætl/\" data-vn=\"cuộc vật lộn, cuộc chiến (nghĩa bóng)\">battle</span>. His mother had always <span class=\"blank\" data-q=\"2\">(2)</span> the <span class=\"wv\" data-term=\"household\" data-ipa=\"/ˈhaʊshəʊld/\" data-vn=\"hộ gia đình; việc nhà\">household</span> so <span class=\"wv\" data-term=\"smoothly\" data-ipa=\"/ˈsmuːðli/\" data-vn=\"trơn tru, suôn sẻ\">smoothly</span> that he had never noticed how much work it involved; now, when the washing machine <span class=\"wv\" data-term=\"flood\" data-ipa=\"/flʌd/\" data-vn=\"làm ngập, tràn nước\">flooded</span> the kitchen, there was nobody to call, and he had no choice but <span class=\"blank\" data-q=\"3\">(3)</span> the problem himself. Slowly, however, he learned. He set himself a weekly <span class=\"wv\" data-term=\"budget\" data-ipa=\"/ˈbʌdʒɪt/\" data-vn=\"ngân sách, kế hoạch chi tiêu\">budget</span> and <span class=\"wv\" data-term=\"stick to\" data-ipa=\"/stɪk tuː/\" data-vn=\"kiên trì bám theo (kế hoạch, nguyên tắc)\">stuck to</span> it, and he stopped <span class=\"blank\" data-q=\"4\">(4)</span> his parents for every small problem, dealing with things on his own instead. Nobody had <span class=\"wv\" data-term=\"warn\" data-ipa=\"/wɔːn/\" data-vn=\"cảnh báo, báo trước\">warned</span> him how many hours a week disappear into simple <span class=\"wv\" data-term=\"household\" data-ipa=\"/ˈhaʊshəʊld/\" data-vn=\"hộ gia đình; việc nhà\">household</span> <span class=\"blank\" data-q=\"5\">(5)</span> - the cleaning, the <span class=\"wv\" data-term=\"laundry\" data-ipa=\"/ˈlɔːndri/\" data-vn=\"việc giặt ủi; quần áo cần giặt\">laundry</span>, the endless <span class=\"wv\" data-term=\"washing-up\" data-ipa=\"/ˌwɒʃɪŋ ˈʌp/\" data-vn=\"việc rửa bát đĩa\">washing-up</span>. A year on, he would not go back. <span class=\"wv\" data-term=\"independence\" data-ipa=\"/ˌɪndɪˈpendəns/\" data-vn=\"sự độc lập, tự lập\">Independence</span>, he says, is not about being left alone; it is about standing on your own two <span class=\"blank\" data-q=\"6\">(6)</span> and knowing you can <span class=\"wv\" data-term=\"cope\" data-ipa=\"/kəʊp/\" data-vn=\"xoay xở, đối phó được\">cope</span>.", "blanks": [{"options": ["match", "meet", "connect", "join"], "key": 1, "explain": "Thành ngữ 'make ends meet' = xoay xở đủ sống với thu nhập ít ỏi. Ba từ còn lại đều có nghĩa 'nối/khớp' nhưng không tạo thành thành ngữ này."}, {"options": ["running", "runs", "ran", "run"], "key": 3, "explain": "Sau 'had always' cần phân từ quá khứ của 'run' - và V3 của run vẫn là 'run' (run - ran - run). Đây là bẫy dạng từ: HS rất hay chọn 'ran' vì thấy quen mắt."}, {"options": ["fix", "fixed", "to fix", "fixing"], "key": 0, "explain": "Cấu trúc 'have no choice but + V nguyên mẫu trần': 'he had no choice but fix the problem himself'. Sau 'but' trong cấu trúc này không dùng to-V hay V-ing."}, {"options": ["to call", "call", "calling", "called"], "key": 2, "explain": "'Stopped calling' = ngừng hẳn việc gọi (thói quen cũ chấm dứt), được khẳng định bởi vế sau 'dealing with things on his own instead'. 'Stop to call' sẽ là dừng việc khác lại để gọi - ngược nghĩa."}, {"options": ["appliances", "chores", "names", "waste"], "key": 1, "explain": "'Household chores' = việc nhà lặt vặt - đúng các ví dụ liệt kê phía sau (dọn dẹp, giặt giũ, rửa bát đều là việc, không phải vật). 'Appliances' là thiết bị, 'waste' là rác thải, 'household names' là thành ngữ chỉ người/vật nổi tiếng - đều không khớp với các ví dụ."}, {"options": ["legs", "shoes", "grounds", "feet"], "key": 3, "explain": "Thành ngữ 'stand on your own two feet' = tự lập, tự đứng vững trên đôi chân của mình. Đây là cụm cố định, không thay bằng legs/shoes được."}]}
+];
+const LS = 'advcloze_exam_t2_v1';
+const TOTAL = 24;
+let S = { cur: 5, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null };
+try { const s = JSON.parse(localStorage.getItem(LS)); if (s) S = Object.assign(S, s); } catch(e) {}
+if (!S.sel) S.sel = {};
+if (!S.hlHtml) S.hlHtml = {};
+if (!DATA.some(function(x){ return x.n === S.cur; })) S.cur = DATA[0].n;
+function save(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e) {} }
+const $ = function(id){ return document.getElementById(id); };
+const picker = $('picker');
+DATA.forEach(function(s){ const o = document.createElement('option'); o.value = s.n; o.textContent = 'Sample ' + s.n + ' - ' + s.topic; picker.appendChild(o); });
+
+function keyOf(n, q){ return n + '_' + q; }
+function curSample(){ return DATA.find(function(x){ return x.n === S.cur; }) || DATA[0]; }
+function curIdx(){ return DATA.findIndex(function(x){ return x.n === S.cur; }); }
+function answeredIn(n){ let c = 0; for (let q = 1; q <= 6; q++){ if (S.sel[keyOf(n, q)] != null) c++; } return c; }
+function answeredTotal(){ return DATA.reduce(function(t, s){ return t + answeredIn(s.n); }, 0); }
+function grade(){
+  let correct = 0; const detail = [];
+  DATA.forEach(function(s){ s.blanks.forEach(function(b, i){
+    const v = S.sel[keyOf(s.n, i + 1)];
+    detail.push(v == null ? -1 : v);
+    if (v === b.key) correct++;
+  }); });
+  return { correct: correct, detail: detail };
+}
+
+function render(){
+  const s = curSample();
+  picker.value = S.cur;
+  $('topic').textContent = s.topic;
+  const pg = $('passage');
+  pg.innerHTML = (S.hlHtml && S.hlHtml[S.cur]) ? S.hlHtml[S.cur] : s.html;
+  for (let q = 1; q <= 6; q++){
+    const bl = pg.querySelector('.blank[data-q="' + q + '"]');
+    if (!bl) continue;
+    const b = s.blanks[q - 1], v = S.sel[keyOf(S.cur, q)];
+    bl.className = 'blank';
+    if (!S.submitted){
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add('picked'); }
+      else bl.textContent = '(' + q + ')';
+    } else {
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add(v === b.key ? 'filled' : 'wrongfill'); }
+      else { bl.textContent = b.options[b.key]; bl.classList.add('shown'); }
+    }
+  }
+  const wrap = $('questions'); wrap.innerHTML = '';
+  s.blanks.forEach(function(b, i){
+    const q = i + 1, v = S.sel[keyOf(S.cur, q)];
+    const card = document.createElement('div'); card.className = 'qcard';
+    let st = '';
+    if (S.submitted){
+      if (v === b.key) st = '<span style="color:var(--green)">✔ Đúng</span>';
+      else if (v == null) st = '<span style="color:var(--orange)">Chưa làm</span>';
+      else st = '<span style="color:var(--red)">✘ Sai</span>';
+    }
+    card.innerHTML = '<div class="qhead"><span>Câu ' + q + '</span><span class="st">' + st + '</span></div>';
+    const opts = document.createElement('div'); opts.className = 'opts';
+    b.options.forEach(function(op, oi){
+      const btn = document.createElement('button'); btn.className = 'opt';
+      btn.textContent = 'ABCD'[oi] + '. ' + op;
+      if (!S.submitted){
+        if (v === oi) btn.classList.add('sel');
+        btn.onclick = function(){ pick(q, oi); };
+      } else {
+        btn.disabled = true;
+        if (oi === b.key) btn.classList.add('right');
+        if (v === oi && v !== b.key) btn.classList.add('wrongpick');
+      }
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    const ex = document.createElement('div');
+    ex.className = 'expl' + (S.submitted ? ' show' : '');
+    ex.textContent = S.submitted ? b.explain : '';
+    card.appendChild(ex);
+    wrap.appendChild(card);
+  });
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  const rb = $('result');
+  if (S.submitted){
+    const y = Math.round(S.correct / TOTAL * 100) / 10;
+    rb.style.display = 'block';
+    rb.textContent = 'Kết quả: ' + S.correct + '/' + TOTAL + ' đúng - điểm ' + y + '/10';
+    $('submitBtn').style.display = 'none';
+  } else {
+    rb.style.display = 'none';
+    $('submitBtn').style.display = '';
+  }
+  renderChips();
+}
+function renderChips(){
+  const c = $('chips'); c.innerHTML = '';
+  DATA.forEach(function(s){
+    const a = answeredIn(s.n);
+    const el = document.createElement('button');
+    el.className = 'schip' + (a === 6 ? ' full' : '') + (s.n === S.cur ? ' cur' : '');
+    el.textContent = s.n + ': ' + a + '/6';
+    el.onclick = function(){ S.cur = s.n; save(); render(); };
+    c.appendChild(el);
+  });
+}
+function pick(q, oi){
+  if (S.submitted) return;
+  S.sel[keyOf(S.cur, q)] = oi; save();
+  const s = curSample(), b = s.blanks[q - 1];
+  const card = $('questions').children[q - 1];
+  if (card){
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach(function(btn, bi){ btn.classList.toggle('sel', bi === oi); });
+  }
+  const bl = $('passage').querySelector('.blank[data-q="' + q + '"]');
+  if (bl){ bl.textContent = b.options[oi]; bl.className = 'blank picked'; }
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function doSubmit(){
+  if (S.submitted) return;
+  const r = grade();
+  S.submitted = true; S.correct = r.correct; save();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(r.correct, TOTAL, r.detail); } catch(e) {} }
+  $('cmodal').classList.remove('open');
+  render();
+}
+$('submitBtn').onclick = function(){
+  if (S.submitted) return;
+  const missing = TOTAL - answeredTotal();
+  $('cText').textContent = 'Sau khi nộp bài, đáp án sẽ bị khóa và không sửa lại được.' + (missing > 0
+    ? ' Bạn còn ' + missing + ' câu chưa làm - câu chưa làm sẽ tính là sai.'
+    : ' Bạn đã làm đủ ' + TOTAL + ' câu.');
+  $('cmodal').classList.add('open');
+};
+$('cYes').onclick = function(){ doSubmit(); };
+$('cNo').onclick = function(){ $('cmodal').classList.remove('open'); };
+$('cmodal').addEventListener('click', function(e){ if (e.target === $('cmodal')) $('cmodal').classList.remove('open'); });
+window.hwOnTimeUp = function(){ if (!S.submitted) doSubmit(); };
+picker.onchange = function(){ S.cur = +picker.value; save(); render(); };
+$('prevBtn').onclick = function(){ const i = curIdx(); if (i > 0){ S.cur = DATA[i - 1].n; save(); render(); } };
+$('nextBtn').onclick = function(){ const i = curIdx(); if (i < DATA.length - 1){ S.cur = DATA[i + 1].n; save(); render(); } };
+// vocab pop-up (center)
+document.addEventListener('click', function(e){
+  const w = e.target.closest('.wv');
+  if (w){
+    $('mTerm').textContent = w.dataset.term;
+    $('mIpa').textContent = w.dataset.ipa;
+    $('mVn').textContent = w.dataset.vn;
+    $('modal').classList.add('open');
+  }
+});
+$('modalX').onclick = function(){ $('modal').classList.remove('open'); };
+$('modal').addEventListener('click', function(e){ if (e.target === $('modal')) $('modal').classList.remove('open'); });
+// zoom
+function applyFs(){ document.documentElement.style.setProperty('--fs', (17 * S.fs / 100) + 'px'); }
+$('zoomIn').onclick = function(){ S.fs = Math.min(140, S.fs + 10); save(); applyFs(); };
+$('zoomOut').onclick = function(){ S.fs = Math.max(80, S.fs - 10); save(); applyFs(); };
+applyFs();
+// highlight (snapshot-based persistence)
+let hlOn = false;
+$('hlBtn').onclick = function(){ hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', function(){
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const pg = $('passage');
+  if (!pg.contains(range.startContainer) || range.startContainer !== range.endContainer || range.startContainer.nodeType !== 3) return;
+  if (range.startContainer.parentElement.closest('.blank')) return;
+  const mark = document.createElement('mark'); mark.className = 'hl';
+  try { range.surroundContents(mark); } catch(e) { return; }
+  S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save(); sel.removeAllRanges();
+});
+document.addEventListener('click', function(e){
+  if (hlOn && e.target.tagName === 'MARK'){
+    const pg = $('passage');
+    const parent = e.target.parentNode;
+    parent.replaceChild(document.createTextNode(e.target.textContent), e.target);
+    parent.normalize();
+    S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save();
+  }
+});
+render();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app.
+   Goi: hwSendResult(correct, total, answers) sau khi HS nop bai trong file. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+/* Nhan dien app: khi duoc nhung, app gui {type:'hw-hello', v:1, code, assignmentId} luc tai xong.
+   Nhan hw-timeup nghia la het gio - file nen tu khoa bai / tu nop giup HS. */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body>
+</html>

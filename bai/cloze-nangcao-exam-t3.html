@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOZE TEXT: FURTHER PRACTICE - Làm bài Test 3 (Samples 9-12)</title>
+<style>
+:root{ --fs:17px; --brown:#8a5a12; --green:#1e8e4f; --red:#d33; --orange:#e07b00; --line:#d8d8d8; --blue:#3b6fd4; }
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Times New Roman",sans-serif;background:#f4f4f6;color:#1c1c1e;font-size:var(--fs)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.15em;margin:0;font-family:"Times New Roman",serif;letter-spacing:.5px}
+header .sub{color:#666;font-size:.82em;width:100%}
+.chip{background:#eef1f6;border:1px solid #c3cede;color:#243b6b;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9em}
+button.tool{background:#fff;border:1px solid #bbb;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.9em}
+button.tool.on{background:#fff3cd;border-color:#e0a800}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select#picker{font-size:.95em;padding:6px;border-radius:8px;border:1px solid #bbb;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.schip{border:1px solid #bbb;background:#fff;border-radius:6px;padding:2px 7px;font-size:.78em;cursor:pointer}
+.schip.full{background:#e8eefc;border-color:var(--blue);color:#1e3a8a;font-weight:700}
+.schip.cur{outline:2px solid #333}
+main{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+@media (max-width:860px){ main{grid-template-columns:1fr} }
+.pane{padding:14px;overflow-y:auto;max-height:calc(100vh - 150px)}
+@media (max-width:860px){ .pane{max-height:none;overflow:visible} }
+.pane.left{border-right:1px solid var(--line);background:#fff}
+.topic{font-family:"Times New Roman",serif;font-weight:700;text-align:center;font-size:1.12em;margin:2px 0 10px}
+.passage{font-family:"Times New Roman",serif;font-size:1.06em;line-height:1.65;text-align:justify}
+.blank{display:inline-block;min-width:2em;text-align:center;background:#eef;border:1px dashed #88a;border-radius:6px;padding:0 4px;font-weight:700;color:#335}
+.blank.picked{background:#e8eefc;border:1px solid var(--blue);color:#1e3a8a}
+.blank.filled{background:#e6f4ea;border:1px solid var(--green);color:#14532d}
+.blank.wrongfill{background:#fdecec;border:1px solid var(--red);color:#a00}
+.blank.shown{background:#fff4e0;border:1px solid var(--orange);color:#8a5200}
+.wv{color:var(--brown);cursor:pointer;border-bottom:1px dotted var(--brown)}
+mark.hl{background:#ffe98a;border-radius:2px}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.qcard .qhead{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.qcard .st{font-size:.85em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} }
+.opt{border:1px solid #bbb;background:#fff;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font-size:.95em}
+.opt:hover{border-color:#666}
+.opt.sel{background:#e8eefc;border-color:var(--blue);font-weight:700}
+.opt.right{background:#e6f4ea;border-color:var(--green);font-weight:700}
+.opt.wrongpick{background:#fdecec;border-color:var(--red);color:#a00}
+.opt:disabled{cursor:default;opacity:.92}
+.expl{display:none;background:#f7f9f7;border-left:3px solid var(--green);padding:8px 10px;margin-top:8px;font-size:.92em;line-height:1.5}
+.expl.show{display:block}
+.submitbar{background:#fff;border-top:1px solid var(--line);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#submitBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 44px;font-size:1.05em;font-weight:700;cursor:pointer}
+#submitBtn:hover{background:#17703d}
+#result{display:none;background:#e6f4ea;border:1px solid var(--green);color:#14532d;border-radius:10px;padding:10px 18px;font-weight:700;font-size:1.05em;text-align:center}
+#modal,#cmodal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+#modal.open,#cmodal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;max-width:430px;width:100%;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);position:relative;text-align:center}
+.mbox .term{font-size:1.5em;font-weight:800;color:var(--brown)}
+.mbox .ipa{font-size:1.15em;color:#444;margin:6px 0}
+.mbox .vn{font-size:1.12em;line-height:1.5}
+.mbox .x{position:absolute;top:6px;right:12px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#888}
+.cbtns{margin-top:16px;display:flex;gap:8px;justify-content:center}
+#cYes{background:var(--green);color:#fff;border-color:var(--green);font-weight:700;padding:8px 18px}
+#cNo{padding:8px 18px}
+.hint{color:#666;font-size:.85em;padding:6px 14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>CLOZE TEXT: FURTHER PRACTICE</h1>
+  <span class="chip" id="score">Đã làm: 0/24</span>
+  <button class="tool" id="zoomOut">A-</button>
+  <button class="tool" id="zoomIn">A+</button>
+  <button class="tool" id="hlBtn">🖍 Tô sáng</button>
+  <div class="sub">Advanced Cloze · Test 3 · Samples 9-12 · 24 câu &nbsp;|&nbsp; Chọn một đáp án cho mỗi câu, làm xong bấm <b>Nộp bài</b> để xem điểm. Chạm vào <b style="color:#8a5a12">từ màu nâu</b> trong bài đọc để xem phiên âm và nghĩa.</div>
+</header>
+<div class="bar">
+  <button class="tool" id="prevBtn">‹ Trước</button>
+  <select id="picker"></select>
+  <button class="tool" id="nextBtn">Sau ›</button>
+  <div class="chips" id="chips"></div>
+</div>
+<main>
+  <section class="pane left">
+    <div class="topic" id="topic"></div>
+    <div class="passage" id="passage"></div>
+  </section>
+  <section class="pane right" id="questions"></section>
+</main>
+<div class="submitbar">
+  <button id="submitBtn">Nộp bài</button>
+  <div id="result"></div>
+</div>
+<div id="modal"><div class="mbox">
+  <button class="x" id="modalX">×</button>
+  <div class="term" id="mTerm"></div>
+  <div class="ipa" id="mIpa"></div>
+  <div class="vn" id="mVn"></div>
+</div></div>
+<div id="cmodal"><div class="mbox">
+  <div class="term" style="color:var(--green);font-size:1.25em">Nộp bài?</div>
+  <div class="vn" id="cText" style="font-size:1em;margin-top:8px"></div>
+  <div class="cbtns">
+    <button class="tool" id="cYes">Nộp bài ngay</button>
+    <button class="tool" id="cNo">Làm tiếp</button>
+  </div>
+</div></div>
+<script>
+const DATA = [
+{"n": 9, "topic": "THE CRUELTY OF THE CROWD: CYBERBULLYING", "html": "Few experiences are more <span class=\"wv\" data-term=\"frightening\" data-ipa=\"/ˈfraɪtənɪŋ/\" data-vn=\"đáng sợ, gây hoảng sợ\">frightening</span> for a teenager than waking up to find a private photo shared with the whole school. Cyberbullying differs from playground <span class=\"wv\" data-term=\"cruelty\" data-ipa=\"/ˈkruːəlti/\" data-vn=\"sự tàn nhẫn, ác ý\">cruelty</span> in one <span class=\"wv\" data-term=\"crucial\" data-ipa=\"/ˈkruːʃl/\" data-vn=\"cực kỳ quan trọng, then chốt\">crucial</span> way: it never really stops. The <span class=\"wv\" data-term=\"victim\" data-ipa=\"/ˈvɪktɪm/\" data-vn=\"nạn nhân\">victim</span> cannot <span class=\"wv\" data-term=\"escape\" data-ipa=\"/ɪˈskeɪp/\" data-vn=\"trốn thoát, thoát khỏi\">escape</span> it by going home, because the messages follow them everywhere. It is essential that schools <span class=\"blank\" data-q=\"1\">(1)</span> the problem seriously and act before real harm is done. Victims often <span class=\"wv\" data-term=\"suffer in silence\" data-ipa=\"/ˈsʌfə(r) ɪn ˈsaɪləns/\" data-vn=\"âm thầm chịu đựng, không dám nói ra\">suffer in silence</span>, afraid that telling an adult will make things worse; some even blame themselves for <span class=\"blank\" data-q=\"2\">(2)</span> the photograph in the first place. Experts point to <span class=\"wv\" data-term=\"warning sign\" data-ipa=\"/ˈwɔːnɪŋ saɪn/\" data-vn=\"dấu hiệu cảnh báo\">warning signs</span> - <span class=\"wv\" data-term=\"withdrawal\" data-ipa=\"/wɪðˈdrɔːəl/\" data-vn=\"sự thu mình, rút lui khỏi mọi người\">withdrawal</span>, lost sleep and a sudden <span class=\"wv\" data-term=\"reluctance\" data-ipa=\"/rɪˈlʌktəns/\" data-vn=\"sự miễn cưỡng, không muốn làm\">reluctance</span> to <span class=\"blank\" data-q=\"3\">(3)</span> school. The law is <span class=\"wv\" data-term=\"catch up\" data-ipa=\"/kætʃ ʌp/\" data-vn=\"bắt kịp, theo kịp (sự thay đổi)\">catching up</span>, and those who share such images can now face <span class=\"wv\" data-term=\"punishment\" data-ipa=\"/ˈpʌnɪʃmənt/\" data-vn=\"hình phạt, sự trừng phạt\">punishment</span>. But <span class=\"wv\" data-term=\"punishment\" data-ipa=\"/ˈpʌnɪʃmənt/\" data-vn=\"hình phạt, sự trừng phạt\">punishment</span> alone will not change the culture. If every <span class=\"wv\" data-term=\"bystander\" data-ipa=\"/ˈbaɪstændə(r)/\" data-vn=\"người ngoài cuộc, người đứng xem\">bystander</span> <span class=\"blank\" data-q=\"4\">(4)</span> the image instead of <span class=\"wv\" data-term=\"forward\" data-ipa=\"/ˈfɔːwəd/\" data-vn=\"chuyển tiếp (tin nhắn, hình ảnh)\">forwarding</span> it, the <span class=\"wv\" data-term=\"cruelty\" data-ipa=\"/ˈkruːəlti/\" data-vn=\"sự tàn nhẫn, ác ý\">cruelty</span> would quickly lose its <span class=\"wv\" data-term=\"audience\" data-ipa=\"/ˈɔːdiəns/\" data-vn=\"khán giả, đám đông người xem\">audience</span>. What is needed is for <span class=\"wv\" data-term=\"witness\" data-ipa=\"/ˈwɪtnəs/\" data-vn=\"người chứng kiến, nhân chứng\">witnesses</span> to stand up <span class=\"blank\" data-q=\"5\">(5)</span> the <span class=\"wv\" data-term=\"victim\" data-ipa=\"/ˈvɪktɪm/\" data-vn=\"nạn nhân\">victim</span>. A single message of <span class=\"wv\" data-term=\"support\" data-ipa=\"/səˈpɔːt/\" data-vn=\"sự ủng hộ, hỗ trợ (tinh thần)\">support</span> can make a real <span class=\"blank\" data-q=\"6\">(6)</span> to someone who feels the whole world is against them.", "blanks": [{"options": ["took", "take", "will take", "takes"], "key": 1, "explain": "Sau 'It is essential that' dùng thể giả định: 'schools take' - động từ nguyên mẫu trần dù chủ ngữ là số nhiều hay số ít. HS quen chia 'takes' theo chủ ngữ schools sẽ sai."}, {"options": ["sharing", "to share", "share", "shared"], "key": 0, "explain": "'Blame themselves for sharing' - sau giới từ 'for' dùng V-ing. Việc chia sẻ đã xảy ra trong quá khứ nhưng dạng sau giới từ vẫn là V-ing, không phải 'shared'."}, {"options": ["reach", "arrive", "go", "attend"], "key": 3, "explain": "Cụm 'reluctance to attend school' - 'attend school' = đi học (trang trọng). 'Go' sẽ cần thêm 'to' phía sau ('go to school') và 'arrive' cần 'at', nhưng cấu trúc câu đã là 'to § school' nên cả hai đều không dùng được; 'reach school' không phải collocation."}, {"options": ["would delete", "delete", "deleted", "will delete"], "key": 2, "explain": "Vế sau 'would quickly lose' báo hiệu điều kiện loại 2, nên mệnh đề if dùng quá khứ đơn 'deleted' dù nói về hành động tương lai. Phải đọc hết câu mới quyết định được."}, {"options": ["with", "for", "by", "behind"], "key": 1, "explain": "'Stand up for somebody' = đứng ra bảo vệ, bênh vực ai. 'Stand by' nghĩa là đứng cạnh/ở bên (hoặc chuẩn bị sẵn sàng), không có cụm 'stand up by/with'."}, {"options": ["improvement", "support", "change", "difference"], "key": 3, "explain": "Cụm cố định 'make a (real) difference' = tạo ra thay đổi có ý nghĩa cho hoàn cảnh của ai. 'Make an improvement' thường dùng cho việc cải thiện một thứ/hệ thống cụ thể; 'make a change' là thực hiện một thay đổi - cả hai đều không diễn tả được ý 'tạo khác biệt cho nạn nhân' như 'difference'."}]},
+{"n": 10, "topic": "THE WOLVES THAT CHANGED A RIVER", "html": "When wolves were <span class=\"wv\" data-term=\"reintroduce\" data-ipa=\"/ˌriːɪntrəˈdjuːs/\" data-vn=\"đưa trở lại (loài vật về tự nhiên)\">reintroduced</span> into Yellowstone National Park in 1995, nobody expected them to change the <span class=\"wv\" data-term=\"landscape\" data-ipa=\"/ˈlændskeɪp/\" data-vn=\"cảnh quan, địa hình\">landscape</span> itself. For seventy years the park&#x27;s elk, having no natural <span class=\"wv\" data-term=\"predator\" data-ipa=\"/ˈpredətə(r)/\" data-vn=\"động vật săn mồi\">predators</span>, had <span class=\"wv\" data-term=\"graze\" data-ipa=\"/ɡreɪz/\" data-vn=\"gặm cỏ\">grazed</span> the valleys <span class=\"wv\" data-term=\"bare\" data-ipa=\"/beə(r)/\" data-vn=\"trơ trụi, không còn gì (bị ăn sạch)\">bare</span>, <span class=\"blank\" data-q=\"1\">(1)</span> young trees before they could grow. The wolves changed the elk&#x27;s behaviour: afraid of being hunted, the <span class=\"wv\" data-term=\"herd\" data-ipa=\"/hɜːd/\" data-vn=\"bầy, đàn (thú)\">herds</span> avoided the open valley floors, and the trees began to <span class=\"wv\" data-term=\"recover\" data-ipa=\"/rɪˈkʌvə(r)/\" data-vn=\"hồi phục, mọc trở lại\">recover</span>. As the forests returned, birds and beavers came back too. According to some <span class=\"wv\" data-term=\"ecologist\" data-ipa=\"/ɪˈkɒlədʒɪst/\" data-vn=\"nhà sinh thái học\">ecologists</span>, the recovering trees <span class=\"wv\" data-term=\"strengthen\" data-ipa=\"/ˈstreŋθn/\" data-vn=\"làm cho chắc khỏe, vững hơn\">strengthened</span> the <span class=\"wv\" data-term=\"riverbank\" data-ipa=\"/ˈrɪvəbæŋk/\" data-vn=\"bờ sông\">riverbanks</span>, so the rivers began to <span class=\"wv\" data-term=\"wander\" data-ipa=\"/ˈwɒndə(r)/\" data-vn=\"uốn lượn, chảy ngoằn ngoèo\">wander</span> less and flow more <span class=\"wv\" data-term=\"steadily\" data-ipa=\"/ˈstedɪli/\" data-vn=\"đều đặn, ổn định\">steadily</span>. The wolves had set off a <span class=\"wv\" data-term=\"chain reaction\" data-ipa=\"/tʃeɪn riˈækʃn/\" data-vn=\"phản ứng dây chuyền, hiệu ứng lan truyền\">chain reaction</span> <span class=\"blank\" data-q=\"2\">(2)</span> <span class=\"wv\" data-term=\"ecologist\" data-ipa=\"/ɪˈkɒlədʒɪst/\" data-vn=\"nhà sinh thái học\">ecologists</span> call a &#x27;<span class=\"wv\" data-term=\"trophic cascade\" data-ipa=\"/ˈtrɒfɪk kæˈskeɪd/\" data-vn=\"thác dinh dưỡng: hiệu ứng lan truyền qua các bậc của chuỗi thức ăn\">trophic cascade</span>&#x27;. <span class=\"wv\" data-term=\"ecosystem\" data-ipa=\"/ˈiːkəʊsɪstəm/\" data-vn=\"hệ sinh thái\">Ecosystems</span> are held together by relationships so complex that removing a single <span class=\"wv\" data-term=\"species\" data-ipa=\"/ˈspiːʃiːz/\" data-vn=\"loài (sinh vật)\">species</span> can bring the whole structure <span class=\"blank\" data-q=\"3\">(3)</span> - while restoring one can bring benefits that <span class=\"blank\" data-q=\"4\">(4)</span> still being discovered decades later. <span class=\"wv\" data-term=\"predator\" data-ipa=\"/ˈpredətə(r)/\" data-vn=\"động vật săn mồi\">Predators</span> are the <span class=\"wv\" data-term=\"architect\" data-ipa=\"/ˈɑːkɪtekt/\" data-vn=\"kiến trúc sư; nghĩa bóng: kẻ kiến tạo\">architects</span> of the landscapes in which other animals live, shaping the valleys, the forests and even the <span class=\"blank\" data-q=\"5\">(5)</span> of the rivers. Protecting a <span class=\"wv\" data-term=\"species\" data-ipa=\"/ˈspiːʃiːz/\" data-vn=\"loài (sinh vật)\">species</span>, <span class=\"wv\" data-term=\"conservationist\" data-ipa=\"/ˌkɒnsəˈveɪʃənɪst/\" data-vn=\"nhà bảo tồn thiên nhiên\">conservationists</span> argue, means protecting the web of life around it - a web in which every <span class=\"blank\" data-q=\"6\">(6)</span> matters.", "blanks": [{"options": ["destroyed", "to destroy", "destroying", "destroy"], "key": 2, "explain": "Cụm phân từ hiện tại chỉ hành động đồng thời: đàn nai sừng tấm vừa gặm trơ thung lũng vừa 'destroying young trees'. Chủ ngữ của V-ing là 'the elk' ở mệnh đề trước - phải tự suy ra chủ ngữ này mới chọn đúng dạng."}, {"options": ["which", "what", "whose", "whom"], "key": 0, "explain": "'A chain reaction (which) ecologists call...' - đại từ quan hệ làm tân ngữ của 'call' chỉ vật nên dùng 'which' (có thể lược bỏ). 'What' không làm đại từ quan hệ; 'whom/whose' chỉ người/sở hữu."}, {"options": ["away", "down", "out", "off"], "key": 1, "explain": "'Bring the whole structure down' = làm sụp đổ toàn bộ cấu trúc. 'Bring out/off/away' không mang nghĩa phá sập trong ngữ cảnh này."}, {"options": ["are", "have", "be", "were"], "key": 0, "explain": "'Benefits that are still being discovered' - lợi ích vẫn đang được khám phá ở hiện tại, dạng bị động tiếp diễn 'are being + V3'. Chỗ trống chỉ điền phần đầu của cấu trúc nên HS phải nhìn cả cụm 'being discovered' phía sau."}, {"options": ["coasts", "beaches", "cliffs", "banks"], "key": 3, "explain": "'The banks of a river' = hai bên bờ sông - thuật ngữ cố định (câu trước cũng nói tới 'riverbanks'). 'Coasts/beaches' dùng cho bờ biển; 'cliffs' là vách đá dựng đứng, không phải bờ sông."}, {"options": ["web", "line", "thread", "string"], "key": 2, "explain": "Trong ẩn dụ 'web of life' (mạng lưới sự sống), mỗi sợi của tấm lưới là 'thread' (sợi chỉ/sợi tơ). 'Web' lặp lại từ ở mệnh đề trước; 'string/line' không thuộc ẩn dụ dệt lưới này."}]},
+{"n": 11, "topic": "A TICKET TO ORBIT", "html": "For most of human history, space was a place only governments could <span class=\"wv\" data-term=\"afford\" data-ipa=\"/əˈfɔːd/\" data-vn=\"đủ khả năng chi trả, kham nổi\">afford</span> to visit. That <span class=\"wv\" data-term=\"era\" data-ipa=\"/ˈɪərə/\" data-vn=\"kỷ nguyên, thời đại\">era</span> is ending. Private companies now sell tickets for flights that carry passengers just beyond the edge of the <span class=\"wv\" data-term=\"atmosphere\" data-ipa=\"/ˈætməsfɪə(r)/\" data-vn=\"khí quyển, bầu khí quyển\">atmosphere</span>, where they experience a few minutes of <span class=\"wv\" data-term=\"weightlessness\" data-ipa=\"/ˈweɪtləsnəs/\" data-vn=\"tình trạng không trọng lượng\">weightlessness</span> and see the <span class=\"wv\" data-term=\"curve\" data-ipa=\"/kɜːv/\" data-vn=\"đường cong\">curve</span> of the Earth. <span class=\"wv\" data-term=\"supporter\" data-ipa=\"/səˈpɔːtə(r)/\" data-vn=\"người ủng hộ\">Supporters</span> argue that today&#x27;s <span class=\"wv\" data-term=\"luxury\" data-ipa=\"/ˈlʌkʃəri/\" data-vn=\"xa xỉ, sang trọng\">luxury</span> trips are <span class=\"wv\" data-term=\"fund\" data-ipa=\"/fʌnd/\" data-vn=\"cấp vốn, tài trợ tiền cho\">funding</span> the technology that <span class=\"blank\" data-q=\"1\">(1)</span> space travel routine tomorrow, just as early aeroplane passengers <span class=\"blank\" data-q=\"2\">(2)</span> the development of <span class=\"wv\" data-term=\"commercial\" data-ipa=\"/kəˈmɜːʃl/\" data-vn=\"thuộc thương mại, để kinh doanh\">commercial</span> <span class=\"wv\" data-term=\"aviation\" data-ipa=\"/ˌeɪviˈeɪʃn/\" data-vn=\"ngành hàng không\">aviation</span> a century ago. Critics are <span class=\"wv\" data-term=\"unconvinced\" data-ipa=\"/ˌʌnkənˈvɪnst/\" data-vn=\"không bị thuyết phục, vẫn hoài nghi\">unconvinced</span>. They point out that each rocket launch releases <span class=\"wv\" data-term=\"enormous\" data-ipa=\"/ɪˈnɔːməs/\" data-vn=\"khổng lồ, cực kỳ lớn\">enormous</span> quantities of carbon, and ask whether a five-minute <span class=\"wv\" data-term=\"thrill\" data-ipa=\"/θrɪl/\" data-vn=\"cảm giác phấn khích, hồi hộp thích thú\">thrill</span> <span class=\"wv\" data-term=\"justify\" data-ipa=\"/ˈdʒʌstɪfaɪ/\" data-vn=\"biện minh cho, cho là xứng đáng\">justifies</span> such a <span class=\"blank\" data-q=\"3\">(3)</span> to the planet. Safety raises another question: unlike aircraft, tested over millions of flights, spacecraft have completed only a <span class=\"blank\" data-q=\"4\">(4)</span> of journeys. Yet passengers who have flown describe the experience in almost <span class=\"wv\" data-term=\"religious\" data-ipa=\"/rɪˈlɪdʒəs/\" data-vn=\"thuộc tôn giáo; ở đây: đầy tôn kính, thiêng liêng\">religious</span> terms: seeing the whole Earth at once changes something <span class=\"wv\" data-term=\"fundamental\" data-ipa=\"/ˌfʌndəˈmentl/\" data-vn=\"căn bản, sâu xa, cốt lõi\">fundamental</span> in you. Whether space tourism becomes a <span class=\"wv\" data-term=\"a force for good\" data-ipa=\"/fɔːs fə(r) ɡʊd/\" data-vn=\"một lực lượng tích cực, yếu tố làm xã hội tốt lên\">force for good</span> or <span class=\"blank\" data-q=\"5\">(5)</span> a playground for the super-rich will depend on choices made in the next decade, by companies and governments <span class=\"blank\" data-q=\"6\">(6)</span>.", "blanks": [{"options": ["made", "would make", "will make", "makes"], "key": 2, "explain": "'The technology that will make space travel routine tomorrow' - mệnh đề quan hệ nói về kết quả tương lai nên dùng 'will make'. 'Would make' cần một điều kiện giả định không có trong câu."}, {"options": ["fund", "funded", "funding", "have funded"], "key": 1, "explain": "Mốc 'a century ago' (một thế kỉ trước) khóa chặt thì quá khứ đơn 'funded'. Đây là manh mối nằm cách chỗ trống khá xa - phải đọc hết câu mới thấy."}, {"options": ["cost", "sacrifice", "damage", "harm"], "key": 0, "explain": "'Such a cost to the planet' = cái giá mà hành tinh phải trả. 'Damage/harm' là danh từ không đếm được nên không đi với 'such a'; 'sacrifice' là sự hi sinh của ai đó dâng cho hành tinh - ngược hướng nghĩa hoàn toàn."}, {"options": ["few", "number", "series", "handful"], "key": 3, "explain": "'Only a handful of journeys' = chỉ một số rất ít chuyến. 'A number of' và 'a series of' đều hàm ý nhiều - mâu thuẫn với 'only'; 'a few of journeys' sai cấu trúc (thừa 'of')."}, {"options": ["remain", "will remain", "remains", "remained"], "key": 2, "explain": "Cấu trúc song song 'becomes a force for good or remains a playground' - hai động từ trong cùng mệnh đề whether phải cùng thì hiện tại đơn 'remains' (chủ ngữ space tourism số ít)."}, {"options": ["at once", "in turn", "as well", "alike"], "key": 3, "explain": "'Companies and governments alike' = cả công ty lẫn chính phủ đều như vậy - 'alike' đứng sau hai danh từ là cách dùng nâng cao. 'As well' đặt ở vị trí này làm đổi nghĩa thành 'ngoài ra'; 'in turn/at once' sai nghĩa."}]},
+{"n": 12, "topic": "THE 50-30-20 RULE", "html": "Most teenagers receive their first money with no idea how to <span class=\"wv\" data-term=\"manage\" data-ipa=\"/ˈmænɪdʒ/\" data-vn=\"quản lý, xoay xở (tiền bạc, công việc)\">manage</span> it. <span class=\"wv\" data-term=\"financial\" data-ipa=\"/faɪˈnænʃl/\" data-vn=\"thuộc tài chính, tiền bạc\">Financial</span> advisers often <span class=\"wv\" data-term=\"recommend\" data-ipa=\"/ˌrekəˈmend/\" data-vn=\"khuyên dùng, đề xuất\">recommend</span> a simple rule: spend half of what you earn on needs, three-tenths on wants, and <span class=\"blank\" data-q=\"1\">(1)</span> the remaining two-tenths for the future. A new pair of <span class=\"wv\" data-term=\"trainers\" data-ipa=\"/ˈtreɪnəz/\" data-vn=\"giày thể thao\">trainers</span> may feel like a need, but it is a want - and <span class=\"wv\" data-term=\"treat\" data-ipa=\"/triːt/\" data-vn=\"coi (cái này) như là (cái kia), đối xử\">treating</span> wants as needs is the fastest way to <span class=\"blank\" data-q=\"2\">(2)</span> the rule. Advisers also warn against <span class=\"wv\" data-term=\"impulse buying\" data-ipa=\"/ˈɪmpʌls ˈbaɪɪŋ/\" data-vn=\"mua sắm bốc đồng, thấy là mua không suy nghĩ\">impulse buying</span>: a jacket bought in thirty seconds is soon forgotten; the money is gone <span class=\"wv\" data-term=\"for good\" data-ipa=\"/fə(r) ɡʊd/\" data-vn=\"mãi mãi, vĩnh viễn\">for good</span>. If shoppers <span class=\"blank\" data-q=\"3\">(3)</span> twenty-four hours before buying anything expensive, most impulse purchases would never happen. The real enemy, however, is <span class=\"wv\" data-term=\"comparison\" data-ipa=\"/kəmˈpærɪsn/\" data-vn=\"sự so sánh (với người khác)\">comparison</span>. Social media fills our screens with other people&#x27;s holidays and clothes, <span class=\"wv\" data-term=\"tempting\" data-ipa=\"/ˈtemptɪŋ/\" data-vn=\"đầy cám dỗ, khêu gợi muốn làm theo\">tempting</span> us to live <span class=\"blank\" data-q=\"4\">(4)</span> our means. Those who <span class=\"wv\" data-term=\"resist\" data-ipa=\"/rɪˈzɪst/\" data-vn=\"cưỡng lại, chống lại (cám dỗ)\">resist</span> discover that saving is not really about the money in the bank, but about the freedom to <span class=\"wv\" data-term=\"refuse\" data-ipa=\"/rɪˈfjuːz/\" data-vn=\"từ chối\">refuse</span> a job you hate or accept an <span class=\"wv\" data-term=\"opportunity\" data-ipa=\"/ˌɒpəˈtjuːnəti/\" data-vn=\"cơ hội\">opportunity</span> you would <span class=\"wv\" data-term=\"otherwise\" data-ipa=\"/ˈʌðəwaɪz/\" data-vn=\"nếu không thì; trong trường hợp khác\">otherwise</span> have to <span class=\"blank\" data-q=\"5\">(5)</span>. Start small, but start now: a habit formed at sixteen will be <span class=\"blank\" data-q=\"6\">(6)</span> a <span class=\"wv\" data-term=\"a fortune\" data-ipa=\"/ˈfɔːtʃuːn/\" data-vn=\"một gia tài, số tiền rất lớn\">fortune</span> by the time you are thirty.", "blanks": [{"options": ["save", "to save", "saved", "saving"], "key": 0, "explain": "Chuỗi liệt kê 'spend half..., (spend) three-tenths..., and save the remaining...' - động từ thứ ba phải song song dạng nguyên mẫu trần 'save' với 'spend' ở đầu câu."}, {"options": ["cheat", "break", "beat", "fool"], "key": 1, "explain": "'Break the rule' = phá vỡ, vi phạm quy tắc (ở đây là quy tắc phân loại needs/wants của chính mình). 'Cheat/beat/fool' chỉ đi với 'the system', không đi với 'the rule'."}, {"options": ["will wait", "waited", "wait", "would wait"], "key": 1, "explain": "Vế 'most impulse purchases would never happen' cho thấy điều kiện loại 2, nên mệnh đề if dùng quá khứ đơn 'waited'. Lại một chỗ trống bắt buộc đọc hết câu mới chọn được."}, {"options": ["behind", "under", "within", "beyond"], "key": 3, "explain": "Thành ngữ 'live beyond your means' = sống vượt quá khả năng tài chính. 'Within your means' mang nghĩa ngược lại hoàn toàn - đây là bẫy nghĩa đối lập trong cùng một cụm từ quen thuộc."}, {"options": ["refuse", "refusing", "refused", "refusal"], "key": 0, "explain": "Sau 'have to' dùng động từ nguyên mẫu trần 'refuse'. Câu dài và có mệnh đề chen vào ('you would otherwise have to...') khiến nhiều HS lạc mất cấu trúc chính."}, {"options": ["priced", "valued", "worth", "costing"], "key": 2, "explain": "'Be worth a fortune' = đáng giá cả một gia tài. 'Costing a fortune' nghĩa là tốn kém (thói quen tốt không 'tốn' gia tài); 'valued/priced' cần cấu trúc khác ('valued at')."}]}
+];
+const LS = 'advcloze_exam_t3_v1';
+const TOTAL = 24;
+let S = { cur: 9, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null };
+try { const s = JSON.parse(localStorage.getItem(LS)); if (s) S = Object.assign(S, s); } catch(e) {}
+if (!S.sel) S.sel = {};
+if (!S.hlHtml) S.hlHtml = {};
+if (!DATA.some(function(x){ return x.n === S.cur; })) S.cur = DATA[0].n;
+function save(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e) {} }
+const $ = function(id){ return document.getElementById(id); };
+const picker = $('picker');
+DATA.forEach(function(s){ const o = document.createElement('option'); o.value = s.n; o.textContent = 'Sample ' + s.n + ' - ' + s.topic; picker.appendChild(o); });
+
+function keyOf(n, q){ return n + '_' + q; }
+function curSample(){ return DATA.find(function(x){ return x.n === S.cur; }) || DATA[0]; }
+function curIdx(){ return DATA.findIndex(function(x){ return x.n === S.cur; }); }
+function answeredIn(n){ let c = 0; for (let q = 1; q <= 6; q++){ if (S.sel[keyOf(n, q)] != null) c++; } return c; }
+function answeredTotal(){ return DATA.reduce(function(t, s){ return t + answeredIn(s.n); }, 0); }
+function grade(){
+  let correct = 0; const detail = [];
+  DATA.forEach(function(s){ s.blanks.forEach(function(b, i){
+    const v = S.sel[keyOf(s.n, i + 1)];
+    detail.push(v == null ? -1 : v);
+    if (v === b.key) correct++;
+  }); });
+  return { correct: correct, detail: detail };
+}
+
+function render(){
+  const s = curSample();
+  picker.value = S.cur;
+  $('topic').textContent = s.topic;
+  const pg = $('passage');
+  pg.innerHTML = (S.hlHtml && S.hlHtml[S.cur]) ? S.hlHtml[S.cur] : s.html;
+  for (let q = 1; q <= 6; q++){
+    const bl = pg.querySelector('.blank[data-q="' + q + '"]');
+    if (!bl) continue;
+    const b = s.blanks[q - 1], v = S.sel[keyOf(S.cur, q)];
+    bl.className = 'blank';
+    if (!S.submitted){
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add('picked'); }
+      else bl.textContent = '(' + q + ')';
+    } else {
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add(v === b.key ? 'filled' : 'wrongfill'); }
+      else { bl.textContent = b.options[b.key]; bl.classList.add('shown'); }
+    }
+  }
+  const wrap = $('questions'); wrap.innerHTML = '';
+  s.blanks.forEach(function(b, i){
+    const q = i + 1, v = S.sel[keyOf(S.cur, q)];
+    const card = document.createElement('div'); card.className = 'qcard';
+    let st = '';
+    if (S.submitted){
+      if (v === b.key) st = '<span style="color:var(--green)">✔ Đúng</span>';
+      else if (v == null) st = '<span style="color:var(--orange)">Chưa làm</span>';
+      else st = '<span style="color:var(--red)">✘ Sai</span>';
+    }
+    card.innerHTML = '<div class="qhead"><span>Câu ' + q + '</span><span class="st">' + st + '</span></div>';
+    const opts = document.createElement('div'); opts.className = 'opts';
+    b.options.forEach(function(op, oi){
+      const btn = document.createElement('button'); btn.className = 'opt';
+      btn.textContent = 'ABCD'[oi] + '. ' + op;
+      if (!S.submitted){
+        if (v === oi) btn.classList.add('sel');
+        btn.onclick = function(){ pick(q, oi); };
+      } else {
+        btn.disabled = true;
+        if (oi === b.key) btn.classList.add('right');
+        if (v === oi && v !== b.key) btn.classList.add('wrongpick');
+      }
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    const ex = document.createElement('div');
+    ex.className = 'expl' + (S.submitted ? ' show' : '');
+    ex.textContent = S.submitted ? b.explain : '';
+    card.appendChild(ex);
+    wrap.appendChild(card);
+  });
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  const rb = $('result');
+  if (S.submitted){
+    const y = Math.round(S.correct / TOTAL * 100) / 10;
+    rb.style.display = 'block';
+    rb.textContent = 'Kết quả: ' + S.correct + '/' + TOTAL + ' đúng - điểm ' + y + '/10';
+    $('submitBtn').style.display = 'none';
+  } else {
+    rb.style.display = 'none';
+    $('submitBtn').style.display = '';
+  }
+  renderChips();
+}
+function renderChips(){
+  const c = $('chips'); c.innerHTML = '';
+  DATA.forEach(function(s){
+    const a = answeredIn(s.n);
+    const el = document.createElement('button');
+    el.className = 'schip' + (a === 6 ? ' full' : '') + (s.n === S.cur ? ' cur' : '');
+    el.textContent = s.n + ': ' + a + '/6';
+    el.onclick = function(){ S.cur = s.n; save(); render(); };
+    c.appendChild(el);
+  });
+}
+function pick(q, oi){
+  if (S.submitted) return;
+  S.sel[keyOf(S.cur, q)] = oi; save();
+  const s = curSample(), b = s.blanks[q - 1];
+  const card = $('questions').children[q - 1];
+  if (card){
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach(function(btn, bi){ btn.classList.toggle('sel', bi === oi); });
+  }
+  const bl = $('passage').querySelector('.blank[data-q="' + q + '"]');
+  if (bl){ bl.textContent = b.options[oi]; bl.className = 'blank picked'; }
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function doSubmit(){
+  if (S.submitted) return;
+  const r = grade();
+  S.submitted = true; S.correct = r.correct; save();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(r.correct, TOTAL, r.detail); } catch(e) {} }
+  $('cmodal').classList.remove('open');
+  render();
+}
+$('submitBtn').onclick = function(){
+  if (S.submitted) return;
+  const missing = TOTAL - answeredTotal();
+  $('cText').textContent = 'Sau khi nộp bài, đáp án sẽ bị khóa và không sửa lại được.' + (missing > 0
+    ? ' Bạn còn ' + missing + ' câu chưa làm - câu chưa làm sẽ tính là sai.'
+    : ' Bạn đã làm đủ ' + TOTAL + ' câu.');
+  $('cmodal').classList.add('open');
+};
+$('cYes').onclick = function(){ doSubmit(); };
+$('cNo').onclick = function(){ $('cmodal').classList.remove('open'); };
+$('cmodal').addEventListener('click', function(e){ if (e.target === $('cmodal')) $('cmodal').classList.remove('open'); });
+window.hwOnTimeUp = function(){ if (!S.submitted) doSubmit(); };
+picker.onchange = function(){ S.cur = +picker.value; save(); render(); };
+$('prevBtn').onclick = function(){ const i = curIdx(); if (i > 0){ S.cur = DATA[i - 1].n; save(); render(); } };
+$('nextBtn').onclick = function(){ const i = curIdx(); if (i < DATA.length - 1){ S.cur = DATA[i + 1].n; save(); render(); } };
+// vocab pop-up (center)
+document.addEventListener('click', function(e){
+  const w = e.target.closest('.wv');
+  if (w){
+    $('mTerm').textContent = w.dataset.term;
+    $('mIpa').textContent = w.dataset.ipa;
+    $('mVn').textContent = w.dataset.vn;
+    $('modal').classList.add('open');
+  }
+});
+$('modalX').onclick = function(){ $('modal').classList.remove('open'); };
+$('modal').addEventListener('click', function(e){ if (e.target === $('modal')) $('modal').classList.remove('open'); });
+// zoom
+function applyFs(){ document.documentElement.style.setProperty('--fs', (17 * S.fs / 100) + 'px'); }
+$('zoomIn').onclick = function(){ S.fs = Math.min(140, S.fs + 10); save(); applyFs(); };
+$('zoomOut').onclick = function(){ S.fs = Math.max(80, S.fs - 10); save(); applyFs(); };
+applyFs();
+// highlight (snapshot-based persistence)
+let hlOn = false;
+$('hlBtn').onclick = function(){ hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', function(){
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const pg = $('passage');
+  if (!pg.contains(range.startContainer) || range.startContainer !== range.endContainer || range.startContainer.nodeType !== 3) return;
+  if (range.startContainer.parentElement.closest('.blank')) return;
+  const mark = document.createElement('mark'); mark.className = 'hl';
+  try { range.surroundContents(mark); } catch(e) { return; }
+  S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save(); sel.removeAllRanges();
+});
+document.addEventListener('click', function(e){
+  if (hlOn && e.target.tagName === 'MARK'){
+    const pg = $('passage');
+    const parent = e.target.parentNode;
+    parent.replaceChild(document.createTextNode(e.target.textContent), e.target);
+    parent.normalize();
+    S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save();
+  }
+});
+render();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app.
+   Goi: hwSendResult(correct, total, answers) sau khi HS nop bai trong file. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+/* Nhan dien app: khi duoc nhung, app gui {type:'hw-hello', v:1, code, assignmentId} luc tai xong.
+   Nhan hw-timeup nghia la het gio - file nen tu khoa bai / tu nop giup HS. */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body>
+</html>

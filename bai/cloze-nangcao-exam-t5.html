@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOZE TEXT: FURTHER PRACTICE - Làm bài Test 5 (Samples 17-20)</title>
+<style>
+:root{ --fs:17px; --brown:#8a5a12; --green:#1e8e4f; --red:#d33; --orange:#e07b00; --line:#d8d8d8; --blue:#3b6fd4; }
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Times New Roman",sans-serif;background:#f4f4f6;color:#1c1c1e;font-size:var(--fs)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.15em;margin:0;font-family:"Times New Roman",serif;letter-spacing:.5px}
+header .sub{color:#666;font-size:.82em;width:100%}
+.chip{background:#eef1f6;border:1px solid #c3cede;color:#243b6b;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9em}
+button.tool{background:#fff;border:1px solid #bbb;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.9em}
+button.tool.on{background:#fff3cd;border-color:#e0a800}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select#picker{font-size:.95em;padding:6px;border-radius:8px;border:1px solid #bbb;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.schip{border:1px solid #bbb;background:#fff;border-radius:6px;padding:2px 7px;font-size:.78em;cursor:pointer}
+.schip.full{background:#e8eefc;border-color:var(--blue);color:#1e3a8a;font-weight:700}
+.schip.cur{outline:2px solid #333}
+main{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+@media (max-width:860px){ main{grid-template-columns:1fr} }
+.pane{padding:14px;overflow-y:auto;max-height:calc(100vh - 150px)}
+@media (max-width:860px){ .pane{max-height:none;overflow:visible} }
+.pane.left{border-right:1px solid var(--line);background:#fff}
+.topic{font-family:"Times New Roman",serif;font-weight:700;text-align:center;font-size:1.12em;margin:2px 0 10px}
+.passage{font-family:"Times New Roman",serif;font-size:1.06em;line-height:1.65;text-align:justify}
+.blank{display:inline-block;min-width:2em;text-align:center;background:#eef;border:1px dashed #88a;border-radius:6px;padding:0 4px;font-weight:700;color:#335}
+.blank.picked{background:#e8eefc;border:1px solid var(--blue);color:#1e3a8a}
+.blank.filled{background:#e6f4ea;border:1px solid var(--green);color:#14532d}
+.blank.wrongfill{background:#fdecec;border:1px solid var(--red);color:#a00}
+.blank.shown{background:#fff4e0;border:1px solid var(--orange);color:#8a5200}
+.wv{color:var(--brown);cursor:pointer;border-bottom:1px dotted var(--brown)}
+mark.hl{background:#ffe98a;border-radius:2px}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.qcard .qhead{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.qcard .st{font-size:.85em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} }
+.opt{border:1px solid #bbb;background:#fff;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font-size:.95em}
+.opt:hover{border-color:#666}
+.opt.sel{background:#e8eefc;border-color:var(--blue);font-weight:700}
+.opt.right{background:#e6f4ea;border-color:var(--green);font-weight:700}
+.opt.wrongpick{background:#fdecec;border-color:var(--red);color:#a00}
+.opt:disabled{cursor:default;opacity:.92}
+.expl{display:none;background:#f7f9f7;border-left:3px solid var(--green);padding:8px 10px;margin-top:8px;font-size:.92em;line-height:1.5}
+.expl.show{display:block}
+.submitbar{background:#fff;border-top:1px solid var(--line);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#submitBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 44px;font-size:1.05em;font-weight:700;cursor:pointer}
+#submitBtn:hover{background:#17703d}
+#result{display:none;background:#e6f4ea;border:1px solid var(--green);color:#14532d;border-radius:10px;padding:10px 18px;font-weight:700;font-size:1.05em;text-align:center}
+#modal,#cmodal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+#modal.open,#cmodal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;max-width:430px;width:100%;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);position:relative;text-align:center}
+.mbox .term{font-size:1.5em;font-weight:800;color:var(--brown)}
+.mbox .ipa{font-size:1.15em;color:#444;margin:6px 0}
+.mbox .vn{font-size:1.12em;line-height:1.5}
+.mbox .x{position:absolute;top:6px;right:12px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#888}
+.cbtns{margin-top:16px;display:flex;gap:8px;justify-content:center}
+#cYes{background:var(--green);color:#fff;border-color:var(--green);font-weight:700;padding:8px 18px}
+#cNo{padding:8px 18px}
+.hint{color:#666;font-size:.85em;padding:6px 14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>CLOZE TEXT: FURTHER PRACTICE</h1>
+  <span class="chip" id="score">Đã làm: 0/24</span>
+  <button class="tool" id="zoomOut">A-</button>
+  <button class="tool" id="zoomIn">A+</button>
+  <button class="tool" id="hlBtn">🖍 Tô sáng</button>
+  <div class="sub">Advanced Cloze · Test 5 · Samples 17-20 · 24 câu &nbsp;|&nbsp; Chọn một đáp án cho mỗi câu, làm xong bấm <b>Nộp bài</b> để xem điểm. Chạm vào <b style="color:#8a5a12">từ màu nâu</b> trong bài đọc để xem phiên âm và nghĩa.</div>
+</header>
+<div class="bar">
+  <button class="tool" id="prevBtn">‹ Trước</button>
+  <select id="picker"></select>
+  <button class="tool" id="nextBtn">Sau ›</button>
+  <div class="chips" id="chips"></div>
+</div>
+<main>
+  <section class="pane left">
+    <div class="topic" id="topic"></div>
+    <div class="passage" id="passage"></div>
+  </section>
+  <section class="pane right" id="questions"></section>
+</main>
+<div class="submitbar">
+  <button id="submitBtn">Nộp bài</button>
+  <div id="result"></div>
+</div>
+<div id="modal"><div class="mbox">
+  <button class="x" id="modalX">×</button>
+  <div class="term" id="mTerm"></div>
+  <div class="ipa" id="mIpa"></div>
+  <div class="vn" id="mVn"></div>
+</div></div>
+<div id="cmodal"><div class="mbox">
+  <div class="term" style="color:var(--green);font-size:1.25em">Nộp bài?</div>
+  <div class="vn" id="cText" style="font-size:1em;margin-top:8px"></div>
+  <div class="cbtns">
+    <button class="tool" id="cYes">Nộp bài ngay</button>
+    <button class="tool" id="cNo">Làm tiếp</button>
+  </div>
+</div></div>
+<script>
+const DATA = [
+{"n": 17, "topic": "AN EXTRA DAY BEFORE THE STORM", "html": "For decades, weather forecasting improved at a painfully slow <span class=\"wv\" data-term=\"pace\" data-ipa=\"/peɪs/\" data-vn=\"tốc độ, nhịp độ tiến triển\">pace</span>, gaining roughly one day of <span class=\"wv\" data-term=\"accuracy\" data-ipa=\"/ˈækjərəsi/\" data-vn=\"độ chính xác\">accuracy</span> every ten years. By the end of 2026, however, that slow progress <span class=\"blank\" data-q=\"1\">(1)</span> an end, thanks to WeatherNext Cyclones, an AI system built by Google DeepMind. Trained on fifty years of weather records and nearly 5,000 historical storms, the system predicts a <span class=\"wv\" data-term=\"cyclone\" data-ipa=\"/ˈsaɪkləʊn/\" data-vn=\"bão xoáy nhiệt đới\">cyclone</span>&#x27;s path, <span class=\"wv\" data-term=\"strength\" data-ipa=\"/streŋθ/\" data-vn=\"cường độ, sức mạnh\">strength</span> and size all at once. In tests on storms between 2023 and 2025, its five-day forecast of a storm&#x27;s position was wrong by 230 kilometres <span class=\"wv\" data-term=\"on average\" data-ipa=\"/ɒn ˈævərɪdʒ/\" data-vn=\"tính trung bình\">on average</span>, <span class=\"blank\" data-q=\"2\">(2)</span> with 370 kilometres for Europe&#x27;s leading model. The AI also proved better at spotting rapid <span class=\"wv\" data-term=\"intensification\" data-ipa=\"/ɪnˌtensɪfɪˈkeɪʃn/\" data-vn=\"sự mạnh lên nhanh chóng (của bão)\">intensification</span>, the sudden strengthening that makes some storms so <span class=\"blank\" data-q=\"3\">(3)</span>. In 2025, it helped American <span class=\"wv\" data-term=\"forecaster\" data-ipa=\"/ˈfɔːkɑːstə(r)/\" data-vn=\"chuyên gia dự báo (thời tiết)\">forecasters</span> predict that <span class=\"wv\" data-term=\"hurricane\" data-ipa=\"/ˈhʌrɪkən/\" data-vn=\"bão lớn ở Đại Tây Dương\">Hurricane</span> Melissa <span class=\"blank\" data-q=\"4\">(4)</span> from a weak storm into one of the most powerful hurricanes <span class=\"wv\" data-term=\"on record\" data-ipa=\"/ɒn ˈrekɔːd/\" data-vn=\"được ghi nhận trong lịch sử, có số liệu lưu lại\">on record</span>. And by generating up to 1,000 possible <span class=\"wv\" data-term=\"version\" data-ipa=\"/ˈvɜːʃn/\" data-vn=\"phiên bản; ở đây: kịch bản dự báo\">versions</span> of a storm&#x27;s future, it gives <span class=\"wv\" data-term=\"coastal\" data-ipa=\"/ˈkəʊstl/\" data-vn=\"ven biển, duyên hải\">coastal</span> communities a vital head <span class=\"blank\" data-q=\"5\">(5)</span>: an extra day to prepare before the winds arrive. Experts note, however, that <span class=\"wv\" data-term=\"rainfall\" data-ipa=\"/ˈreɪnfɔːl/\" data-vn=\"lượng mưa\">rainfall</span> and <span class=\"wv\" data-term=\"flooding\" data-ipa=\"/ˈflʌdɪŋ/\" data-vn=\"ngập lụt, lũ lụt\">flooding</span> - which <span class=\"blank\" data-q=\"6\">(6)</span> for most storm deaths - are things the AI cannot yet predict.", "blanks": [{"options": ["has come to", "had come to", "comes to", "come to"], "key": 1, "explain": "'By the end of 2026' đặt mốc quá khứ hoàn thành: sự tiến bộ chậm đã kết thúc trước/trong năm 2026 nhờ hệ thống mới - dùng 'had come to an end'."}, {"options": ["comparing", "comparison", "compared", "compare"], "key": 2, "explain": "Mệnh đề rút gọn với phân từ bị động: '(when) compared with 370 kilometres' = khi so với 370 km của mô hình châu Âu."}, {"options": ["deathly", "dying", "dead", "deadly"], "key": 3, "explain": "'Deadly' = gây chết người, nguy hiểm chết người (deadly storm). 'Deathly' nghĩa là như chết (deathly silence/pale), không dùng cho mức độ nguy hiểm của bão."}, {"options": ["would grow", "will grow", "grows", "has grown"], "key": 0, "explain": "Tường thuật ở quá khứ: 'forecasters predict that...' trong bối cảnh 2025 - động từ dự đoán về tương lai tại thời điểm đó phải lùi thành 'would grow'."}, {"options": ["beginning", "lead", "start", "edge"], "key": 2, "explain": "Thành ngữ 'a head start' = lợi thế xuất phát sớm. Ở đây là lợi thế thêm một ngày chuẩn bị trước bão."}, {"options": ["explain", "cause", "blame", "account"], "key": 3, "explain": "Cụm 'account for' = chiếm/chịu trách nhiệm cho (một tỉ lệ, nguyên nhân). Mưa và ngập lụt 'account for most storm deaths' = là nguyên nhân của phần lớn ca tử vong do bão."}]},
+{"n": 18, "topic": "FUTA, THE RED PANDA WHO REFUSED TO GROW OLD", "html": "In 2005, a red panda at Chiba Zoological Park in Japan became a national <span class=\"wv\" data-term=\"sensation\" data-ipa=\"/senˈseɪʃn/\" data-vn=\"hiện tượng gây sốt, sự kiện làm xôn xao\">sensation</span> for an unusual reason: he kept standing <span class=\"wv\" data-term=\"upright\" data-ipa=\"/ˈʌpraɪt/\" data-vn=\"thẳng đứng, dựng đứng\">upright</span> on his <span class=\"wv\" data-term=\"hind\" data-ipa=\"/haɪnd/\" data-vn=\"ở phía sau (chân sau, phần sau)\">hind</span> legs, like a small person surveying his surroundings. Two decades later, that same panda, Futa, has made <span class=\"wv\" data-term=\"headline\" data-ipa=\"/ˈhedlaɪn/\" data-vn=\"tít lớn trên báo; &#x27;make headlines&#x27;: lên mặt báo\">headlines</span> again - this time for refusing to grow old. On 17 November 2026, at the age of 23 years and 135 days, Futa <span class=\"blank\" data-q=\"1\">(1)</span> by Guinness World Records as the oldest living red panda in <span class=\"wv\" data-term=\"captivity\" data-ipa=\"/kæpˈtɪvəti/\" data-vn=\"tình trạng bị nuôi nhốt (trong vườn thú)\">captivity</span>. The achievement is remarkable because red pandas <span class=\"wv\" data-term=\"typically\" data-ipa=\"/ˈtɪpɪkli/\" data-vn=\"thông thường, điển hình là\">typically</span> live only twelve to seventeen years in zoos, and the previous <span class=\"wv\" data-term=\"record holder\" data-ipa=\"/ˈrekɔːd ˈhəʊldə(r)/\" data-vn=\"người/con vật đang giữ kỷ lục\">record holder</span>, an American panda named Taylor, <span class=\"blank\" data-q=\"2\">(2)</span> the age of 21 years and 265 days. Futa himself did not attend the <span class=\"wv\" data-term=\"ceremony\" data-ipa=\"/ˈserəməni/\" data-vn=\"buổi lễ, nghi lễ\">ceremony</span>: expecting a <span class=\"wv\" data-term=\"sharp\" data-ipa=\"/ʃɑːp/\" data-vn=\"đột ngột và mạnh (thay đổi, giảm nhiệt độ)\">sharp</span> drop in temperature, the zoo decided not to put its <span class=\"wv\" data-term=\"elderly\" data-ipa=\"/ˈeldəli/\" data-vn=\"già, cao tuổi\">elderly</span> star <span class=\"wv\" data-term=\"on display\" data-ipa=\"/ɒn dɪˈspleɪ/\" data-vn=\"được trưng ra cho công chúng xem\">on display</span>, <span class=\"blank\" data-q=\"3\">(3)</span> disappointed the crowds. Born in 2003 and at Chiba since 2004, Futa can no longer stand <span class=\"wv\" data-term=\"upright\" data-ipa=\"/ˈʌpraɪt/\" data-vn=\"thẳng đứng, dựng đứng\">upright</span> - his <span class=\"wv\" data-term=\"eyesight\" data-ipa=\"/ˈaɪsaɪt/\" data-vn=\"thị lực, sức nhìn\">eyesight</span> has faded and one <span class=\"wv\" data-term=\"hind\" data-ipa=\"/haɪnd/\" data-vn=\"ở phía sau (chân sau, phần sau)\">hind</span> leg gives him trouble - but keepers say his <span class=\"wv\" data-term=\"appetite\" data-ipa=\"/ˈæpɪtaɪt/\" data-vn=\"sự thèm ăn, ăn ngon miệng\">appetite</span> remains <span class=\"wv\" data-term=\"hearty\" data-ipa=\"/ˈhɑːti/\" data-vn=\"khỏe mạnh, ngon lành (ăn uống)\">hearty</span> and his condition <span class=\"wv\" data-term=\"stable\" data-ipa=\"/ˈsteɪbl/\" data-vn=\"ổn định (tình trạng sức khỏe)\">stable</span>. He still has one more record in his <span class=\"blank\" data-q=\"4\">(4)</span>: the oldest red panda ever, Kusu, reached 24, and if Futa <span class=\"blank\" data-q=\"5\">(5)</span> another year, the all-time title will be his as well. For his old fans, the story is a reminder that fame rarely <span class=\"blank\" data-q=\"6\">(6)</span> - but good care, apparently, can last much longer.", "blanks": [{"options": ["recognised", "was recognised", "has recognised", "is recognising"], "key": 1, "explain": "Bị động quá khứ đơn: Futa 'was recognised by Guinness World Records' - có 'by + tác nhân' phía sau nên bắt buộc dạng bị động."}, {"options": ["arrived", "gained", "got", "reached"], "key": 3, "explain": "'Reach the age of...' = đạt tới độ tuổi. 'Arrive' phải đi với 'at', 'get/gain the age' không phải collocation."}, {"options": ["that", "what", "which", "it"], "key": 2, "explain": "Mệnh đề quan hệ không xác định sau dấu phẩy, thay cho cả mệnh đề phía trước ('the zoo decided not to put its star on display') - chỉ dùng 'which', không dùng 'that' sau dấu phẩy."}, {"options": ["view", "sights", "aim", "target"], "key": 1, "explain": "Thành ngữ 'have something in your sights' = đang nhắm tới, trong tầm ngắm. 'In his view' nghĩa là 'theo ý kiến của anh ta', sai nghĩa."}, {"options": ["survived", "will survive", "would survive", "survives"], "key": 3, "explain": "Câu điều kiện loại 1: 'if Futa survives another year, the all-time title will be his' - mệnh đề if dùng hiện tại đơn, mệnh đề chính dùng will."}, {"options": ["lasts", "stays", "remains", "continues"], "key": 0, "explain": "'Fame rarely lasts' = danh tiếng hiếm khi kéo dài. 'Remains' cần bổ ngữ phía sau, 'stays/continues' không diễn đạt được nghĩa tồn tại lâu dài trong câu này."}]},
+{"n": 19, "topic": "WHEN THE DESERT WAS GREEN", "html": "Today, the Empty Quarter of Saudi Arabia is one of the driest places on Earth, a sea of sand stretching to the <span class=\"wv\" data-term=\"horizon\" data-ipa=\"/həˈraɪzn/\" data-vn=\"đường chân trời\">horizon</span>. Yet 125,000 years ago, this same landscape held a <span class=\"wv\" data-term=\"freshwater\" data-ipa=\"/ˈfreʃwɔːtə(r)/\" data-vn=\"nước ngọt (sông, hồ)\">freshwater</span> lake of some 340 square kilometres, and around its <span class=\"wv\" data-term=\"shore\" data-ipa=\"/ʃɔː(r)/\" data-vn=\"bờ (hồ, biển)\">shores</span> lived hippos, giant buffalo and herds of <span class=\"wv\" data-term=\"gazelle\" data-ipa=\"/ɡəˈzel/\" data-vn=\"linh dương gazelle\">gazelles</span>. Evidence for this lost world, published in the journal Science in November 2026, comes from more than 500 <span class=\"wv\" data-term=\"fossil\" data-ipa=\"/ˈfɒsl/\" data-vn=\"hóa thạch\">fossils</span> and 5,500 stone tools <span class=\"blank\" data-q=\"1\">(1)</span> at a site called Uruq al-Julaybah. Researchers from Saudi Arabia, Australia and several other countries have <span class=\"wv\" data-term=\"reconstruct\" data-ipa=\"/ˌriːkənˈstrʌkt/\" data-vn=\"tái dựng lại, dựng lại bức tranh quá khứ\">reconstructed</span> a period known as Green Arabia: by the time early humans reached the lake, increased rainfall <span class=\"blank\" data-q=\"2\">(2)</span> the desert into <span class=\"wv\" data-term=\"grassland\" data-ipa=\"/ˈɡrɑːslænd/\" data-vn=\"đồng cỏ\">grassland</span>. Most remarkable of all are the stone points found <span class=\"wv\" data-term=\"cluster\" data-ipa=\"/ˈklʌstə(r)/\" data-vn=\"tụ tập, tập trung thành cụm\">clustered</span> near animal bones, which carry <span class=\"wv\" data-term=\"trace\" data-ipa=\"/treɪs/\" data-vn=\"dấu vết, vết tích còn sót lại\">traces</span> of plant <span class=\"wv\" data-term=\"resin\" data-ipa=\"/ˈrezɪn/\" data-vn=\"nhựa cây\">resin</span> and <span class=\"wv\" data-term=\"fibre\" data-ipa=\"/ˈfaɪbə(r)/\" data-vn=\"sợi (thực vật, vải)\">fibres</span>. The team believes the points were fixed to wooden <span class=\"wv\" data-term=\"shaft\" data-ipa=\"/ʃɑːft/\" data-vn=\"cán dài (của giáo, mũi tên)\">shafts</span> and possibly dipped in <span class=\"wv\" data-term=\"poison\" data-ipa=\"/ˈpɔɪzn/\" data-vn=\"chất độc\">poison</span> - if so, they would be the oldest poisoned hunting weapons ever found, <span class=\"blank\" data-q=\"3\">(3)</span> the previous record by some 65,000 years. The discovery <span class=\"wv\" data-term=\"challenge\" data-ipa=\"/ˈtʃælɪndʒ/\" data-vn=\"thách thức, đặt dấu hỏi cho (quan điểm cũ)\">challenges</span> the <span class=\"wv\" data-term=\"long-held\" data-ipa=\"/ˌlɒŋ ˈheld/\" data-vn=\"đã tồn tại, được tin theo từ lâu\">long-held</span> view that early humans <span class=\"wv\" data-term=\"merely\" data-ipa=\"/ˈmɪəli/\" data-vn=\"chỉ đơn thuần là, chỉ\">merely</span> passed through Arabia on their way to other <span class=\"wv\" data-term=\"continent\" data-ipa=\"/ˈkɒntɪnənt/\" data-vn=\"châu lục, lục địa\">continents</span>. Instead, it suggests they <span class=\"blank\" data-q=\"4\">(4)</span> beside its lakes for <span class=\"wv\" data-term=\"generation\" data-ipa=\"/ˌdʒenəˈreɪʃn/\" data-vn=\"thế hệ; nhiều thế hệ nối tiếp\">generations</span> - at least until the climate turned and the water <span class=\"blank\" data-q=\"5\">(5)</span>. What remains is a powerful <span class=\"wv\" data-term=\"reminder\" data-ipa=\"/rɪˈmaɪndə(r)/\" data-vn=\"điều gợi nhớ, lời nhắc nhở\">reminder</span> that a whole world of lakes and hippos can vanish without <span class=\"blank\" data-q=\"6\">(6)</span>.", "blanks": [{"options": ["unearthing", "which unearthed", "unearthed", "unearth"], "key": 2, "explain": "Mệnh đề quan hệ rút gọn dạng bị động: tools '(which were) unearthed at a site' = những công cụ được khai quật tại một địa điểm."}, {"options": ["transformed", "has transformed", "transforms", "had transformed"], "key": 3, "explain": "'By the time early humans reached the lake' là mốc quá khứ; việc mưa biến sa mạc thành đồng cỏ xảy ra trước mốc đó nên dùng quá khứ hoàn thành 'had transformed'."}, {"options": ["beating", "beat", "beaten", "to beat"], "key": 0, "explain": "Cụm phân từ hiện tại mở đầu mệnh đề phụ kết quả: '...ever found, beating the previous record by...' = phá kỷ lục trước đó tới khoảng 65.000 năm."}, {"options": ["camped", "stayed", "rested", "settled"], "key": 3, "explain": "'Settled beside its lakes for generations' = định cư bên hồ qua nhiều thế hệ. 'Camped/stayed/rested' đều là tạm thời, mâu thuẫn với 'for generations'."}, {"options": ["dried out", "dried up", "dried off", "dried down"], "key": 1, "explain": "'The water dried up' = nước cạn kiệt, biến mất (dùng cho sông hồ). 'Dried out' là làm khô một vật ướt, chủ ngữ phải là vật bị làm khô."}, {"options": ["a trace", "a sign", "a mark", "a sound"], "key": 0, "explain": "Thành ngữ 'vanish without a trace' = biến mất không để lại dấu vết. Đây là cụm cố định, không thay bằng 'a sign/a mark'."}]},
+{"n": 20, "topic": "AI THAT THINKS WITH LIGHT", "html": "Modern artificial intelligence has a growing <span class=\"wv\" data-term=\"appetite\" data-ipa=\"/ˈæpɪtaɪt/\" data-vn=\"sự thèm ăn; nghĩa bóng: nhu cầu rất lớn, sự &#x27;khát&#x27; (điện năng)\">appetite</span> for electricity: training large models can consume as much power as a small city. In a study published in November 2026, they describe an AI system built around a loop of <span class=\"wv\" data-term=\"optical fibre\" data-ipa=\"/ˈɒptɪkl ˈfaɪbə(r)/\" data-vn=\"sợi quang học\">optical fibre</span> two hundred metres long. Information enters the loop as <span class=\"wv\" data-term=\"pulse\" data-ipa=\"/pʌls/\" data-vn=\"xung (ánh sáng, điện) ngắn\">pulses</span> of light, is transformed as it <span class=\"wv\" data-term=\"circulate\" data-ipa=\"/ˈsɜːkjəleɪt/\" data-vn=\"lưu thông, chạy vòng quanh\">circulates</span>, and is finally <span class=\"blank\" data-q=\"1\">(1)</span> back into an electrical signal. <span class=\"wv\" data-term=\"conventional\" data-ipa=\"/kənˈvenʃənl/\" data-vn=\"thông thường, truyền thống\">Conventional</span> AI relies on complex networks whose training <span class=\"wv\" data-term=\"demand\" data-ipa=\"/dɪˈmɑːnd/\" data-vn=\"đòi hỏi, cần tới (lượng lớn)\">demands</span> <span class=\"wv\" data-term=\"vast\" data-ipa=\"/vɑːst/\" data-vn=\"mênh mông, cực kỳ lớn\">vast</span> <span class=\"wv\" data-term=\"computing\" data-ipa=\"/kəmˈpjuːtɪŋ/\" data-vn=\"điện toán, năng lực tính toán\">computing</span> power. The Tokyo team <span class=\"wv\" data-term=\"redesign\" data-ipa=\"/ˌriːdɪˈzaɪn/\" data-vn=\"thiết kế lại\">redesigned</span> the learning process so that a simpler structure could be trained effectively - and, to their surprise, the simplified system <span class=\"blank\" data-q=\"2\">(2)</span> the performance of far more complex ones while using a <span class=\"wv\" data-term=\"fraction\" data-ipa=\"/ˈfrækʃn/\" data-vn=\"một phần nhỏ (của tổng thể)\">fraction</span> of the energy. The approach is still in its <span class=\"blank\" data-q=\"3\">(3)</span>, and no one expects light-based machines <span class=\"blank\" data-q=\"4\">(4)</span> <span class=\"wv\" data-term=\"conventional\" data-ipa=\"/kənˈvenʃənl/\" data-vn=\"thông thường, truyền thống\">conventional</span> computers <span class=\"wv\" data-term=\"overnight\" data-ipa=\"/ˌəʊvəˈnaɪt/\" data-vn=\"chỉ sau một đêm; nghĩa bóng: ngay lập tức\">overnight</span>. But as the demand for AI continues to grow, a technology that computes at the speed of light while <span class=\"blank\" data-q=\"5\">(5)</span> only a <span class=\"wv\" data-term=\"trickle\" data-ipa=\"/ˈtrɪkl/\" data-vn=\"dòng chảy rất nhỏ, lượng ít ỏi\">trickle</span> of power could hardly be more <span class=\"blank\" data-q=\"6\">(6)</span>. It is a reminder that progress in <span class=\"wv\" data-term=\"computing\" data-ipa=\"/kəmˈpjuːtɪŋ/\" data-vn=\"điện toán, năng lực tính toán\">computing</span> does not always mean building bigger machines; sometimes it means finding a smarter way to <span class=\"wv\" data-term=\"put nature to work\" data-ipa=\"/pʌt ˈneɪtʃə(r) tə wɜːk/\" data-vn=\"tận dụng sức của tự nhiên làm việc cho mình\">put nature to work</span>.", "blanks": [{"options": ["converting", "converts", "converted", "convert"], "key": 2, "explain": "Song song với 'is transformed' phía trước: 'is finally converted back into an electrical signal' - bị động hiện tại đơn."}, {"options": ["rivalled", "copied", "followed", "repeated"], "key": 0, "explain": "'Rival' = ngang ngửa, sánh được với. Hệ thống đơn giản đạt hiệu năng ngang các hệ thống phức tạp hơn nhiều - không phải 'copied/followed' (bắt chước, đi theo)."}, {"options": ["childhood", "youth", "beginning", "infancy"], "key": 3, "explain": "Thành ngữ 'in its infancy' = còn ở giai đoạn sơ khai (dùng cho công nghệ, dự án). 'In its beginning' không phải cách nói đúng."}, {"options": ["replacing", "to replace", "replace", "replaced"], "key": 1, "explain": "Cấu trúc 'expect somebody/something to do something': 'no one expects light-based machines to replace conventional computers'."}, {"options": ["drinking", "sipping", "swallowing", "tasting"], "key": 1, "explain": "'Sip' = nhấp từng ngụm nhỏ - ẩn dụ cho việc tiêu thụ rất ít điện. 'Drink/swallow' gợi lượng lớn, ngược nghĩa với 'only a trickle of power'."}, {"options": ["punctual", "early", "timely", "prompt"], "key": 2, "explain": "'Timely' = đúng thời điểm cần thiết (timely arrival/technology). 'Punctual' chỉ dùng cho người đúng giờ; 'prompt' là nhanh chóng, không mang nghĩa 'đúng lúc đang cần'."}]}
+];
+const LS = 'advcloze_exam_t5_v1';
+const TOTAL = 24;
+let S = { cur: 17, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null };
+try { const s = JSON.parse(localStorage.getItem(LS)); if (s) S = Object.assign(S, s); } catch(e) {}
+if (!S.sel) S.sel = {};
+if (!S.hlHtml) S.hlHtml = {};
+if (!DATA.some(function(x){ return x.n === S.cur; })) S.cur = DATA[0].n;
+function save(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e) {} }
+const $ = function(id){ return document.getElementById(id); };
+const picker = $('picker');
+DATA.forEach(function(s){ const o = document.createElement('option'); o.value = s.n; o.textContent = 'Sample ' + s.n + ' - ' + s.topic; picker.appendChild(o); });
+
+function keyOf(n, q){ return n + '_' + q; }
+function curSample(){ return DATA.find(function(x){ return x.n === S.cur; }) || DATA[0]; }
+function curIdx(){ return DATA.findIndex(function(x){ return x.n === S.cur; }); }
+function answeredIn(n){ let c = 0; for (let q = 1; q <= 6; q++){ if (S.sel[keyOf(n, q)] != null) c++; } return c; }
+function answeredTotal(){ return DATA.reduce(function(t, s){ return t + answeredIn(s.n); }, 0); }
+function grade(){
+  let correct = 0; const detail = [];
+  DATA.forEach(function(s){ s.blanks.forEach(function(b, i){
+    const v = S.sel[keyOf(s.n, i + 1)];
+    detail.push(v == null ? -1 : v);
+    if (v === b.key) correct++;
+  }); });
+  return { correct: correct, detail: detail };
+}
+
+function render(){
+  const s = curSample();
+  picker.value = S.cur;
+  $('topic').textContent = s.topic;
+  const pg = $('passage');
+  pg.innerHTML = (S.hlHtml && S.hlHtml[S.cur]) ? S.hlHtml[S.cur] : s.html;
+  for (let q = 1; q <= 6; q++){
+    const bl = pg.querySelector('.blank[data-q="' + q + '"]');
+    if (!bl) continue;
+    const b = s.blanks[q - 1], v = S.sel[keyOf(S.cur, q)];
+    bl.className = 'blank';
+    if (!S.submitted){
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add('picked'); }
+      else bl.textContent = '(' + q + ')';
+    } else {
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add(v === b.key ? 'filled' : 'wrongfill'); }
+      else { bl.textContent = b.options[b.key]; bl.classList.add('shown'); }
+    }
+  }
+  const wrap = $('questions'); wrap.innerHTML = '';
+  s.blanks.forEach(function(b, i){
+    const q = i + 1, v = S.sel[keyOf(S.cur, q)];
+    const card = document.createElement('div'); card.className = 'qcard';
+    let st = '';
+    if (S.submitted){
+      if (v === b.key) st = '<span style="color:var(--green)">✔ Đúng</span>';
+      else if (v == null) st = '<span style="color:var(--orange)">Chưa làm</span>';
+      else st = '<span style="color:var(--red)">✘ Sai</span>';
+    }
+    card.innerHTML = '<div class="qhead"><span>Câu ' + q + '</span><span class="st">' + st + '</span></div>';
+    const opts = document.createElement('div'); opts.className = 'opts';
+    b.options.forEach(function(op, oi){
+      const btn = document.createElement('button'); btn.className = 'opt';
+      btn.textContent = 'ABCD'[oi] + '. ' + op;
+      if (!S.submitted){
+        if (v === oi) btn.classList.add('sel');
+        btn.onclick = function(){ pick(q, oi); };
+      } else {
+        btn.disabled = true;
+        if (oi === b.key) btn.classList.add('right');
+        if (v === oi && v !== b.key) btn.classList.add('wrongpick');
+      }
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    const ex = document.createElement('div');
+    ex.className = 'expl' + (S.submitted ? ' show' : '');
+    ex.textContent = S.submitted ? b.explain : '';
+    card.appendChild(ex);
+    wrap.appendChild(card);
+  });
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  const rb = $('result');
+  if (S.submitted){
+    const y = Math.round(S.correct / TOTAL * 100) / 10;
+    rb.style.display = 'block';
+    rb.textContent = 'Kết quả: ' + S.correct + '/' + TOTAL + ' đúng - điểm ' + y + '/10';
+    $('submitBtn').style.display = 'none';
+  } else {
+    rb.style.display = 'none';
+    $('submitBtn').style.display = '';
+  }
+  renderChips();
+}
+function renderChips(){
+  const c = $('chips'); c.innerHTML = '';
+  DATA.forEach(function(s){
+    const a = answeredIn(s.n);
+    const el = document.createElement('button');
+    el.className = 'schip' + (a === 6 ? ' full' : '') + (s.n === S.cur ? ' cur' : '');
+    el.textContent = s.n + ': ' + a + '/6';
+    el.onclick = function(){ S.cur = s.n; save(); render(); };
+    c.appendChild(el);
+  });
+}
+function pick(q, oi){
+  if (S.submitted) return;
+  S.sel[keyOf(S.cur, q)] = oi; save();
+  const s = curSample(), b = s.blanks[q - 1];
+  const card = $('questions').children[q - 1];
+  if (card){
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach(function(btn, bi){ btn.classList.toggle('sel', bi === oi); });
+  }
+  const bl = $('passage').querySelector('.blank[data-q="' + q + '"]');
+  if (bl){ bl.textContent = b.options[oi]; bl.className = 'blank picked'; }
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function doSubmit(){
+  if (S.submitted) return;
+  const r = grade();
+  S.submitted = true; S.correct = r.correct; save();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(r.correct, TOTAL, r.detail); } catch(e) {} }
+  $('cmodal').classList.remove('open');
+  render();
+}
+$('submitBtn').onclick = function(){
+  if (S.submitted) return;
+  const missing = TOTAL - answeredTotal();
+  $('cText').textContent = 'Sau khi nộp bài, đáp án sẽ bị khóa và không sửa lại được.' + (missing > 0
+    ? ' Bạn còn ' + missing + ' câu chưa làm - câu chưa làm sẽ tính là sai.'
+    : ' Bạn đã làm đủ ' + TOTAL + ' câu.');
+  $('cmodal').classList.add('open');
+};
+$('cYes').onclick = function(){ doSubmit(); };
+$('cNo').onclick = function(){ $('cmodal').classList.remove('open'); };
+$('cmodal').addEventListener('click', function(e){ if (e.target === $('cmodal')) $('cmodal').classList.remove('open'); });
+window.hwOnTimeUp = function(){ if (!S.submitted) doSubmit(); };
+picker.onchange = function(){ S.cur = +picker.value; save(); render(); };
+$('prevBtn').onclick = function(){ const i = curIdx(); if (i > 0){ S.cur = DATA[i - 1].n; save(); render(); } };
+$('nextBtn').onclick = function(){ const i = curIdx(); if (i < DATA.length - 1){ S.cur = DATA[i + 1].n; save(); render(); } };
+// vocab pop-up (center)
+document.addEventListener('click', function(e){
+  const w = e.target.closest('.wv');
+  if (w){
+    $('mTerm').textContent = w.dataset.term;
+    $('mIpa').textContent = w.dataset.ipa;
+    $('mVn').textContent = w.dataset.vn;
+    $('modal').classList.add('open');
+  }
+});
+$('modalX').onclick = function(){ $('modal').classList.remove('open'); };
+$('modal').addEventListener('click', function(e){ if (e.target === $('modal')) $('modal').classList.remove('open'); });
+// zoom
+function applyFs(){ document.documentElement.style.setProperty('--fs', (17 * S.fs / 100) + 'px'); }
+$('zoomIn').onclick = function(){ S.fs = Math.min(140, S.fs + 10); save(); applyFs(); };
+$('zoomOut').onclick = function(){ S.fs = Math.max(80, S.fs - 10); save(); applyFs(); };
+applyFs();
+// highlight (snapshot-based persistence)
+let hlOn = false;
+$('hlBtn').onclick = function(){ hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', function(){
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const pg = $('passage');
+  if (!pg.contains(range.startContainer) || range.startContainer !== range.endContainer || range.startContainer.nodeType !== 3) return;
+  if (range.startContainer.parentElement.closest('.blank')) return;
+  const mark = document.createElement('mark'); mark.className = 'hl';
+  try { range.surroundContents(mark); } catch(e) { return; }
+  S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save(); sel.removeAllRanges();
+});
+document.addEventListener('click', function(e){
+  if (hlOn && e.target.tagName === 'MARK'){
+    const pg = $('passage');
+    const parent = e.target.parentNode;
+    parent.replaceChild(document.createTextNode(e.target.textContent), e.target);
+    parent.normalize();
+    S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save();
+  }
+});
+render();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app.
+   Goi: hwSendResult(correct, total, answers) sau khi HS nop bai trong file. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+/* Nhan dien app: khi duoc nhung, app gui {type:'hw-hello', v:1, code, assignmentId} luc tai xong.
+   Nhan hw-timeup nghia la het gio - file nen tu khoa bai / tu nop giup HS. */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body>
+</html>
