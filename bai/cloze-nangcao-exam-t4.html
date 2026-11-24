@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOZE TEXT: FURTHER PRACTICE - Làm bài Test 4 (Samples 13-16)</title>
+<style>
+:root{ --fs:17px; --brown:#8a5a12; --green:#1e8e4f; --red:#d33; --orange:#e07b00; --line:#d8d8d8; --blue:#3b6fd4; }
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Times New Roman",sans-serif;background:#f4f4f6;color:#1c1c1e;font-size:var(--fs)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.15em;margin:0;font-family:"Times New Roman",serif;letter-spacing:.5px}
+header .sub{color:#666;font-size:.82em;width:100%}
+.chip{background:#eef1f6;border:1px solid #c3cede;color:#243b6b;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9em}
+button.tool{background:#fff;border:1px solid #bbb;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.9em}
+button.tool.on{background:#fff3cd;border-color:#e0a800}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select#picker{font-size:.95em;padding:6px;border-radius:8px;border:1px solid #bbb;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.schip{border:1px solid #bbb;background:#fff;border-radius:6px;padding:2px 7px;font-size:.78em;cursor:pointer}
+.schip.full{background:#e8eefc;border-color:var(--blue);color:#1e3a8a;font-weight:700}
+.schip.cur{outline:2px solid #333}
+main{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+@media (max-width:860px){ main{grid-template-columns:1fr} }
+.pane{padding:14px;overflow-y:auto;max-height:calc(100vh - 150px)}
+@media (max-width:860px){ .pane{max-height:none;overflow:visible} }
+.pane.left{border-right:1px solid var(--line);background:#fff}
+.topic{font-family:"Times New Roman",serif;font-weight:700;text-align:center;font-size:1.12em;margin:2px 0 10px}
+.passage{font-family:"Times New Roman",serif;font-size:1.06em;line-height:1.65;text-align:justify}
+.blank{display:inline-block;min-width:2em;text-align:center;background:#eef;border:1px dashed #88a;border-radius:6px;padding:0 4px;font-weight:700;color:#335}
+.blank.picked{background:#e8eefc;border:1px solid var(--blue);color:#1e3a8a}
+.blank.filled{background:#e6f4ea;border:1px solid var(--green);color:#14532d}
+.blank.wrongfill{background:#fdecec;border:1px solid var(--red);color:#a00}
+.blank.shown{background:#fff4e0;border:1px solid var(--orange);color:#8a5200}
+.wv{color:var(--brown);cursor:pointer;border-bottom:1px dotted var(--brown)}
+mark.hl{background:#ffe98a;border-radius:2px}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.qcard .qhead{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.qcard .st{font-size:.85em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} }
+.opt{border:1px solid #bbb;background:#fff;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font-size:.95em}
+.opt:hover{border-color:#666}
+.opt.sel{background:#e8eefc;border-color:var(--blue);font-weight:700}
+.opt.right{background:#e6f4ea;border-color:var(--green);font-weight:700}
+.opt.wrongpick{background:#fdecec;border-color:var(--red);color:#a00}
+.opt:disabled{cursor:default;opacity:.92}
+.expl{display:none;background:#f7f9f7;border-left:3px solid var(--green);padding:8px 10px;margin-top:8px;font-size:.92em;line-height:1.5}
+.expl.show{display:block}
+.submitbar{background:#fff;border-top:1px solid var(--line);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#submitBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 44px;font-size:1.05em;font-weight:700;cursor:pointer}
+#submitBtn:hover{background:#17703d}
+#result{display:none;background:#e6f4ea;border:1px solid var(--green);color:#14532d;border-radius:10px;padding:10px 18px;font-weight:700;font-size:1.05em;text-align:center}
+#modal,#cmodal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+#modal.open,#cmodal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;max-width:430px;width:100%;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);position:relative;text-align:center}
+.mbox .term{font-size:1.5em;font-weight:800;color:var(--brown)}
+.mbox .ipa{font-size:1.15em;color:#444;margin:6px 0}
+.mbox .vn{font-size:1.12em;line-height:1.5}
+.mbox .x{position:absolute;top:6px;right:12px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#888}
+.cbtns{margin-top:16px;display:flex;gap:8px;justify-content:center}
+#cYes{background:var(--green);color:#fff;border-color:var(--green);font-weight:700;padding:8px 18px}
+#cNo{padding:8px 18px}
+.hint{color:#666;font-size:.85em;padding:6px 14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>CLOZE TEXT: FURTHER PRACTICE</h1>
+  <span class="chip" id="score">Đã làm: 0/24</span>
+  <button class="tool" id="zoomOut">A-</button>
+  <button class="tool" id="zoomIn">A+</button>
+  <button class="tool" id="hlBtn">🖍 Tô sáng</button>
+  <div class="sub">Advanced Cloze · Test 4 · Samples 13-16 · 24 câu &nbsp;|&nbsp; Chọn một đáp án cho mỗi câu, làm xong bấm <b>Nộp bài</b> để xem điểm. Chạm vào <b style="color:#8a5a12">từ màu nâu</b> trong bài đọc để xem phiên âm và nghĩa.</div>
+</header>
+<div class="bar">
+  <button class="tool" id="prevBtn">‹ Trước</button>
+  <select id="picker"></select>
+  <button class="tool" id="nextBtn">Sau ›</button>
+  <div class="chips" id="chips"></div>
+</div>
+<main>
+  <section class="pane left">
+    <div class="topic" id="topic"></div>
+    <div class="passage" id="passage"></div>
+  </section>
+  <section class="pane right" id="questions"></section>
+</main>
+<div class="submitbar">
+  <button id="submitBtn">Nộp bài</button>
+  <div id="result"></div>
+</div>
+<div id="modal"><div class="mbox">
+  <button class="x" id="modalX">×</button>
+  <div class="term" id="mTerm"></div>
+  <div class="ipa" id="mIpa"></div>
+  <div class="vn" id="mVn"></div>
+</div></div>
+<div id="cmodal"><div class="mbox">
+  <div class="term" style="color:var(--green);font-size:1.25em">Nộp bài?</div>
+  <div class="vn" id="cText" style="font-size:1em;margin-top:8px"></div>
+  <div class="cbtns">
+    <button class="tool" id="cYes">Nộp bài ngay</button>
+    <button class="tool" id="cNo">Làm tiếp</button>
+  </div>
+</div></div>
+<script>
+const DATA = [
+{"n": 13, "topic": "FROM BEDROOM GAMER TO PROFESSIONAL", "html": "Ten years ago, playing games <span class=\"wv\" data-term=\"for a living\" data-ipa=\"/fə(r) ə ˈlɪvɪŋ/\" data-vn=\"để kiếm sống\">for a living</span> sounded like a <span class=\"wv\" data-term=\"fantasy\" data-ipa=\"/ˈfæntəsi/\" data-vn=\"điều viễn vông, chỉ có trong tưởng tượng\">fantasy</span>. Professional gamers fill <span class=\"wv\" data-term=\"stadium\" data-ipa=\"/ˈsteɪdiəm/\" data-vn=\"sân vận động\">stadiums</span> and earn salaries most office workers would <span class=\"wv\" data-term=\"envy\" data-ipa=\"/ˈenvi/\" data-vn=\"ghen tị với, thèm muốn như người khác\">envy</span>. The route to the top, however, is <span class=\"wv\" data-term=\"brutal\" data-ipa=\"/ˈbruːtl/\" data-vn=\"khốc liệt, đầy gian khổ\">brutal</span>. A young player who dreams of <span class=\"blank\" data-q=\"1\">(1)</span> professional must practise eight to ten hours a day, studying <span class=\"wv\" data-term=\"opponent\" data-ipa=\"/əˈpəʊnənt/\" data-vn=\"đối thủ\">opponents</span>&#x27; <span class=\"wv\" data-term=\"strategy\" data-ipa=\"/ˈstrætədʒi/\" data-vn=\"chiến thuật, chiến lược\">strategies</span>. Talent alone is not enough: players need <span class=\"wv\" data-term=\"lightning\" data-ipa=\"/ˈlaɪtnɪŋ/\" data-vn=\"sét; trong &#x27;lightning reflexes&#x27;: nhanh như chớp\">lightning</span> <span class=\"wv\" data-term=\"reflex\" data-ipa=\"/ˈriːfleks/\" data-vn=\"phản xạ\">reflexes</span>, <span class=\"wv\" data-term=\"concentration\" data-ipa=\"/ˌkɒnsnˈtreɪʃn/\" data-vn=\"sự tập trung\">concentration</span> and the ability to stay calm when a match worth thousands of dollars <span class=\"blank\" data-q=\"2\">(2)</span> on a single decision. Those who survive treat gaming as a job: teams now employ <span class=\"wv\" data-term=\"coach\" data-ipa=\"/kəʊtʃ/\" data-vn=\"huấn luyện viên\">coaches</span>, <span class=\"wv\" data-term=\"analyst\" data-ipa=\"/ˈænəlɪst/\" data-vn=\"chuyên viên phân tích\">analysts</span> and <span class=\"wv\" data-term=\"psychologist\" data-ipa=\"/saɪˈkɒlədʒɪst/\" data-vn=\"nhà tâm lý học\">psychologists</span> to <span class=\"blank\" data-q=\"3\">(3)</span> their players in <span class=\"wv\" data-term=\"peak condition\" data-ipa=\"/piːk kənˈdɪʃn/\" data-vn=\"trạng thái phong độ, thể lực đỉnh cao\">peak condition</span>. The <span class=\"wv\" data-term=\"reward\" data-ipa=\"/rɪˈwɔːd/\" data-vn=\"phần thưởng, thành quả xứng đáng\">rewards</span> are extraordinary, but for every champion there are thousands of <span class=\"wv\" data-term=\"hopeful\" data-ipa=\"/ˈhəʊpfl/\" data-vn=\"người nuôi hy vọng thành công (trong thi đấu)\">hopefuls</span> who <span class=\"wv\" data-term=\"give up\" data-ipa=\"/ɡɪv ʌp/\" data-vn=\"từ bỏ, bỏ cuộc\">gave up</span> everything and <span class=\"blank\" data-q=\"4\">(4)</span> nothing in return. The professionals themselves are <span class=\"wv\" data-term=\"blunt\" data-ipa=\"/blʌnt/\" data-vn=\"thẳng thắn, nói toạc ra\">blunt</span>: talent gets you noticed, but only <span class=\"wv\" data-term=\"discipline\" data-ipa=\"/ˈdɪsəplɪn/\" data-vn=\"kỷ luật, tính tự giác\">discipline</span> keeps you at the <span class=\"blank\" data-q=\"5\">(5)</span>. Parents who once <span class=\"wv\" data-term=\"dismiss\" data-ipa=\"/dɪˈsmɪs/\" data-vn=\"gạt bỏ, coi thường, không thèm để ý\">dismissed</span> games as a waste of time now ask a different question: not whether their child plays, but whether the child plays with a <span class=\"blank\" data-q=\"6\">(6)</span> - a plan, a balance and a future beyond the screen.", "blanks": [{"options": ["to become", "become", "became", "becoming"], "key": 3, "explain": "'Dream of + V-ing': dreams of becoming professional. Sau giới từ 'of' bắt buộc dùng V-ing - bẫy quen thuộc nhưng vẫn hiệu quả ở tốc độ làm bài nhanh."}, {"options": ["hang", "hanging", "hangs", "hung"], "key": 2, "explain": "'Hang on' ở đây không phải 'treo' mà là 'phụ thuộc vào': a match hangs on a single decision. Chủ ngữ là 'a match' (số ít, cụm 'worth thousands of dollars' chỉ bổ nghĩa) nên dùng 'hangs'. Phải hiểu nghĩa của cụm và xác định đúng chủ ngữ mới chia đúng động từ."}, {"options": ["keep", "hold", "stay", "leave"], "key": 0, "explain": "'Keep somebody in peak condition' = giữ cho ai ở thể trạng đỉnh cao. 'Hold/stay/leave' đều không tạo thành cụm này với 'in peak condition'."}, {"options": ["have got", "got", "get", "getting"], "key": 1, "explain": "'Gave up everything and got nothing in return' - động từ thứ hai song song quá khứ đơn với 'gave' ở phía trước. Mệnh đề quan hệ dài làm HS dễ quên mốc thời gian của động từ chính."}, {"options": ["lead", "head", "top", "best"], "key": 2, "explain": "'At the top' = ở vị trí đỉnh cao (trong nghề). 'At the head' là ở đầu bàn/đầu hàng; 'lead' phải dùng trong cụm 'in the lead'; 'at the best' sai cấu trúc."}, {"options": ["luck", "plan", "talent", "purpose"], "key": 3, "explain": "Phần sau dấu gạch ngang liệt kê 'a plan, a balance and a future' - tất cả đều là biểu hiện của 'purpose' (mục đích, định hướng rõ ràng). 'Plan' chỉ là một phần của đáp án nên chọn 'plan' sẽ hẹp hơn ý toàn câu."}]},
+{"n": 14, "topic": "THE MIDNIGHT ZONE", "html": "Far fewer people have dived to the deepest part of the ocean than have travelled into space. The reason is simple: the deep sea is the most <span class=\"wv\" data-term=\"hostile\" data-ipa=\"/ˈhɒstaɪl/\" data-vn=\"khắc nghiệt, thù địch (môi trường sống)\">hostile</span> environment on Earth. Below a thousand metres, the water is <span class=\"wv\" data-term=\"pitch black\" data-ipa=\"/pɪtʃ blæk/\" data-vn=\"tối đen như mực\">pitch black</span>, the temperature <span class=\"wv\" data-term=\"hover\" data-ipa=\"/ˈhɒvə(r)/\" data-vn=\"lơ lửng quanh một mức, dao động nhẹ\">hovers</span> just above <span class=\"wv\" data-term=\"freezing\" data-ipa=\"/ˈfriːzɪŋ/\" data-vn=\"mức đóng băng (khoảng 0 độ C)\">freezing</span>, and the <span class=\"wv\" data-term=\"pressure\" data-ipa=\"/ˈpreʃə(r)/\" data-vn=\"áp suất, áp lực\">pressure</span> would <span class=\"wv\" data-term=\"crush\" data-ipa=\"/krʌʃ/\" data-vn=\"nghiền nát, ép bẹp\">crush</span> an ordinary <span class=\"wv\" data-term=\"submarine\" data-ipa=\"/ˈsʌbməriːn/\" data-vn=\"tàu ngầm\">submarine</span> like a <span class=\"wv\" data-term=\"tin can\" data-ipa=\"/tɪn kæn/\" data-vn=\"lon thiếc (vật mỏng, dễ bị bẹp)\">tin can</span>. The <span class=\"wv\" data-term=\"creature\" data-ipa=\"/ˈkriːtʃə(r)/\" data-vn=\"sinh vật, loài vật\">creatures</span> that live there survive by eating the <span class=\"wv\" data-term=\"constant\" data-ipa=\"/ˈkɒnstənt/\" data-vn=\"liên tục, không ngừng\">constant</span> rain of dead <span class=\"wv\" data-term=\"matter\" data-ipa=\"/ˈmætə(r)/\" data-vn=\"vật chất, chất (hữu cơ)\">matter</span> <span class=\"blank\" data-q=\"1\">(1)</span> from the surface world above. Until recently, this zone could not <span class=\"blank\" data-q=\"2\">(2)</span> by any vehicle <span class=\"wv\" data-term=\"in existence\" data-ipa=\"/ɪɡˈzɪstəns/\" data-vn=\"đang tồn tại, hiện có trên đời\">in existence</span>. The deep ocean <span class=\"wv\" data-term=\"absorb\" data-ipa=\"/əbˈzɔːb/\" data-vn=\"hấp thụ, hút vào\">absorbs</span> enormous amounts of heat and carbon, yet it is already being <span class=\"blank\" data-q=\"3\">(3)</span> by mining companies eager for the <span class=\"wv\" data-term=\"valuable\" data-ipa=\"/ˈvæljuəbl/\" data-vn=\"có giá trị, quý giá\">valuable</span> metals on its floor. What we do to this hidden world in the next twenty years may <span class=\"blank\" data-q=\"4\">(4)</span> the health of the oceans for centuries. We cannot protect what we have not yet learned to <span class=\"blank\" data-q=\"5\">(5)</span> - and we have <span class=\"wv\" data-term=\"explore\" data-ipa=\"/ɪkˈsplɔː(r)/\" data-vn=\"khám phá, thám hiểm\">explored</span> less of the deep sea than of the surface of Mars. The map of the planet still has a <span class=\"wv\" data-term=\"vast\" data-ipa=\"/vɑːst/\" data-vn=\"mênh mông, bao la\">vast</span> <span class=\"wv\" data-term=\"blank\" data-ipa=\"/blæŋk/\" data-vn=\"trống, chưa có gì (vùng chưa khám phá)\">blank</span> space at its centre: a world as large as a continent that remains almost entirely <span class=\"blank\" data-q=\"6\">(6)</span>.", "blanks": [{"options": ["drifting", "drift", "drifted", "to drift"], "key": 0, "explain": "Mệnh đề quan hệ rút gọn chủ động: 'dead matter (which is) drifting from the surface' - vật chất đang trôi xuống nên dùng phân từ hiện tại 'drifting'. 'Drifted' sẽ mang nghĩa bị động vô lý."}, {"options": ["reach", "be reached", "reaching", "reached"], "key": 1, "explain": "'This zone could not be reached' - vùng biển là đối tượng được tiếp cận nên cần bị động sau 'could not'. Cấu trúc 'could not be + V3' là dạng nâng cao của modal passive."}, {"options": ["targets", "targeting", "targeted", "target"], "key": 2, "explain": "'It is already being targeted by mining companies' - bị động tiếp diễn: is being + V3 'targeted'. Chỗ trống nằm ở cuối cấu trúc nên HS phải lắp ghép cả cụm 'is being...' mới chọn đúng."}, {"options": ["predict", "define", "settle", "determine"], "key": 3, "explain": "'Determine the health of the oceans' = định đoạt, quyết định tình trạng của đại dương trong nhiều thế kỉ. 'Define' là định nghĩa; 'settle' là giải quyết một tranh chấp; 'predict' là dự đoán - việc con người làm không thể 'dự đoán' sức khỏe đại dương, nó quyết định sức khỏe đó."}, {"options": ["value", "cost", "rate", "price"], "key": 0, "explain": "'Learn to value' = học cách trân trọng, coi trọng. 'Price/cost/rate' đều là 'định giá' theo nghĩa tiền bạc - sai hoàn toàn với thông điệp bảo vệ đại dương của câu."}, {"options": ["undiscovered", "unexplored", "uninhabited", "unpolluted"], "key": 1, "explain": "'Unexplored' = đã biết là tồn tại nhưng chưa được khám phá - đúng với đáy biển sâu. 'Undiscovered' sai vì ta đã biết nó ở đó; 'uninhabited' sai vì vẫn có sinh vật sống; 'unpolluted' sai vì vi nhựa đã chạm tới nơi này."}]},
+{"n": 15, "topic": "ONE TAKE: THE ART OF THE LONG SHOT", "html": "Most films are built from thousands of short pieces, <span class=\"wv\" data-term=\"edit\" data-ipa=\"/ˈedɪt/\" data-vn=\"biên tập, dựng (phim)\">edited</span> together <span class=\"wv\" data-term=\"invisibly\" data-ipa=\"/ɪnˈvɪzəbli/\" data-vn=\"một cách vô hình, không để lại dấu vết\">invisibly</span>. A small number of directors prefer the opposite approach: filming a whole movie in one <span class=\"wv\" data-term=\"continuous\" data-ipa=\"/kənˈtɪnjuəs/\" data-vn=\"liên tục, không ngắt quãng\">continuous</span> <span class=\"wv\" data-term=\"take (film)\" data-ipa=\"/teɪk/\" data-vn=\"cú máy: một lần quay liên tục không cắt\">take</span>. The results can be <span class=\"wv\" data-term=\"electrifying\" data-ipa=\"/ɪˈlektrɪfaɪɪŋ/\" data-vn=\"gây phấn khích tột độ, nghẹt thở\">electrifying</span>, but the risks are enormous. If an actor forgets a line in the final minute of a ten-minute shot, everything must begin again from <span class=\"blank\" data-q=\"1\">(1)</span>. Such scenes are planned with <span class=\"wv\" data-term=\"military precision\" data-ipa=\"/ˈmɪlɪtri prɪˈsɪʒn/\" data-vn=\"độ chính xác tuyệt đối như trong quân đội\">military precision</span>: the camera operator, <span class=\"blank\" data-q=\"2\">(2)</span> through a crowded set, must never <span class=\"wv\" data-term=\"block\" data-ipa=\"/blɒk/\" data-vn=\"chắn, che khuất\">block</span> the actors. In one famous war film, the camera appears to follow soldiers across a battlefield in one <span class=\"wv\" data-term=\"unbroken\" data-ipa=\"/ʌnˈbrəʊkən/\" data-vn=\"không bị ngắt, liền mạch\">unbroken</span> shot lasting two hours; by the time filming began, the crew <span class=\"blank\" data-q=\"3\">(3)</span> the shot more than forty times. Because the camera never cuts, the audience experiences events in real time, sharing the characters&#x27; <span class=\"wv\" data-term=\"exhaustion\" data-ipa=\"/ɪɡˈzɔːstʃən/\" data-vn=\"sự kiệt sức\">exhaustion</span> and fear <span class=\"wv\" data-term=\"as if\" data-ipa=\"/æz ɪf/\" data-vn=\"như thể là, cứ như\">as if</span> they <span class=\"blank\" data-q=\"4\">(4)</span> the characters themselves. When such shots work, no <span class=\"wv\" data-term=\"editing\" data-ipa=\"/ˈedɪtɪŋ/\" data-vn=\"việc dựng phim, biên tập phim\">editing</span> trick can <span class=\"blank\" data-q=\"5\">(5)</span> their effect. The director&#x27;s <span class=\"wv\" data-term=\"gamble\" data-ipa=\"/ˈɡæmbl/\" data-vn=\"canh bạc, sự đánh cược mạo hiểm\">gamble</span> is simple: <span class=\"wv\" data-term=\"trade\" data-ipa=\"/treɪd/\" data-vn=\"đánh đổi, đổi cái này lấy cái kia\">trade</span> the safety of the <span class=\"wv\" data-term=\"editing\" data-ipa=\"/ˈedɪtɪŋ/\" data-vn=\"việc dựng phim, biên tập phim\">editing</span> room for one <span class=\"wv\" data-term=\"unbroken\" data-ipa=\"/ʌnˈbrəʊkən/\" data-vn=\"không bị ngắt, liền mạch\">unbroken</span> piece of reality, knowing that a single mistake means starting <span class=\"wv\" data-term=\"all over again\" data-ipa=\"/ɔːl ˈəʊvə(r) əˈɡen/\" data-vn=\"lại từ đầu, làm lại toàn bộ\">all over again</span> - and that the <span class=\"blank\" data-q=\"6\">(6)</span> could not be higher.", "blanks": [{"options": ["first", "beginning", "start", "scratch"], "key": 3, "explain": "Thành ngữ 'from scratch' = từ đầu, từ con số không. 'Beginning/start' đều cần 'the' phía trước ('from the beginning') và 'from first' không tồn tại - cả ba đều bị loại bởi chính cấu trúc 'from §' trống trơn của câu, một bẫy ngữ pháp ẩn trong câu hỏi từ vựng."}, {"options": ["weaves", "weaving", "woven", "weave"], "key": 1, "explain": "Cụm phân từ chen giữa hai dấu phẩy bổ nghĩa cho 'the camera operator': 'the operator, weaving through a crowded set, must never block...' - dùng phân từ hiện tại 'weaving'. Phải nhận ra mệnh đề chính bắt đầu ở 'must' phía sau."}, {"options": ["rehearsed", "rehearses", "had rehearsed", "have rehearsed"], "key": 2, "explain": "'By the time filming began, the crew had rehearsed...' - quá khứ hoàn thành cho hành động hoàn tất trước một mốc quá khứ khác. 'By the time' là dấu hiệu quyết định nằm ngay đầu mệnh đề."}, {"options": ["were", "be", "are", "is"], "key": 0, "explain": "'As if they were the characters themselves' - sau 'as if' diễn tả điều không có thật ở hiện tại dùng 'were' cho mọi ngôi. Khán giả không thể thực sự là nhân vật nên không dùng 'are'."}, {"options": ["explain", "guarantee", "match", "deserve"], "key": 2, "explain": "'No editing trick can match their effect' = không thủ thuật dựng phim nào sánh bằng hiệu quả đó. 'Explain/guarantee/deserve' đều không kết hợp được với 'their effect' theo nghĩa so sánh mức độ hiệu quả này."}, {"options": ["losses", "bets", "chances", "stakes"], "key": 3, "explain": "'The stakes' = mức được thua, tầm quan trọng của một quyết định mạo hiểm - 'the stakes could not be higher' là cụm cố định. 'Bets' là các khoản đặt cược, 'chances' là cơ hội, 'losses' là thiệt hại đã xảy ra - không từ nào tạo được cụm này."}]},
+{"n": 16, "topic": "VOYAGER 1: ONE LIGHT-DAY FROM HOME", "html": "On 18 November 2026, NASA&#x27;s Voyager 1 became the first <span class=\"wv\" data-term=\"human-made\" data-ipa=\"/ˈhjuːmən meɪd/\" data-vn=\"do con người chế tạo\">human-made</span> object to travel one light-day from Earth: <span class=\"wv\" data-term=\"roughly\" data-ipa=\"/ˈrʌfli/\" data-vn=\"khoảng chừng, xấp xỉ\">roughly</span> 26 billion kilometres, the distance light itself needs a full 24 hours to cover. Launched in 1977, the <span class=\"wv\" data-term=\"probe\" data-ipa=\"/prəʊb/\" data-vn=\"tàu thăm dò (không người lái)\">probe</span> is now so far away that a signal sent from Earth <span class=\"blank\" data-q=\"1\">(1)</span> a whole day to reach it, and any reply takes another day to come home. NASA announced the record only a day later: by the time the news was confirmed, the <span class=\"wv\" data-term=\"probe\" data-ipa=\"/prəʊb/\" data-vn=\"tàu thăm dò (không người lái)\">probe</span>&#x27;s signal <span class=\"blank\" data-q=\"2\">(2)</span> through space for a full 24 hours. Still <span class=\"wv\" data-term=\"race\" data-ipa=\"/reɪs/\" data-vn=\"lao đi rất nhanh\">racing</span> <span class=\"wv\" data-term=\"outwards\" data-ipa=\"/ˈaʊtwədz/\" data-vn=\"hướng ra phía ngoài\">outwards</span> at 61,000 kilometres per hour, Voyager 1 has left the Sun&#x27;s <span class=\"wv\" data-term=\"influence\" data-ipa=\"/ˈɪnfluəns/\" data-vn=\"ảnh hưởng; vùng ảnh hưởng\">influence</span> behind and entered <span class=\"blank\" data-q=\"3\">(3)</span> space, the empty region between the stars. On board is the Golden Record, a collection of Earth&#x27;s sounds and images - in effect, a message in a <span class=\"blank\" data-q=\"4\">(4)</span>, thrown into the cosmic ocean for any <span class=\"wv\" data-term=\"civilisation\" data-ipa=\"/ˌsɪvəlaɪˈzeɪʃn/\" data-vn=\"nền văn minh\">civilisation</span> that might find it one day. But the <span class=\"wv\" data-term=\"probe\" data-ipa=\"/prəʊb/\" data-vn=\"tàu thăm dò (không người lái)\">probe</span>&#x27;s power is slowly <span class=\"wv\" data-term=\"run out\" data-ipa=\"/rʌn aʊt/\" data-vn=\"sắp cạn kiệt (năng lượng, thời gian)\">running out</span>. By the time it fails completely, around 2036, Voyager 1 <span class=\"blank\" data-q=\"5\">(5)</span> nearly six decades in space. Long after its last signal <span class=\"wv\" data-term=\"fade\" data-ipa=\"/feɪd/\" data-vn=\"mờ dần, yếu dần (tín hiệu, âm thanh)\">fades</span>, it will <span class=\"wv\" data-term=\"drift\" data-ipa=\"/drɪft/\" data-vn=\"trôi dạt, trôi lững lờ\">drift</span> on in silence, and its story will continue to <span class=\"blank\" data-q=\"6\">(6)</span> us how small our planet is, and how far a single message can travel.", "blanks": [{"options": ["take", "took", "takes", "taking"], "key": 2, "explain": "Chủ ngữ 'a signal' số ít và đây là sự thật lâu dài ở hiện tại (tín hiệu luôn mất 1 ngày) nên dùng hiện tại đơn 'takes'."}, {"options": ["had been travelling", "has been travelling", "is travelling", "travels"], "key": 0, "explain": "Quá khứ hoàn thành tiếp diễn: tín hiệu đã di chuyển suốt 24 giờ trước thời điểm tin được xác nhận. Dấu hiệu: 'by the time' + 'for a full 24 hours'."}, {"options": ["international", "interstellar", "interplanetary", "interactive"], "key": 1, "explain": "'Interstellar' = giữa các vì sao, khớp phần giải nghĩa 'the empty region between the stars'. 'Interplanetary' chỉ là giữa các hành tinh trong hệ Mặt Trời - tàu đã vượt qua vùng này."}, {"options": ["box", "disc", "capsule", "bottle"], "key": 3, "explain": "Thành ngữ 'a message in a bottle' = thông điệp trong chai thả trôi, khớp 'thrown into the cosmic ocean'. Dù Golden Record thực chất là đĩa, 'disc' là bẫy dữ kiện."}, {"options": ["will spend", "has spent", "will have spent", "spent"], "key": 2, "explain": "'By the time it fails... around 2036' - mốc tương lai, hành động hoàn tất trước mốc đó nên dùng tương lai hoàn thành 'will have spent'."}, {"options": ["remember", "remind", "recall", "memorise"], "key": 1, "explain": "Cấu trúc 'remind somebody how...' = gợi cho ai nhớ về điều gì. 'Remember/recall' không đi với tân ngữ người + mệnh đề how theo cách này."}]}
+];
+const LS = 'advcloze_exam_t4_v1';
+const TOTAL = 24;
+let activeLS = LS;
+let S = { cur: 13, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null };
+function loadFrom(key){
+  const st = { cur: 13, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null };
+  try { const s = JSON.parse(localStorage.getItem(key)); if (s) Object.assign(st, s); } catch(e) {}
+  if (!st.sel) st.sel = {};
+  if (!st.hlHtml) st.hlHtml = {};
+  if (!DATA.some(function(x){ return x.n === st.cur; })) st.cur = DATA[0].n;
+  return st;
+}
+S = loadFrom(LS);
+function save(){ try { localStorage.setItem(activeLS, JSON.stringify(S)); } catch(e) {} }
+const $ = function(id){ return document.getElementById(id); };
+const picker = $('picker');
+DATA.forEach(function(s){ const o = document.createElement('option'); o.value = s.n; o.textContent = 'Sample ' + s.n + ' - ' + s.topic; picker.appendChild(o); });
+
+function keyOf(n, q){ return n + '_' + q; }
+function curSample(){ return DATA.find(function(x){ return x.n === S.cur; }) || DATA[0]; }
+function curIdx(){ return DATA.findIndex(function(x){ return x.n === S.cur; }); }
+function answeredIn(n){ let c = 0; for (let q = 1; q <= 6; q++){ if (S.sel[keyOf(n, q)] != null) c++; } return c; }
+function answeredTotal(){ return DATA.reduce(function(t, s){ return t + answeredIn(s.n); }, 0); }
+function grade(){
+  let correct = 0; const detail = [];
+  DATA.forEach(function(s){ s.blanks.forEach(function(b, i){
+    const v = S.sel[keyOf(s.n, i + 1)];
+    detail.push(v == null ? -1 : v);
+    if (v === b.key) correct++;
+  }); });
+  return { correct: correct, detail: detail };
+}
+
+function render(){
+  const s = curSample();
+  picker.value = S.cur;
+  $('topic').textContent = s.topic;
+  const pg = $('passage');
+  pg.innerHTML = (S.hlHtml && S.hlHtml[S.cur]) ? S.hlHtml[S.cur] : s.html;
+  for (let q = 1; q <= 6; q++){
+    const bl = pg.querySelector('.blank[data-q="' + q + '"]');
+    if (!bl) continue;
+    const b = s.blanks[q - 1], v = S.sel[keyOf(S.cur, q)];
+    bl.className = 'blank';
+    if (!S.submitted){
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add('picked'); }
+      else bl.textContent = '(' + q + ')';
+    } else {
+      if (v != null){ bl.textContent = b.options[v]; bl.classList.add(v === b.key ? 'filled' : 'wrongfill'); }
+      else { bl.textContent = b.options[b.key]; bl.classList.add('shown'); }
+    }
+  }
+  const wrap = $('questions'); wrap.innerHTML = '';
+  s.blanks.forEach(function(b, i){
+    const q = i + 1, v = S.sel[keyOf(S.cur, q)];
+    const card = document.createElement('div'); card.className = 'qcard';
+    let st = '';
+    if (S.submitted){
+      if (v === b.key) st = '<span style="color:var(--green)">✔ Đúng</span>';
+      else if (v == null) st = '<span style="color:var(--orange)">Chưa làm</span>';
+      else st = '<span style="color:var(--red)">✘ Sai</span>';
+    }
+    card.innerHTML = '<div class="qhead"><span>Câu ' + q + '</span><span class="st">' + st + '</span></div>';
+    const opts = document.createElement('div'); opts.className = 'opts';
+    b.options.forEach(function(op, oi){
+      const btn = document.createElement('button'); btn.className = 'opt';
+      btn.textContent = 'ABCD'[oi] + '. ' + op;
+      if (!S.submitted){
+        if (v === oi) btn.classList.add('sel');
+        btn.onclick = function(){ pick(q, oi); };
+      } else {
+        btn.disabled = true;
+        if (oi === b.key) btn.classList.add('right');
+        if (v === oi && v !== b.key) btn.classList.add('wrongpick');
+      }
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    const ex = document.createElement('div');
+    ex.className = 'expl' + (S.submitted ? ' show' : '');
+    ex.textContent = S.submitted ? b.explain : '';
+    card.appendChild(ex);
+    wrap.appendChild(card);
+  });
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  const rb = $('result');
+  if (S.submitted){
+    const y = Math.round(S.correct / TOTAL * 100) / 10;
+    rb.style.display = 'block';
+    rb.textContent = 'Kết quả: ' + S.correct + '/' + TOTAL + ' đúng - điểm ' + y + '/10';
+    $('submitBtn').style.display = 'none';
+  } else {
+    rb.style.display = 'none';
+    rb.textContent = '';
+    $('submitBtn').style.display = '';
+  }
+  renderChips();
+}
+function renderChips(){
+  const c = $('chips'); c.innerHTML = '';
+  DATA.forEach(function(s){
+    const a = answeredIn(s.n);
+    const el = document.createElement('button');
+    el.className = 'schip' + (a === 6 ? ' full' : '') + (s.n === S.cur ? ' cur' : '');
+    el.textContent = s.n + ': ' + a + '/6';
+    el.onclick = function(){ S.cur = s.n; save(); render(); };
+    c.appendChild(el);
+  });
+}
+function pick(q, oi){
+  if (S.submitted) return;
+  S.sel[keyOf(S.cur, q)] = oi; save();
+  const s = curSample(), b = s.blanks[q - 1];
+  const card = $('questions').children[q - 1];
+  if (card){
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach(function(btn, bi){ btn.classList.toggle('sel', bi === oi); });
+  }
+  const bl = $('passage').querySelector('.blank[data-q="' + q + '"]');
+  if (bl){ bl.textContent = b.options[oi]; bl.className = 'blank picked'; }
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function doSubmit(){
+  if (S.submitted) return;
+  const r = grade();
+  S.submitted = true; S.correct = r.correct; save();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(r.correct, TOTAL, r.detail); } catch(e) {} }
+  $('cmodal').classList.remove('open');
+  render();
+}
+$('submitBtn').onclick = function(){
+  if (S.submitted) return;
+  const missing = TOTAL - answeredTotal();
+  $('cText').textContent = 'Sau khi nộp bài, đáp án sẽ bị khóa và không sửa lại được.' + (missing > 0
+    ? ' Bạn còn ' + missing + ' câu chưa làm - câu chưa làm sẽ tính là sai.'
+    : ' Bạn đã làm đủ ' + TOTAL + ' câu.');
+  $('cmodal').classList.add('open');
+};
+$('cYes').onclick = function(){ doSubmit(); };
+$('cNo').onclick = function(){ $('cmodal').classList.remove('open'); };
+$('cmodal').addEventListener('click', function(e){ if (e.target === $('cmodal')) $('cmodal').classList.remove('open'); });
+window.hwOnTimeUp = function(){ if (!S.submitted) doSubmit(); };
+// Per-identity state buckets: the app greets the iframe with hw-hello {code}
+// ('GV' for the teacher incl. preview, the student code for each student).
+// State is stored per code so GV preview and every student stay independent
+// on the same browser. Standalone opens (no hello) keep the base key.
+function resendResult(){
+  if (!S.submitted || S.correct == null) return;
+  const r = grade();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(S.correct, TOTAL, r.detail); } catch(e) {} }
+}
+window.addEventListener('message', function(e){
+  const d = e && e.data;
+  if (!d || d.v !== 1 || d.type !== 'hw-hello' || !d.code) return;
+  const key = LS + '@' + d.code;
+  if (key === activeLS){ if (S.submitted) resendResult(); return; }
+  const prev = S;
+  activeLS = key;
+  if (localStorage.getItem(key)){ S = loadFrom(key); }
+  else if (!prev.submitted){ S = prev; save(); }
+  else { S = { cur: 13, sel: {}, fs: prev.fs, hlHtml: {}, submitted: false, correct: null }; save(); }
+  applyFs();
+  render();
+  if (S.submitted) resendResult();
+});
+picker.onchange = function(){ S.cur = +picker.value; save(); render(); };
+$('prevBtn').onclick = function(){ const i = curIdx(); if (i > 0){ S.cur = DATA[i - 1].n; save(); render(); } };
+$('nextBtn').onclick = function(){ const i = curIdx(); if (i < DATA.length - 1){ S.cur = DATA[i + 1].n; save(); render(); } };
+// vocab pop-up (center)
+document.addEventListener('click', function(e){
+  const w = e.target.closest('.wv');
+  if (w){
+    $('mTerm').textContent = w.dataset.term;
+    $('mIpa').textContent = w.dataset.ipa;
+    $('mVn').textContent = w.dataset.vn;
+    $('modal').classList.add('open');
+  }
+});
+$('modalX').onclick = function(){ $('modal').classList.remove('open'); };
+$('modal').addEventListener('click', function(e){ if (e.target === $('modal')) $('modal').classList.remove('open'); });
+// zoom
+function applyFs(){ document.documentElement.style.setProperty('--fs', (17 * S.fs / 100) + 'px'); }
+$('zoomIn').onclick = function(){ S.fs = Math.min(140, S.fs + 10); save(); applyFs(); };
+$('zoomOut').onclick = function(){ S.fs = Math.max(80, S.fs - 10); save(); applyFs(); };
+applyFs();
+// highlight (snapshot-based persistence)
+let hlOn = false;
+$('hlBtn').onclick = function(){ hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', function(){
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const pg = $('passage');
+  if (!pg.contains(range.startContainer) || range.startContainer !== range.endContainer || range.startContainer.nodeType !== 3) return;
+  if (range.startContainer.parentElement.closest('.blank')) return;
+  const mark = document.createElement('mark'); mark.className = 'hl';
+  try { range.surroundContents(mark); } catch(e) { return; }
+  S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save(); sel.removeAllRanges();
+});
+document.addEventListener('click', function(e){
+  if (hlOn && e.target.tagName === 'MARK'){
+    const pg = $('passage');
+    const parent = e.target.parentNode;
+    parent.replaceChild(document.createTextNode(e.target.textContent), e.target);
+    parent.normalize();
+    S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save();
+  }
+});
+render();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app.
+   Goi: hwSendResult(correct, total, answers) sau khi HS nop bai trong file. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+/* Nhan dien app: khi duoc nhung, app gui {type:'hw-hello', v:1, code, assignmentId} luc tai xong.
+   Nhan hw-timeup nghia la het gio - file nen tu khoa bai / tu nop giup HS. */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body>
+</html>
