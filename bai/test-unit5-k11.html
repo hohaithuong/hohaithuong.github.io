@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST - UNIT 5: GLOBAL WARMING (Grade 11)</title>
+<style>
+:root{ --fs:17px; --brown:#8a5a12; --green:#1e8e4f; --red:#d33; --orange:#e07b00; --line:#d8d8d8; --blue:#3b6fd4; }
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Times New Roman",sans-serif;background:#f4f4f6;color:#1c1c1e;font-size:var(--fs)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.15em;margin:0;font-family:"Times New Roman",serif;letter-spacing:.5px}
+header .sub{color:#666;font-size:.82em;width:100%}
+.chip{background:#eef1f6;border:1px solid #c3cede;color:#243b6b;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9em}
+button.tool{background:#fff;border:1px solid #bbb;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.9em}
+button.tool.on{background:#fff3cd;border-color:#e0a800}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select#picker{font-size:.95em;padding:6px;border-radius:8px;border:1px solid #bbb;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.schip{border:1px solid #bbb;background:#fff;border-radius:6px;padding:2px 7px;font-size:.78em;cursor:pointer}
+.schip.full{background:#e8eefc;border-color:var(--blue);color:#1e3a8a;font-weight:700}
+.schip.cur{outline:2px solid #333}
+main{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+@media (max-width:860px){ main{grid-template-columns:1fr} }
+.pane{padding:14px;overflow-y:auto;max-height:calc(100vh - 150px)}
+@media (max-width:860px){ .pane{max-height:none;overflow:visible} }
+.pane.left{border-right:1px solid var(--line);background:#fff}
+.topic{font-family:"Times New Roman",serif;font-weight:700;text-align:center;font-size:1.12em;margin:2px 0 10px}
+.passage{font-family:"Times New Roman",serif;font-size:1.06em;line-height:1.65;text-align:justify}
+.instrbox{font-size:.98em;line-height:1.6}
+.instrbox h3{margin:4px 0 8px;font-family:"Times New Roman",serif}
+.fxlist{font-size:1em;line-height:1.55}
+.fxlist p{margin:0 0 10px}
+.blank{display:inline-block;min-width:2em;text-align:center;background:#eef;border:1px dashed #88a;border-radius:6px;padding:0 4px;font-weight:700;color:#335}
+.blank.picked{background:#e8eefc;border:1px solid var(--blue);color:#1e3a8a}
+.blank.filled{background:#e6f4ea;border:1px solid var(--green);color:#14532d}
+.blank.wrongfill{background:#fdecec;border:1px solid var(--red);color:#a00}
+.blank.shown{background:#fff4e0;border:1px solid var(--orange);color:#8a5200}
+.wv{color:var(--brown);cursor:pointer;border-bottom:1px dotted var(--brown)}
+mark.hl{background:#ffe98a;border-radius:2px}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.qcard .qhead{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.qcard .st{font-size:.85em}
+.qtext{margin-bottom:8px;line-height:1.5}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} }
+.opt{border:1px solid #bbb;background:#fff;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font-size:.95em}
+.opt:hover{border-color:#666}
+.opt.sel{background:#e8eefc;border-color:var(--blue);font-weight:700}
+.opt.right{background:#e6f4ea;border-color:var(--green);font-weight:700}
+.opt.wrongpick{background:#fdecec;border-color:var(--red);color:#a00}
+.opt:disabled{cursor:default;opacity:.92}
+select.msel{width:100%;font-size:.95em;padding:8px;border-radius:8px;border:1px solid #bbb;background:#fff}
+select.msel.ok{border-color:var(--green);background:#e6f4ea}
+select.msel.bad{border-color:var(--red);background:#fdecec}
+.expl{display:none;background:#f7f9f7;border-left:3px solid var(--green);padding:8px 10px;margin-top:8px;font-size:.92em;line-height:1.5}
+.expl.show{display:block}
+.submitbar{background:#fff;border-top:1px solid var(--line);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#submitBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 44px;font-size:1.05em;font-weight:700;cursor:pointer}
+#submitBtn:hover{background:#17703d}
+#result{display:none;background:#e6f4ea;border:1px solid var(--green);color:#14532d;border-radius:10px;padding:10px 18px;font-weight:700;font-size:1.05em;text-align:center}
+#modal,#cmodal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+#modal.open,#cmodal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;max-width:430px;width:100%;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);position:relative;text-align:center}
+.mbox .term{font-size:1.5em;font-weight:800;color:var(--brown)}
+.mbox .ipa{font-size:1.15em;color:#444;margin:6px 0}
+.mbox .en{font-size:1.02em;line-height:1.5;color:#333}
+.mbox .vn{font-size:1.12em;line-height:1.5;margin-top:4px}
+.mbox .x{position:absolute;top:6px;right:12px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#888}
+.cbtns{margin-top:16px;display:flex;gap:8px;justify-content:center}
+#cYes{background:var(--green);color:#fff;border-color:var(--green);font-weight:700;padding:8px 18px}
+#cNo{padding:8px 18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>TEST - UNIT 5: GLOBAL WARMING</h1>
+  <span class="chip" id="score">Đã làm: 0/43</span>
+  <button class="tool" id="zoomOut">A-</button>
+  <button class="tool" id="zoomIn">A+</button>
+  <button class="tool" id="hlBtn">🖍 Tô sáng</button>
+  <div class="sub">Grade 11 · 43 câu: Part 1 - Grammar &amp; Vocabulary (30) · Part 2 - Advanced Cloze (5) · Part 3 - Matching Causes &amp; Effects (8). Chọn đáp án cho mỗi câu, làm xong bấm <b>Nộp bài</b> để xem điểm và đáp án. Bài làm được lưu riêng theo mã của từng học sinh. Chạm vào <b style="color:#8a5a12">từ màu nâu</b> trong bài đọc để xem phiên âm và nghĩa.</div>
+</header>
+<div class="bar">
+  <button class="tool" id="prevBtn">‹ Trước</button>
+  <select id="picker"></select>
+  <button class="tool" id="nextBtn">Sau ›</button>
+  <div class="chips" id="chips"></div>
+</div>
+<main>
+  <section class="pane left">
+    <div class="topic" id="topic"></div>
+    <div class="passage" id="passage"></div>
+  </section>
+  <section class="pane right" id="questions"></section>
+</main>
+<div class="submitbar">
+  <button id="submitBtn">Nộp bài</button>
+  <div id="result"></div>
+</div>
+<div id="modal"><div class="mbox">
+  <button class="x" id="modalX">×</button>
+  <div class="term" id="mTerm"></div>
+  <div class="ipa" id="mIpa"></div>
+  <div class="en" id="mEn"></div>
+  <div class="vn" id="mVn"></div>
+</div></div>
+<div id="cmodal"><div class="mbox">
+  <div class="term" style="color:var(--green);font-size:1.25em">Nộp bài?</div>
+  <div class="vn" id="cText" style="font-size:1em;margin-top:8px"></div>
+  <div class="cbtns">
+    <button class="tool" id="cYes">Nộp bài ngay</button>
+    <button class="tool" id="cNo">Làm tiếp</button>
+  </div>
+</div></div>
+<script>
+const DATA = [{"id": "p1", "type": "mcq", "title": "Part 1 - Grammar & Vocabulary (Câu 1-30)", "topic": "", "leftHTML": "<div class=\"instrbox\"><h3>Part 1 - Grammar and Vocabulary</h3><p><b>Questions 1-15:</b> Grammar - participle clauses (present participle, past participle and perfect participle clauses).</p><p><b>Questions 16-30:</b> Vocabulary - Unit 5: Global Warming.</p><p>Choose the best answer for each question. You can change your answers before you submit. Your answers are saved automatically on this device.</p></div>", "items": [{"n": 1, "q": "______ from the factory, the thick smoke spreads across the whole valley.", "options": ["Released", "Releasing", "Release", "To release"], "key": 0, "expl": "Khói được nhà máy thải ra (bị động) nên dùng phân từ quá khứ: Released."}, {"n": 2, "q": "______ the report carefully, she found two serious mistakes in the data.", "options": ["Having read", "Having reading", "Being read", "Having reads"], "key": 0, "expl": "Hành động đọc xảy ra và hoàn thành trước, dùng phân từ hoàn thành: Having read."}, {"n": 3, "q": "The man ______ on the beach is a climate scientist.", "options": ["stands", "stood", "standing", "is standing"], "key": 2, "expl": "Mệnh đề quan hệ rút gọn chủ động: the man (who is) standing on the beach."}, {"n": 4, "q": "The forest ______ last year is slowly growing back.", "options": ["burning", "burn", "burns", "burned"], "key": 3, "expl": "Rừng bị đốt (bị động) nên dùng phân từ quá khứ: (which was) burned."}, {"n": 5, "q": "______ in the sun for hours, the ice melted completely.", "options": ["Left", "Leaving", "Leave", "Leaves"], "key": 0, "expl": "Băng bị để ngoài nắng (bị động): Left in the sun for hours."}, {"n": 6, "q": "______ about the flood warning, the villagers moved to higher ground.", "options": ["Worrying", "Worry", "Worried", "Worries"], "key": 2, "expl": "Dân làng là người cảm thấy lo lắng: Worried about the warning."}, {"n": 7, "q": "The results ______ in the report shocked many people around the world.", "options": ["showing", "show", "shows", "shown"], "key": 3, "expl": "Kết quả được trình bày trong báo cáo (bị động): (which were) shown."}, {"n": 8, "q": "______ the trees fall one by one, the old man felt deeply sad.", "options": ["Watched", "Watching", "Watch", "Watches"], "key": 1, "expl": "Ông lão là người nhìn (chủ động): Watching the trees fall."}, {"n": 9, "q": "______ enough money over two years, the town built a new sea wall.", "options": ["Having saved", "Having saving", "Being saved", "Having saves"], "key": 0, "expl": "Việc dành dụm tiền hoàn thành trước khi xây tường biển: Having saved."}, {"n": 10, "q": "Plastic bottles ______ into the sea harm turtles and other sea animals.", "options": ["throwing", "throw", "thrown", "throws"], "key": 2, "expl": "Chai nhựa bị ném xuống biển (bị động): (which are) thrown into the sea."}, {"n": 11, "q": "______ the documentary about melting ice caps, Lan could not sleep that night.", "options": ["Having watching", "Being watched", "Having watches", "Having watched"], "key": 3, "expl": "Xem xong bộ phim (trước) rồi mới mất ngủ: Having watched. 'Watched' là động từ quá khứ, không đứng đầu mệnh đề phân từ được."}, {"n": 12, "q": "______ in large numbers, trees help keep the air clean and cool.", "options": ["Planting", "Planted", "Plant", "Plants"], "key": 1, "expl": "Cây được trồng (bị động): Planted in large numbers."}, {"n": 13, "q": "The news about the strongest storm of the year was ______ for everyone.", "options": ["frighten", "frightens", "frightened", "frightening"], "key": 3, "expl": "Tin tức gây ra cảm giác sợ nên dùng tính từ -ing: frightening."}, {"n": 14, "q": "______ for hours in the heavy rain, the rescue workers were completely wet.", "options": ["Having worked", "Having working", "Being worked", "Having works"], "key": 0, "expl": "Làm việc nhiều giờ trước đó dẫn tới kết quả ở mệnh đề chính: Having worked."}, {"n": 15, "q": "The girl ______ the poster about saving energy is my classmate.", "options": ["holds", "holding", "held", "is holding"], "key": 1, "expl": "Mệnh đề quan hệ rút gọn chủ động: the girl (who is) holding the poster."}, {"n": 16, "q": "Burning fossil fuels ______ large amounts of carbon dioxide into the atmosphere.", "options": ["absorbs", "prevents", "reduces", "releases"], "key": 3, "expl": "Đốt nhiên liệu hóa thạch thải ra khí CO2: release emissions/gas into the atmosphere."}, {"n": 17, "q": "Forests help ______ carbon dioxide from the air and slow down global warming.", "options": ["absorb", "release", "emit", "waste"], "key": 0, "expl": "Rừng hấp thụ CO2: absorb carbon dioxide."}, {"n": 18, "q": "If the ice caps continue to ______, sea levels around the world will rise faster.", "options": ["freeze", "melt", "boil", "dry"], "key": 1, "expl": "Băng tan làm mực nước biển dâng: melt."}, {"n": 19, "q": "A long period of time with almost no rain is called a ______.", "options": ["flood", "storm", "heatwave", "drought"], "key": 3, "expl": "Hạn hán là thời gian dài gần như không có mưa: drought."}, {"n": 20, "q": "Carbon dioxide is one of the main ______ gases that trap heat in the atmosphere.", "options": ["greenfield", "greenhouse", "hothouse", "glasshouse"], "key": 1, "expl": "Khí nhà kính: greenhouse gases."}, {"n": 21, "q": "Factories must cut down their carbon ______ if they want to protect the environment.", "options": ["solutions", "temperatures", "emissions", "forests"], "key": 2, "expl": "Lượng khí thải carbon: carbon emissions."}, {"n": 22, "q": "Solar panels and wind turbines are used to produce ______ energy.", "options": ["renewable", "fossil", "nuclear", "chemical"], "key": 0, "expl": "Năng lượng tái tạo: renewable energy."}, {"n": 23, "q": "The summer of 2026 brought a severe ______, with temperatures above 40°C for two weeks.", "options": ["blizzard", "drought", "heatwave", "flood"], "key": 2, "expl": "Đợt nắng nóng kéo dài: heatwave."}, {"n": 24, "q": "Rising sea levels put many low coastal villages ______ danger of flooding.", "options": ["on", "in", "at", "under"], "key": 1, "expl": "Cụm cố định: in danger (of) = gặp nguy hiểm."}, {"n": 25, "q": "People should stop ______ trees in the Amazon rainforest for farmland.", "options": ["planting", "growing", "protecting", "cutting down"], "key": 3, "expl": "Chặt cây: cut down trees."}, {"n": 26, "q": "If we do not act now, many rare animal species may soon become ______.", "options": ["extinct", "alive", "common", "safe"], "key": 0, "expl": "Tuyệt chủng: become extinct."}, {"n": 27, "q": "______ is the long-term change in the Earth's weather patterns.", "options": ["Weather forecast", "Natural disaster", "Climate change", "Greenhouse effect"], "key": 2, "expl": "Sự thay đổi lâu dài của các kiểu thời tiết trên Trái Đất: climate change."}, {"n": 28, "q": "Remember to turn off the lights when you leave the room to avoid ______ electricity.", "options": ["saving", "wasting", "producing", "using"], "key": 1, "expl": "Tránh lãng phí điện: avoid wasting electricity (avoid + V-ing)."}, {"n": 29, "q": "Plants take in carbon dioxide from the ______ around us.", "options": ["ocean floor", "underground", "atmosphere", "space"], "key": 2, "expl": "Thực vật lấy CO2 từ khí quyển: the atmosphere."}, {"n": 30, "q": "The word <u>reduce</u> in the sentence 'We must reduce the use of fossil fuels' is closest in meaning to ______.", "options": ["increase", "decrease", "waste", "burn"], "key": 1, "expl": "reduce = decrease: giảm."}]}, {"id": "p2", "type": "cloze", "title": "Part 2 - Advanced Cloze (Câu 31-35)", "topic": "The Amazon: A Forest at a Tipping Point", "leftHTML": "The Amazon rainforest, often described as the “lungs of the Earth”, absorbs <span class=\"wv\" data-term=\"enormous\" data-ipa=\"/ɪˈnɔːməs/\" data-en=\"very large in size or amount\" data-vn=\"khổng lồ, rất lớn\">enormous</span> quantities of carbon dioxide. In recent decades, however, <span class=\"wv\" data-term=\"deforestation\" data-ipa=\"/diːˌfɒrɪˈsteɪʃn/\" data-en=\"cutting down or clearing all the trees in an area\" data-vn=\"nạn phá rừng\">deforestation</span> has pushed this vital <span class=\"wv\" data-term=\"ecosystem\" data-ipa=\"/ˈiːkəʊˌsɪstəm/\" data-en=\"all the plants and animals living together in an area\" data-vn=\"hệ sinh thái\">ecosystem</span> towards a dangerous tipping point. <span class=\"blank\" data-q=\"1\"></span> by farmers for crops and cattle, large areas of forest disappear every year, releasing the carbon stored in the trees back into the <span class=\"wv\" data-term=\"atmosphere\" data-ipa=\"/ˈætməsfɪə/\" data-en=\"the layer of gases around the Earth\" data-vn=\"khí quyển\">atmosphere</span>. Scientists warn that <span class=\"blank\" data-q=\"2\"></span> roughly twenty percent of the forest disappears, the remaining trees may no longer generate enough <span class=\"wv\" data-term=\"rainfall\" data-ipa=\"/ˈreɪnfɔːl/\" data-en=\"the amount of rain that falls in an area\" data-vn=\"lượng mưa\">rainfall</span> to <span class=\"wv\" data-term=\"sustain\" data-ipa=\"/səˈsteɪn/\" data-en=\"to keep something alive or able to continue\" data-vn=\"duy trì, nuôi sống\">sustain</span> themselves. The result would be a dramatic change: the rainforest would gradually dry out and be replaced by <span class=\"wv\" data-term=\"savanna\" data-ipa=\"/səˈvænə/\" data-en=\"a flat area of land with grass and few trees, in a hot country\" data-vn=\"thảo nguyên (xavan)\">savanna</span>. Such a change would destroy one of the richest <span class=\"wv\" data-term=\"habitats\" data-ipa=\"/ˈhæbɪtæts/\" data-en=\"the natural homes of plants and animals\" data-vn=\"môi trường sống\">habitats</span> on Earth and would also <span class=\"blank\" data-q=\"3\"></span> the effects of climate change worldwide. Worse still, the process may already have <span class=\"blank\" data-q=\"4\"></span> in some southern regions, where rainfall has fallen noticeably in recent years. Protecting the Amazon, therefore, is not simply a regional concern; it is a global <span class=\"blank\" data-q=\"5\"></span> that demands immediate action.", "items": [{"n": 31, "q": "Blank (1)", "options": ["Clearing", "Clear", "Cleared", "Clears"], "key": 2, "expl": "Diện tích rừng bị nông dân dọn sạch (bị động) nên dùng phân từ quá khứ: Cleared by farmers."}, {"n": 32, "q": "Blank (2)", "options": ["once", "despite", "whereas", "unless"], "key": 0, "expl": "'Once + mệnh đề' = một khi điều đó xảy ra thì hệ quả kéo theo. 'Unless' sẽ đảo ngược logic của câu."}, {"n": 33, "q": "Blank (3)", "options": ["postpone", "hold back", "overlook", "accelerate"], "key": 3, "expl": "accelerate the effects = làm cho tác động của biến đổi khí hậu nhanh và mạnh hơn."}, {"n": 34, "q": "Blank (4)", "options": ["began", "begun", "begin", "beginning"], "key": 1, "expl": "Sau 'may have' phải dùng phân từ quá khứ: have begun."}, {"n": 35, "q": "Blank (5)", "options": ["celebration", "tradition", "responsibility", "ceremony"], "key": 2, "expl": "a global responsibility = một trách nhiệm toàn cầu, phù hợp với ý 'demands immediate action'."}]}, {"id": "p3", "type": "match", "title": "Part 3 - Matching Causes & Effects (Câu 36-43)", "topic": "", "leftHTML": "<div class=\"fxlist\"><h3 style=\"font-family:'Times New Roman',serif;margin:4px 0 8px\">Effects</h3><p><b>a.</b> Salt water flows into rice fields and destroys the crops.</p><p><b>b.</b> City surfaces trap heat, making urban areas hotter than the countryside.</p><p><b>c.</b> Huge amounts of carbon dioxide are released into the air.</p><p><b>d.</b> More land, water and energy used to grow that food are wasted too.</p><p><b>e.</b> The flooded fields give off methane, a powerful greenhouse gas.</p><p><b>f.</b> There are fewer trees to absorb carbon dioxide from the air.</p><p><b>g.</b> Engines burn fuel while going nowhere, wasting petrol and adding to emissions.</p><p><b>h.</b> Coral reefs lose their colour and slowly die.</p></div>", "effects": ["Salt water flows into rice fields and destroys the crops.", "City surfaces trap heat, making urban areas hotter than the countryside.", "Huge amounts of carbon dioxide are released into the air.", "More land, water and energy used to grow that food are wasted too.", "The flooded fields give off methane, a powerful greenhouse gas.", "There are fewer trees to absorb carbon dioxide from the air.", "Engines burn fuel while going nowhere, wasting petrol and adding to emissions.", "Coral reefs lose their colour and slowly die."], "items": [{"n": 36, "q": "Farmers burn forests to clear land for crops.", "key": 2, "expl": "Đốt rừng thải ra một lượng lớn CO2 vào không khí."}, {"n": 37, "q": "Cities cover more and more land with concrete and asphalt.", "key": 1, "expl": "Bê tông và nhựa đường giữ nhiệt, làm thành phố nóng hơn vùng quê."}, {"n": 38, "q": "The sea gets warmer year after year.", "key": 7, "expl": "Biển ấm lên làm san hô mất màu và chết dần (hiện tượng tẩy trắng san hô)."}, {"n": 39, "q": "Trees are cut down in large numbers.", "key": 5, "expl": "Cây bị chặt nhiều thì còn ít cây để hấp thụ CO2."}, {"n": 40, "q": "Rice fields are kept flooded for months.", "key": 4, "expl": "Ruộng ngập nước thải ra khí methane, một khí nhà kính mạnh."}, {"n": 41, "q": "Drivers sit in traffic jams for hours every day.", "key": 6, "expl": "Xe kẹt đường vẫn nổ máy đốt xăng mà không đi đâu, gây lãng phí và thêm khí thải."}, {"n": 42, "q": "People waste large amounts of food every day.", "key": 3, "expl": "Thức ăn bỏ đi đồng nghĩa đất, nước và năng lượng dùng để sản xuất cũng bị lãng phí."}, {"n": 43, "q": "Sea levels rise along the coast.", "key": 0, "expl": "Nước biển dâng làm nước mặn tràn vào ruộng lúa và phá hoại mùa màng."}]}];
+const LS = 'test_u5k11_exam_v1';
+const TOTAL = 43;
+let activeLS = LS;
+function defState(){ return { cur: DATA[0].id, sel: {}, fs: 100, hlHtml: {}, submitted: false, correct: null }; }
+function loadFrom(key){
+  const st = defState();
+  try { const s = JSON.parse(localStorage.getItem(key)); if (s) Object.assign(st, s); } catch(e) {}
+  if (!st.sel) st.sel = {};
+  if (!st.hlHtml) st.hlHtml = {};
+  if (!DATA.some(function(x){ return x.id === st.cur; })) st.cur = DATA[0].id;
+  return st;
+}
+let S = loadFrom(LS);
+function save(){ try { localStorage.setItem(activeLS, JSON.stringify(S)); } catch(e) {} }
+const $ = function(id){ return document.getElementById(id); };
+const picker = $('picker');
+DATA.forEach(function(s){ const o = document.createElement('option'); o.value = s.id; o.textContent = s.title; picker.appendChild(o); });
+function keyOf(sec, i){ return sec + '_' + i; }
+function curSec(){ return DATA.find(function(x){ return x.id === S.cur; }) || DATA[0]; }
+function curIdx(){ return DATA.findIndex(function(x){ return x.id === S.cur; }); }
+function answeredIn(sec){ const s = DATA.find(function(x){ return x.id === sec; }); let c = 0; s.items.forEach(function(it, i){ if (S.sel[keyOf(sec, i + 1)] != null) c++; }); return c; }
+function answeredTotal(){ return DATA.reduce(function(t, s){ return t + answeredIn(s.id); }, 0); }
+function grade(){
+  let correct = 0; const detail = [];
+  DATA.forEach(function(s){ s.items.forEach(function(it, i){
+    const v = S.sel[keyOf(s.id, i + 1)];
+    detail.push(v == null ? -1 : v);
+    if (v === it.key) correct++;
+  }); });
+  return { correct: correct, detail: detail };
+}
+function decorateBlanks(){
+  const s = curSec(); if (s.type !== 'cloze') return;
+  const pg = $('passage');
+  s.items.forEach(function(it, i){
+    const q = i + 1, bl = pg.querySelector('.blank[data-q="' + q + '"]');
+    if (!bl) return;
+    const v = S.sel[keyOf(s.id, q)];
+    bl.className = 'blank';
+    if (!S.submitted){
+      if (v != null){ bl.textContent = it.options[v]; bl.classList.add('picked'); }
+      else bl.textContent = '(' + q + ')';
+    } else {
+      if (v != null){ bl.textContent = it.options[v]; bl.classList.add(v === it.key ? 'filled' : 'wrongfill'); }
+      else { bl.textContent = it.options[it.key]; bl.classList.add('shown'); }
+    }
+  });
+}
+function render(){
+  const s = curSec();
+  picker.value = S.cur;
+  $('topic').textContent = s.topic || '';
+  const pg = $('passage');
+  pg.innerHTML = (S.hlHtml && S.hlHtml[s.id]) ? S.hlHtml[s.id] : s.leftHTML;
+  decorateBlanks();
+  const wrap = $('questions'); wrap.innerHTML = '';
+  s.items.forEach(function(it, i){
+    const li = i + 1, gn = it.n, v = S.sel[keyOf(s.id, li)];
+    const card = document.createElement('div'); card.className = 'qcard';
+    let st = '';
+    if (S.submitted){
+      if (v === it.key) st = '<span style="color:var(--green)">✔ Đúng</span>';
+      else if (v == null) st = '<span style="color:var(--orange)">Chưa làm</span>';
+      else st = '<span style="color:var(--red)">✘ Sai</span>';
+    }
+    card.innerHTML = '<div class="qhead"><span>Câu ' + gn + '</span><span class="st">' + st + '</span></div>';
+    if (s.type === 'match'){
+      const qt = document.createElement('div'); qt.className = 'qtext'; qt.textContent = it.q; card.appendChild(qt);
+      const sel = document.createElement('select'); sel.className = 'msel'; sel.id = 'msel_' + li;
+      sel.innerHTML = '<option value="">- chọn hệ quả (effect) -</option>' + s.effects.map(function(e, ei){ return '<option value="' + ei + '">' + 'abcdefgh'[ei] + '. ' + e + '</option>'; }).join('');
+      if (v != null) sel.value = v;
+      if (!S.submitted){ sel.onchange = function(){ pickMatch(li, sel.value === '' ? null : +sel.value); }; }
+      else { sel.disabled = true; sel.classList.add(v === it.key ? 'ok' : 'bad'); }
+      card.appendChild(sel);
+    } else {
+      if (it.q){ const qt = document.createElement('div'); qt.className = 'qtext'; qt.innerHTML = it.q; card.appendChild(qt); }
+      const opts = document.createElement('div'); opts.className = 'opts';
+      it.options.forEach(function(op, oi){
+        const btn = document.createElement('button'); btn.className = 'opt';
+        btn.textContent = 'ABCD'[oi] + '. ' + op;
+        if (!S.submitted){
+          if (v === oi) btn.classList.add('sel');
+          btn.onclick = function(){ pick(li, oi); };
+        } else {
+          btn.disabled = true;
+          if (oi === it.key) btn.classList.add('right');
+          if (v === oi && v !== it.key) btn.classList.add('wrongpick');
+        }
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    }
+    const ex = document.createElement('div');
+    ex.className = 'expl' + (S.submitted ? ' show' : '');
+    if (S.submitted){
+      ex.textContent = (s.type === 'match')
+        ? 'Đáp án: ' + 'abcdefgh'[it.key] + '. ' + s.effects[it.key] + ' - ' + it.expl
+        : it.expl;
+    }
+    card.appendChild(ex);
+    wrap.appendChild(card);
+  });
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  const rb = $('result');
+  if (S.submitted){
+    const y = Math.round(S.correct / TOTAL * 100) / 10;
+    rb.style.display = 'block';
+    rb.textContent = 'Kết quả: ' + S.correct + '/' + TOTAL + ' đúng - điểm ' + y + '/10';
+    $('submitBtn').style.display = 'none';
+  } else {
+    rb.style.display = 'none'; rb.textContent = '';
+    $('submitBtn').style.display = '';
+  }
+  renderChips();
+}
+function renderChips(){
+  const c = $('chips'); c.innerHTML = '';
+  DATA.forEach(function(s, si){
+    const a = answeredIn(s.id);
+    const el = document.createElement('button');
+    el.className = 'schip' + (a === s.items.length ? ' full' : '') + (s.id === S.cur ? ' cur' : '');
+    el.textContent = 'Phần ' + (si + 1) + ': ' + a + '/' + s.items.length;
+    el.onclick = function(){ S.cur = s.id; save(); render(); };
+    c.appendChild(el);
+  });
+}
+function pick(li, oi){
+  if (S.submitted) return;
+  const s = curSec();
+  S.sel[keyOf(s.id, li)] = oi; save();
+  const card = $('questions').children[li - 1];
+  if (card){
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach(function(btn, bi){ btn.classList.toggle('sel', bi === oi); });
+  }
+  if (s.type === 'cloze') decorateBlanks();
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function pickMatch(li, v){
+  if (S.submitted) return;
+  const s = curSec();
+  if (v == null) delete S.sel[keyOf(s.id, li)]; else S.sel[keyOf(s.id, li)] = v;
+  save();
+  $('score').textContent = 'Đã làm: ' + answeredTotal() + '/' + TOTAL;
+  renderChips();
+}
+function doSubmit(){
+  if (S.submitted) return;
+  const r = grade();
+  S.submitted = true; S.correct = r.correct; save();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(r.correct, TOTAL, r.detail); } catch(e) {} }
+  $('cmodal').classList.remove('open');
+  render();
+}
+$('submitBtn').onclick = function(){
+  if (S.submitted) return;
+  const missing = TOTAL - answeredTotal();
+  $('cText').textContent = 'Sau khi nộp bài, đáp án sẽ bị khóa và không sửa lại được.' + (missing > 0
+    ? ' Bạn còn ' + missing + ' câu chưa làm - câu chưa làm sẽ tính là sai.'
+    : ' Bạn đã làm đủ ' + TOTAL + ' câu.');
+  $('cmodal').classList.add('open');
+};
+$('cYes').onclick = function(){ doSubmit(); };
+$('cNo').onclick = function(){ $('cmodal').classList.remove('open'); };
+$('cmodal').addEventListener('click', function(e){ if (e.target === $('cmodal')) $('cmodal').classList.remove('open'); });
+window.hwOnTimeUp = function(){ if (!S.submitted) doSubmit(); };
+// Per-identity state buckets: the app greets the iframe with hw-hello {code}
+// ('GV' for the teacher incl. preview, the student code for each student).
+// State is stored per code so GV preview and every student stay independent
+// on the same browser. Standalone opens (no hello) keep the base key.
+function resendResult(){
+  if (!S.submitted || S.correct == null) return;
+  const r = grade();
+  if (typeof window.hwSendResult === 'function'){ try { window.hwSendResult(S.correct, TOTAL, r.detail); } catch(e) {} }
+}
+window.addEventListener('message', function(e){
+  const d = e && e.data;
+  if (!d || d.v !== 1 || d.type !== 'hw-hello' || !d.code) return;
+  const key = LS + '@' + d.code;
+  if (key === activeLS){ if (S.submitted) resendResult(); return; }
+  const prev = S;
+  activeLS = key;
+  if (localStorage.getItem(key)){ S = loadFrom(key); }
+  else if (!prev.submitted){ S = prev; save(); }
+  else { S = defState(); S.fs = prev.fs; save(); }
+  applyFs();
+  render();
+  if (S.submitted) resendResult();
+});
+picker.onchange = function(){ S.cur = picker.value; save(); render(); };
+$('prevBtn').onclick = function(){ const i = curIdx(); if (i > 0){ S.cur = DATA[i - 1].id; save(); render(); } };
+$('nextBtn').onclick = function(){ const i = curIdx(); if (i < DATA.length - 1){ S.cur = DATA[i + 1].id; save(); render(); } };
+// vocab pop-up (center)
+document.addEventListener('click', function(e){
+  const w = e.target.closest('.wv');
+  if (w){
+    $('mTerm').textContent = w.dataset.term;
+    $('mIpa').textContent = w.dataset.ipa;
+    $('mEn').textContent = w.dataset.en;
+    $('mVn').textContent = w.dataset.vn;
+    $('modal').classList.add('open');
+  }
+});
+$('modalX').onclick = function(){ $('modal').classList.remove('open'); };
+$('modal').addEventListener('click', function(e){ if (e.target === $('modal')) $('modal').classList.remove('open'); });
+// zoom
+function applyFs(){ document.documentElement.style.setProperty('--fs', (17 * S.fs / 100) + 'px'); }
+$('zoomIn').onclick = function(){ S.fs = Math.min(140, S.fs + 10); save(); applyFs(); };
+$('zoomOut').onclick = function(){ S.fs = Math.max(80, S.fs - 10); save(); applyFs(); };
+applyFs();
+// highlight (snapshot-based persistence)
+let hlOn = false;
+$('hlBtn').onclick = function(){ hlOn = !hlOn; $('hlBtn').classList.toggle('on', hlOn); };
+document.addEventListener('mouseup', function(){
+  if (!hlOn) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const pg = $('passage');
+  if (!pg.contains(range.startContainer) || range.startContainer !== range.endContainer || range.startContainer.nodeType !== 3) return;
+  if (range.startContainer.parentElement.closest('.blank')) return;
+  const mark = document.createElement('mark'); mark.className = 'hl';
+  try { range.surroundContents(mark); } catch(e) { return; }
+  S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save(); sel.removeAllRanges();
+});
+document.addEventListener('click', function(e){
+  if (hlOn && e.target.tagName === 'MARK'){
+    const pg = $('passage');
+    const parent = e.target.parentNode;
+    parent.replaceChild(document.createTextNode(e.target.textContent), e.target);
+    parent.normalize();
+    S.hlHtml = S.hlHtml || {}; S.hlHtml[S.cur] = pg.innerHTML; save();
+  }
+});
+render();
+</script>
+<script>
+/* HW Bridge v1 - gui ket qua ve Homework Space khi bai duoc nhung trong app.
+   Goi: hwSendResult(correct, total, answers) sau khi HS nop bai trong file. */
+window.hwSendResult = function (correct, total, answers) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'hw-result', v: 1, correct: correct, total: total, answers: answers || [] },
+        '*'
+      );
+    }
+  } catch (e) { /* mo file doc lap: bo qua */ }
+};
+/* Nhan dien app: khi duoc nhung, app gui {type:'hw-hello', v:1, code, assignmentId} luc tai xong.
+   Nhan hw-timeup nghia la het gio - file nen tu khoa bai / tu nop giup HS. */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d || d.v !== 1) return;
+  if (d.type === 'hw-hello') { window.hwStudentCode = d.code; window.hwAssignmentId = d.assignmentId; }
+  if (d.type === 'hw-timeup' && typeof window.hwOnTimeUp === 'function') { window.hwOnTimeUp(); }
+});
+</script>
+</body>
+</html>
